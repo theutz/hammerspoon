@@ -172,47 +172,28 @@ hs.hotkey.bind(mods, "j", function()
 	hs.grid.set(win, target)
 end)
 
-hs.hotkey.bind(mods, "return", function()
-	local win = hs.window.frontmostWindow()
-	local current = hs.grid.get(win)
-
-	local initial = hs.geometry.new({ 0, 0, gridSize.w, gridSize.h })
-
-	---@type table
-	local two_thirds = initial:copy()
-	two_thirds.w = two_thirds.w - 4
-	two_thirds.x = two_thirds.x + 2
-
-	---@type table
-	local half = initial:copy()
-	half.w = half.w - 6
-	half.x = half.x + 3
-
-	---@type table
-	local third = initial:copy()
-	third.w = third.w - 8
-	third.x = third.x + 4
-
-	local target = initial
-
-	if current == initial then
-		target = two_thirds
-	elseif current == two_thirds then
-		target = half
-	elseif current == half then
-		target = third
-	end
-
-	hs.grid.set(win, target)
-end)
-
+-- Center on Screen
 hs.hotkey.bind(mods, "space", function()
 	local win = hs.window.frontmostWindow()
 	---@type table
 	local frame = win:centerOnScreen():frame()
-	frame.y = frame.y + gridMargin.h - 3 -- not sure why we need this 3, but we do
+	frame.y = frame.y - gridMargin.h - 3 -- not sure why we need this 3, but we do
 	win:move(frame)
 end)
+
+local quarters = {
+	{ "u", "0,0 6x4" },
+	{ "i", "6,0 6x4" },
+	{ "m", "6,4 6x4" },
+	{ "n", "0,4 6x4" },
+	{ "return", "0,0 12x8" },
+}
+
+for _, value in ipairs(quarters) do
+	hs.hotkey.bind(mods, value[1], function()
+		hs.grid.set(hs.window.frontmostWindow(), hs.geometry.new(value[2]))
+	end)
+end
 
 -- AutoStashApps = wf.new({
 --   "Messages",
