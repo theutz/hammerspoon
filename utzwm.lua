@@ -15,6 +15,45 @@ local gridMargin = hs.geometry.size(16, 16) or {}
 
 hs.grid.setGrid(gridSize).setMargins(gridMargin)
 
+---@type ((string | string[])[])[]
+local definitions = {
+	{ "h", { "0,0 6x8", "0,0 9x8", "0,0 3x8" } },
+	{ "j", { "0,4 12x4", "0,4 6x4", "6,4 12x4", "0,4 4x4", "4,4 4x4", "8,4 4x4" } },
+	{ "k", { "0,0 12x4", "0,0 6x4", "6,0 12x4", "0,0 4x4", "4,0 4x4", "8,0 4x4" } },
+	{ "l", { "6,0 6x8", "3,0 9x8", "9,0 3x8" } },
+	{ "u", { "0,0 6x4" } },
+	{ "i", { "6,0 6x4" } },
+	{ "m", { "6,4 6x4" } },
+	{ "n", { "0,4 6x4" } },
+	{ "return", { "0,0 12x8" } },
+}
+
+for _, def in ipairs(definitions) do
+	local key, sizes = table.unpack(def)
+	---@cast key string
+	---@cast sizes string[]
+
+	hs.hotkey.bind(mods, key, function()
+		local win = hs.window.frontmostWindow()
+		local current = hs.grid.get(win)
+
+		for index, size in ipairs(sizes) do
+			---@cast sizes hs.geometry[]
+			sizes[index] = hs.geometry:new(size)
+		end
+
+		local size = sizes[1]
+
+		for index, value in ipairs(sizes) do
+			if current and current:equals(value) then
+				size = sizes[index + 1] or size
+			end
+		end
+
+		hs.grid.set(win, size)
+	end)
+end
+
 -- Activate grid chooser
 hs.hotkey.bind(mods, "x", function()
 	local grid = hs.grid.getGrid()
@@ -22,150 +61,6 @@ hs.hotkey.bind(mods, "x", function()
 	hs.grid.show(function()
 		hs.grid.setGrid(grid)
 	end)
-end)
-
-hs.hotkey.bind(mods, "h", function()
-	local win = hs.window.frontmostWindow()
-	local current = hs.grid.get(win)
-
-	local sizes = {
-		hs.geometry:new("0,0 3x8"),
-		hs.geometry:new("0,0 6x8"),
-		hs.geometry:new("0,0 9x8"),
-	}
-
-	local size = sizes[1]
-
-	for index, value in ipairs(sizes) do
-		if current and current:equals(value) then
-			size = sizes[index + 1] or sizes[1]
-		end
-	end
-
-	hs.grid.set(win, size)
-end)
-
-hs.hotkey.bind(mods, "l", function()
-	local win = hs.window.frontmostWindow()
-	local current = hs.grid.get(win)
-
-	local initial = hs.geometry.new("6,0 6x8")
-
-	---@type table
-	local big = initial:copy()
-	big.w = big.w + 2
-	big.x = big.x - 2
-
-	---@type table
-	local small = initial:copy()
-	small.w = small.w - 2
-	small.x = small.x + 2
-
-	local target = initial
-
-	if current == initial then
-		target = small
-	elseif current == small then
-		target = big
-	end
-
-	hs.grid.set(win, target)
-end)
-
-hs.hotkey.bind(mods, "k", function()
-	local win = hs.window.frontmostWindow()
-	local current = hs.grid.get(win)
-
-	local initial = hs.geometry.new("0,0 12x4")
-
-	---@type table
-	local right_quarter = initial:copy()
-	right_quarter.w = 6
-	right_quarter.x = 6
-
-	---@type table
-	local left_quarter = initial:copy()
-	left_quarter.w = 6
-	left_quarter.x = 0
-
-	---@type table
-	local right_sixth = initial:copy()
-	right_sixth.w = 4
-	right_sixth.x = 0
-
-	---@type table
-	local center_sixth = initial:copy()
-	center_sixth.w = 4
-	center_sixth.x = 4
-
-	---@type table
-	local left_sixth = initial:copy()
-	left_sixth.w = 4
-	left_sixth.x = 8
-
-	local target = initial
-
-	if current == initial then
-		target = left_quarter
-	elseif current == left_quarter then
-		target = right_quarter
-	elseif current == right_quarter then
-		target = right_sixth
-	elseif current == right_sixth then
-		target = center_sixth
-	elseif current == center_sixth then
-		target = left_sixth
-	end
-
-	hs.grid.set(win, target)
-end)
-
-hs.hotkey.bind(mods, "j", function()
-	local win = hs.window.frontmostWindow()
-	local current = hs.grid.get(win)
-
-	local initial = hs.geometry.new("0,4 12x4")
-
-	---@type table
-	local right_quarter = initial:copy()
-	right_quarter.w = 6
-	right_quarter.x = 6
-
-	---@type table
-	local left_quarter = initial:copy()
-	left_quarter.w = 6
-	left_quarter.x = 0
-
-	---@type table
-	local right_sixth = initial:copy()
-	right_sixth.w = 4
-	right_sixth.x = 0
-
-	---@type table
-	local center_sixth = initial:copy()
-	center_sixth.w = 4
-	center_sixth.x = 4
-
-	---@type table
-	local left_sixth = initial:copy()
-	left_sixth.w = 4
-	left_sixth.x = 8
-
-	local target = initial
-
-	if current == initial then
-		target = left_quarter
-	elseif current == left_quarter then
-		target = right_quarter
-	elseif current == right_quarter then
-		target = right_sixth
-	elseif current == right_sixth then
-		target = center_sixth
-	elseif current == center_sixth then
-		target = left_sixth
-	end
-
-	hs.grid.set(win, target)
 end)
 
 -- Center on Screen
@@ -176,20 +71,6 @@ hs.hotkey.bind(mods, "space", function()
 	frame.y = frame.y - gridMargin.h - 3 -- not sure why we need this 3, but we do
 	win:move(frame)
 end)
-
-local quarters = {
-	{ "u", "0,0 6x4" },
-	{ "i", "6,0 6x4" },
-	{ "m", "6,4 6x4" },
-	{ "n", "0,4 6x4" },
-	{ "return", "0,0 12x8" },
-}
-
-for _, value in ipairs(quarters) do
-	hs.hotkey.bind(mods, value[1], function()
-		hs.grid.set(hs.window.frontmostWindow(), hs.geometry.new(value[2]))
-	end)
-end
 
 -- AutoStashApps = wf.new({
 --   "Messages",
