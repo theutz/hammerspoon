@@ -16,7 +16,7 @@ local gridMargin = hs.geometry.size(16, 16) or {}
 hs.grid.setGrid(gridSize).setMargins(gridMargin)
 
 local definitions = {
-	{ "c", { "1,1 10x8", "2,2 8x6" } },
+	{ "c", { "1,1 10x10", "2,2 8x8", "2,1 8x10", "3,1 6x10" } },
 	{ "h", { "0,0 6x12", "0,0 9x12", "0,0 3x12" } },
 	{ "i", { "6,0 6x6" } },
 	{ "j", { "0,6 12x6", "0,6 6x6", "6,6 6x6", "0,6 4x6", "4,6 4x6", "8,6 4x6" } },
