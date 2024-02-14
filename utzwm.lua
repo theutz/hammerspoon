@@ -68,7 +68,7 @@ hs.hotkey.bind(mods, "space", function()
 	local win = hs.window.frontmostWindow()
 	---@type table
 	local frame = win:centerOnScreen():frame()
-	frame.y = frame.y - gridMargin.h - 3 -- not sure why we need this 3, but we do
+	frame.y = frame.y - (gridMargin.h / 2)
 	win:move(frame)
 end)
 

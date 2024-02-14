@@ -1,11 +1,10 @@
 hs.loadSpoon("SpoonInstall")
-local app = hs.application
-local hk = hs.hotkey
 local log = require("log")
 
 local mods = { "cmd", "ctrl", "alt" }
+local hyper = { "cmd", "ctrl", "alt", "shift" }
 
---spoon.SpoonInstall:andUse("EmmyLua")
+-- spoon.SpoonInstall:andUse("EmmyLua")
 spoon.SpoonInstall:andUse("ReloadConfiguration", {
 	hotkeys = {
 		reloadConfiguration = { mods, "r" },
@@ -13,7 +12,6 @@ spoon.SpoonInstall:andUse("ReloadConfiguration", {
 	start = true,
 })
 
-local hyper = require("hyper")
 require("utzwm")
 
 local function logTaskErr(taskName)
@@ -29,8 +27,41 @@ end
 
 local function runInShell(command)
 	return function()
-		hs.task.new("/opt/homebrew/bin/fish", logTaskErr(command), { "-l", "-c", command }):start()
+		hs.task.new("/opt/homebrew/bin/zsh", logTaskErr(command), { "-l", "-c", command }):start()
 	end
+end
+
+local hyper_bindings = {
+	{ "1", "1Password" },
+	{ "b", "Arc" },
+	{ "c", "Calendar" },
+	{ "d", "Dash" },
+	{ "e", "Mail" },
+	{ "f", "Figma" },
+	{ "l", "Timemator" },
+	{ "m", "Messages" },
+	{ "n", "Notion" },
+	{ "p", "Spotify" },
+	{ "s", "Slack" },
+	{ "t", "WezTerm" },
+	{ "u", "Due" },
+	{ "v", "Neovide" },
+}
+
+for _, definition in ipairs(hyper_bindings) do
+	local key, app = table.unpack(definition)
+	local fn = function()
+		local curr = hs.application.find(app)
+		if curr and curr:isFrontmost() then
+			curr:hide()
+			return
+		end
+		hs.application.launchOrFocus(app)
+	end
+	if type(app) == "function" then
+		fn = app
+	end
+	hs.hotkey.bind(hyper, key, fn)
 end
 
 hs.alert.show("Hammerspoon Reloaded!")
