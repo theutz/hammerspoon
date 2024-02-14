@@ -10,47 +10,46 @@ spoon.SpoonInstall:andUse("WindowScreenLeftAndRight", {
 	},
 })
 
-local gridSize = hs.geometry.size(12, 8) or {}
+local gridSize = hs.geometry.size(12, 12) or {}
 local gridMargin = hs.geometry.size(16, 16) or {}
 
 hs.grid.setGrid(gridSize).setMargins(gridMargin)
 
----@type ((string | string[])[])[]
 local definitions = {
-	{ "h", { "0,0 6x8", "0,0 9x8", "0,0 3x8" } },
-	{ "j", { "0,4 12x4", "0,4 6x4", "6,4 12x4", "0,4 4x4", "4,4 4x4", "8,4 4x4" } },
-	{ "k", { "0,0 12x4", "0,0 6x4", "6,0 12x4", "0,0 4x4", "4,0 4x4", "8,0 4x4" } },
-	{ "l", { "6,0 6x8", "3,0 9x8", "9,0 3x8" } },
-	{ "u", { "0,0 6x4" } },
-	{ "i", { "6,0 6x4" } },
-	{ "m", { "6,4 6x4" } },
-	{ "n", { "0,4 6x4" } },
-	{ "return", { "0,0 12x8" } },
+	{ "c", { "1,1 10x8", "2,2 8x6" } },
+	{ "h", { "0,0 6x12", "0,0 9x12", "0,0 3x12" } },
+	{ "i", { "6,0 6x6" } },
+	{ "j", { "0,6 12x6", "0,6 6x6", "6,6 6x6", "0,6 4x6", "4,6 4x6", "8,6 4x6" } },
+	{ "k", { "0,0 12x6", "0,0 6x6", "6,0 6x6", "0,0 4x6", "4,0 4x6", "8,0 4x6" } },
+	{ "l", { "6,0 6x12", "3,0 9x12", "9,0 3x12" } },
+	{ "m", { "6,6 6x6" } },
+	{ "n", { "0,6 6x6" } },
+	{ "return", { "0,0 12x12" } },
+	{ "u", { "0,0 6x6" } },
 }
 
-for _, def in ipairs(definitions) do
-	local key, sizes = table.unpack(def)
-	---@cast key string
-	---@cast sizes string[]
+for _, definition in ipairs(definitions) do
+	local key, dimensions = table.unpack(definition)
 
 	hs.hotkey.bind(mods, key, function()
 		local win = hs.window.frontmostWindow()
-		local current = hs.grid.get(win)
+		local current_grid = hs.grid.get(win)
 
-		for index, size in ipairs(sizes) do
-			---@cast sizes hs.geometry[]
-			sizes[index] = hs.geometry:new(size)
+		local grids = {}
+
+		for _, dimension in ipairs(dimensions) do
+			table.insert(grids, hs.geometry:new(dimension))
 		end
 
-		local size = sizes[1]
+		local new_grid = grids[1]
 
-		for index, value in ipairs(sizes) do
-			if current and current:equals(value) then
-				size = sizes[index + 1] or size
+		for index, grid in ipairs(grids) do
+			if current_grid and current_grid:equals(grid) then
+				new_grid = grids[index + 1] or grids[1]
 			end
 		end
 
-		hs.grid.set(win, size)
+		hs.grid.set(win, new_grid)
 	end)
 end
 
@@ -71,42 +70,3 @@ hs.hotkey.bind(mods, "space", function()
 	frame.y = frame.y - (gridMargin.h / 2)
 	win:move(frame)
 end)
-
--- AutoStashApps = wf.new({
---   "Messages",
---   "Telegram",
---   "WhatsApp",
---   "Discord",
---   "Slack",
---   "Spotify",
---   "Hammerspoon",
---   "Surfshark",
---   "Calendar",
---   "Reeder",
---   "1Password",
--- })
-
--- AutoStashApps:subscribe({ wf.windowVisible, wf.windowFocused }, function(win)
---   ---@type hs.screen | nil
---   local screen = nil
---   local g = hs.geometry.new({ 1, 1, 10, 6 })
---   if #hs.screen.allScreens() > 1 then
---     screen = hs.screen.primaryScreen()
---   end
---   hs.grid.set(win, g, screen)
--- end)
-
--- AutoStashApps:subscribe(wf.windowUnfocused, function(win)
---   local primaryScreen = hs.screen.primaryScreen()
---   ---@type hs.screen | nil
---   local screen = nil
---   local g = hs.geometry.new({ 0, 0, 12, 8 })
---   if #hs.screen.allScreens() > 1 then
---     if win:screen() == primaryScreen then
---       screen = primaryScreen:next()
---     end
---     hs.grid.set(win, g, screen)
---   else
---     win:application():hide()
---   end
--- end)
