@@ -31,6 +31,8 @@ local function runInShell(command)
 	end
 end
 
+hs.application.enableSpotlightForNameSearches(true)
+
 local hyper_bindings = {
 	{ "1", "1Password" },
 	{ "b", "Arc" },
@@ -53,7 +55,7 @@ for _, definition in ipairs(hyper_bindings) do
 	local key, app = table.unpack(definition)
 	local fn = function()
 		local curr = hs.application.find(app)
-		if curr and curr:isFrontmost() then
+		if curr and curr.isFrontmost and curr:isFrontmost() then
 			curr:hide()
 			return
 		end
