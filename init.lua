@@ -38,6 +38,7 @@ local hyper_bindings = {
 	{ "d", "Dash" },
 	{ "e", "Mail" },
 	{ "f", "Figma" },
+	{ "h", "Hammerspoon" },
 	{ "l", "Timemator" },
 	{ "m", "Messages" },
 	{ "n", "Notion" },
