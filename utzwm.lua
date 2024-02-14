@@ -15,6 +15,7 @@ local gridMargin = hs.geometry.size(16, 16) or {}
 
 hs.grid.setGrid(gridSize).setMargins(gridMargin)
 
+-- Activate grid chooser
 hs.hotkey.bind(mods, "x", function()
 	local grid = hs.grid.getGrid()
 	hs.grid.setGrid("6x4")
@@ -24,29 +25,24 @@ hs.hotkey.bind(mods, "x", function()
 end)
 
 hs.hotkey.bind(mods, "h", function()
-	---@type hs.window
 	local win = hs.window.frontmostWindow()
 	local current = hs.grid.get(win)
 
-	local initial = hs.geometry.new("0,0 6x8")
+	local sizes = {
+		hs.geometry:new("0,0 3x8"),
+		hs.geometry:new("0,0 6x8"),
+		hs.geometry:new("0,0 9x8"),
+	}
 
-	---@type table
-	local big = initial:copy()
-	big.w = big.w + 2
+	local size = sizes[1]
 
-	---@type table
-	local small = initial:copy()
-	small.w = small.w - 2
-
-	local target = initial
-
-	if initial == current then
-		target = small
-	elseif current == small then
-		target = big
+	for index, value in ipairs(sizes) do
+		if current and current:equals(value) then
+			size = sizes[index + 1] or sizes[1]
+		end
 	end
 
-	hs.grid.set(win, target)
+	hs.grid.set(win, size)
 end)
 
 hs.hotkey.bind(mods, "l", function()
