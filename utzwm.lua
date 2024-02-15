@@ -1,4 +1,4 @@
-local log = require("log")
+local log = require "log"
 local wf = hs.window.filter
 
 local mods = { "ctrl", "alt", "cmd" }

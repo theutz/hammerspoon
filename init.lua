@@ -1,5 +1,5 @@
-hs.loadSpoon("SpoonInstall")
-local log = require("log")
+hs.loadSpoon "SpoonInstall"
+local log = require "log"
 
 local mods = { "cmd", "ctrl", "alt" }
 local hyper = { "cmd", "ctrl", "alt", "shift" }
@@ -12,7 +12,7 @@ spoon.SpoonInstall:andUse("ReloadConfiguration", {
 	start = true,
 })
 
-require("utzwm")
+require "utzwm"
 
 local function logTaskErr(taskName)
 	return function(exitCode, stdOut, stdErr)
@@ -67,4 +67,4 @@ for _, definition in ipairs(hyper_bindings) do
 	hs.hotkey.bind(hyper, key, fn)
 end
 
-hs.alert.show("Hammerspoon Reloaded!")
+hs.alert.show "Hammerspoon Reloaded!"
