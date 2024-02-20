@@ -2,7 +2,6 @@ hs.loadSpoon "SpoonInstall"
 local log = require "log"
 
 local mods = { "cmd", "ctrl", "alt" }
-local hyper = { "cmd", "ctrl", "alt", "shift" }
 
 -- spoon.SpoonInstall:andUse("EmmyLua")
 spoon.SpoonInstall:andUse("ReloadConfiguration", {
@@ -13,6 +12,9 @@ spoon.SpoonInstall:andUse("ReloadConfiguration", {
 })
 
 require "utzwm"
+
+local hyper = require "hyper"
+hyper.setup()
 
 local function logTaskErr(taskName)
 	return function(exitCode, stdOut, stdErr)
@@ -28,37 +30,5 @@ local function runInShell(command)
 end
 
 hs.application.enableSpotlightForNameSearches(true)
-
-local hyper_bindings = {
-	{ "1", "1Password" },
-	{ "b", "Arc" },
-	{ "c", "Calendar" },
-	{ "d", "Dash" },
-	{ "e", "Mail" },
-	{ "f", "Figma" },
-	{ "h", "Hammerspoon" },
-	{ "l", "Timemator" },
-	{ "m", "Messages" },
-	{ "n", "Notion" },
-	{ "p", "Spotify" },
-	{ "s", "Slack" },
-	{ "t", "WezTerm" },
-	{ "u", "Due" },
-	{ "v", "Neovide" },
-}
-
-for _, definition in ipairs(hyper_bindings) do
-	local key, app = table.unpack(definition)
-	local fn = function()
-		local curr = hs.application.find(app)
-		if curr and curr.isFrontmost and curr:isFrontmost() then
-			curr:hide()
-			return
-		end
-		hs.application.launchOrFocus(app)
-	end
-	if type(app) == "function" then fn = app end
-	hs.hotkey.bind(hyper, key, fn)
-end
 
 hs.alert.show "Hammerspoon Reloaded!"
