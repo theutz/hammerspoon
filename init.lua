@@ -11,7 +11,15 @@ spoon.SpoonInstall:andUse("ReloadConfiguration", {
 	start = true,
 })
 
-require "utzwm"
+spoon.SpoonInstall:andUse("WindowScreenLeftAndRight", {
+	hotkeys = {
+		screen_left = { mods, "[" },
+		screen_right = { mods, "]" },
+	},
+})
+
+local utzwm = require "utzwm"
+utzwm.setup(mods)
 
 local hyper = require "hyper"
 hyper.setup()
@@ -30,5 +38,11 @@ local function runInShell(command)
 end
 
 hs.application.enableSpotlightForNameSearches(true)
+
+local vpn_chooser = hs.chooser.new(function(choice)
+	log.i(choice)
+	if choice == nil then return end
+end)
+-- hs.hotkey.bind(mods)
 
 hs.alert.show "Hammerspoon Reloaded!"
