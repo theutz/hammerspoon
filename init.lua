@@ -39,10 +39,4 @@ end
 
 hs.application.enableSpotlightForNameSearches(true)
 
-local vpn_chooser = hs.chooser.new(function(choice)
-	log.i(choice)
-	if choice == nil then return end
-end)
--- hs.hotkey.bind(mods)
-
 hs.alert.show "Hammerspoon Reloaded!"
