@@ -44,9 +44,7 @@ for _, definition in ipairs(definitions) do
 		local new_grid = grids[1]
 
 		for index, grid in ipairs(grids) do
-			if current_grid and current_grid:equals(grid) then
-				new_grid = grids[index + 1] or grids[1]
-			end
+			if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
 		end
 
 		hs.grid.set(win, new_grid)

@@ -19,16 +19,12 @@ local function logTaskErr(taskName)
 		log.f("Running %s", taskName)
 		log.d(stdOut)
 
-		if exitCode > 0 then
-			log.ef("%s: %d %s", taskName, exitCode, stdErr)
-		end
+		if exitCode > 0 then log.ef("%s: %d %s", taskName, exitCode, stdErr) end
 	end
 end
 
 local function runInShell(command)
-	return function()
-		hs.task.new("/opt/homebrew/bin/zsh", logTaskErr(command), { "-l", "-c", command }):start()
-	end
+	return function() hs.task.new("/opt/homebrew/bin/zsh", logTaskErr(command), { "-l", "-c", command }):start() end
 end
 
 hs.application.enableSpotlightForNameSearches(true)
@@ -61,9 +57,7 @@ for _, definition in ipairs(hyper_bindings) do
 		end
 		hs.application.launchOrFocus(app)
 	end
-	if type(app) == "function" then
-		fn = app
-	end
+	if type(app) == "function" then fn = app end
 	hs.hotkey.bind(hyper, key, fn)
 end
 
