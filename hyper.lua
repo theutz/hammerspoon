@@ -17,8 +17,11 @@ M.hyper_bindings = {
 	{ "s", "Slack" },
 	{ "t", "WezTerm" },
 	{ "u", "Due" },
-	{ "v", "Neovide" },
+	{ "i", "Neovide" },
+	{ "v", function() M.vpn_chooser:show() end },
 }
+
+M.vpn_chooser = nil
 
 function M.setup()
 	M.setupVpnChooser()
@@ -52,7 +55,6 @@ function M.setupVpnChooser()
 		{ text = "NordVPN" },
 	}
 	M.vpn_chooser = vpn_chooser
-	hs.hotkey.bind(M.hyper, "i", function() M.vpn_chooser:show() end)
 end
 
 return M
