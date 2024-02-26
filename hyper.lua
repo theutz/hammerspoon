@@ -66,9 +66,9 @@ function M.setupMessagingChooser()
 	end)
 	chooser:choices {
 		{ text = "Messages", subText = "macOS" },
-		{ text = "WhatsApp" },
-		{ text = "Telegram" },
 		{ text = "Slack" },
+		{ text = "Telegram" },
+		{ text = "WhatsApp" },
 		{ text = "Discord" },
 		{ text = "Messenger", subText = "Facebook" },
 	}
