@@ -18,6 +18,7 @@ M.hyper_bindings = {
 	{ "u", "Due" },
 	{ "i", "Neovide" },
 	{ "v", function() M.vpn_chooser:show() end },
+	{ "z", "zoom.us" },
 }
 
 M.vpn_chooser = nil
