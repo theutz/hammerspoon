@@ -14,6 +14,7 @@ M.hyper_bindings = {
 	{ "m", function() M.messaging_chooser:show() end },
 	{ "n", "Notion" },
 	{ "p", "Spotify" },
+	{ "s", "Slack" },
 	{ "t", "WezTerm" },
 	{ "u", "Due" },
 	{ "i", "Neovide" },
@@ -29,17 +30,17 @@ function M.setup()
 
 	for _, definition in ipairs(M.hyper_bindings) do
 		local key, app = table.unpack(definition)
-		hs.hotkey.bind(M.hyper, key, M.openOrFocus(app))
+		hs.hotkey.bind(M.hyper, key, M.open(app))
 	end
 end
 
-function M.openOrFocus(app)
+function M.open(app)
 	local fn = function()
-		local curr = hs.application.find(app)
-		if curr and curr.isFrontmost and curr:isFrontmost() then
-			curr:hide()
-			return
-		end
+		-- local curr = hs.application.find(app)
+		-- if curr and curr.isFrontmost and curr:isFrontmost() then
+		-- 	curr:hide()
+		-- 	return
+		-- end
 		hs.application.launchOrFocus(app)
 	end
 	if type(app) == "function" then fn = app end
@@ -49,7 +50,7 @@ end
 function M.setupVpnChooser()
 	local chooser = hs.chooser.new(function(choice)
 		if choice == nil or choice.text == nil then return end
-		M.openOrFocus(choice.text)()
+		M.open(choice.text)()
 		M.vpn_chooser:query(nil)
 	end)
 	chooser:choices {
@@ -62,7 +63,7 @@ end
 function M.setupMessagingChooser()
 	local chooser = hs.chooser.new(function(choice)
 		if choice == nil or choice.text == nil then return end
-		M.openOrFocus(choice.text)()
+		M.open(choice.text)()
 		M.messaging_chooser:query(nil)
 	end)
 	chooser:choices {
