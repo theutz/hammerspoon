@@ -35,14 +35,7 @@ function M.setup()
 end
 
 function M.open(app)
-	local fn = function()
-		-- local curr = hs.application.find(app)
-		-- if curr and curr.isFrontmost and curr:isFrontmost() then
-		-- 	curr:hide()
-		-- 	return
-		-- end
-		hs.application.launchOrFocus(app)
-	end
+	local fn = function() hs.application.launchOrFocus(app) end
 	if type(app) == "function" then fn = app end
 	return fn
 end
