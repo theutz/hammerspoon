@@ -9,9 +9,10 @@ M.hyper_bindings = {
 	{ "d", "Dash" },
 	{ "e", "Mail" },
 	{ "f", "Figma" },
+	{ "g", function() M.messaging_chooser:show() end },
 	{ "h", "Hammerspoon" },
 	{ "l", "Timemator" },
-	{ "m", function() M.messaging_chooser:show() end },
+	{ "m", "Messages" },
 	{ "n", "Notion" },
 	{ "p", "Spotify" },
 	{ "s", "Slack" },
@@ -60,12 +61,12 @@ function M.setupMessagingChooser()
 		M.messaging_chooser:query(nil)
 	end)
 	chooser:choices {
-		{ text = "Messages", subText = "macOS" },
-		{ text = "Slack" },
 		{ text = "Telegram" },
 		{ text = "WhatsApp" },
 		{ text = "Discord" },
 		{ text = "Messenger", subText = "Facebook" },
+		{ text = "Messages", subText = "macOS" },
+		{ text = "Slack" },
 	}
 	M.messaging_chooser = chooser
 end
