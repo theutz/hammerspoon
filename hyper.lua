@@ -1,3 +1,5 @@
+local log = require "log"
+
 local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
@@ -36,7 +38,21 @@ function M.setup()
 end
 
 function M.open(app)
-	local fn = function() hs.application.launchOrFocus(app) end
+	local fn = function()
+		local curr = hs.application.find(app)
+		if curr and curr:isFrontmost() then
+			if curr:hide() then return end
+			local name
+			if app and app.name then
+				name = app.name
+			elseif type(app) == "string" then
+				name = app
+			end
+			if name then curr:selectMenuItem("Hide " .. name) end
+			return
+		end
+		hs.application.launchOrFocus(app)
+	end
 	if type(app) == "function" then fn = app end
 	return fn
 end
