@@ -5,7 +5,7 @@ M.hyper = { "cmd", "ctrl", "alt", "shift" }
 --- @type { [1]: string, [2]: string|string[] }[]
 M.bindings = {
 	{ "1", "1Password" },
-	{ "b", { "Firefox", "Safari", "Google Chrome", "Vivaldi" } },
+	{ "b", { "Firefox", "Vivaldi", "Safari", "Google Chrome" } },
 	{ "c", "Calendar" },
 	{ "d", "Dash" },
 	{ "e", "Neovide" },
