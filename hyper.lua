@@ -2,8 +2,41 @@ local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
 
+--- @type { [1]: string, [2]: string|string[] }[]
+M.bindings = {
+	{ "1", "1Password" },
+	{ "b", { "Firefox", "Safari", "Google Chrome", "Vivaldi" } },
+	{ "c", "Calendar" },
+	{ "d", "Dash" },
+	{ "e", "Mail" },
+	{ "f", "Figma" },
+	{ "h", "Hammerspoon" },
+	{ "l", "Timemator" },
+	{
+		"m",
+		{
+			"Messages",
+			"Telegram",
+			"WhatsApp",
+			"Mail",
+			"Discord",
+			"Element",
+			"Messenger",
+			"Slack",
+		},
+	},
+	{ "n", "Notion" },
+	{ "p", "Spotify" },
+	{ "s", "Slack" },
+	{ "t", "WezTerm" },
+	{ "u", "Due" },
+	{ "i", "Neovide" },
+	{ "v", { "ClearVPN", "NordVPN" } },
+	{ "z", "zoom.us" },
+}
+
 function M.setup()
-	for _, definition in ipairs(M.bindings()) do
+	for _, definition in ipairs(M.bindings) do
 		local key, appOrApps = table.unpack(definition)
 		--- @type function[]
 		local args = {}
@@ -17,42 +50,6 @@ function M.setup()
 		end
 		hs.hotkey.bind(M.hyper, key, table.unpack(args))
 	end
-end
-
-function M.bindings()
-	--- @type { [1]: string, [2]: string|function, [3]: string[]? }[]
-	return {
-		{ "1", "1Password" },
-		{ "b", "Firefox" },
-		{ "c", "Calendar" },
-		{ "d", "Dash" },
-		{ "e", "Mail" },
-		{ "f", "Figma" },
-		{ "h", "Hammerspoon" },
-		{ "l", "Timemator" },
-		{
-			"m",
-			{
-
-				"Messages",
-				"Telegram",
-				"WhatsApp",
-				"Mail",
-				"Discord",
-				"Element",
-				"Messenger",
-				"Slack",
-			},
-		},
-		{ "n", "Notion" },
-		{ "p", "Spotify" },
-		{ "s", "Slack" },
-		{ "t", "WezTerm" },
-		{ "u", "Due" },
-		{ "i", "Neovide" },
-		{ "v", { "ClearVPN", "NordVPN" } },
-		{ "z", "zoom.us" },
-	}
 end
 
 function M.open(app)
