@@ -2,18 +2,17 @@ local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
 
-M.chat_apps = {}
-
-M.vpn_apps = { "ClearVPN", "NordVPN" }
-
 function M.setup()
 	for _, definition in ipairs(M.bindings()) do
-		local key, app, apps = table.unpack(definition)
+		local key, appOrApps = table.unpack(definition)
 		--- @type function[]
 		local args = {}
-		if apps ~= nil then
+		if type(appOrApps) == "table" then
+			local app = appOrApps[1]
+			local apps = appOrApps
 			args = { M.chooser(app, apps) }
 		else
+			local app = appOrApps
 			args = { M.open(app) }
 		end
 		hs.hotkey.bind(M.hyper, key, table.unpack(args))
@@ -33,7 +32,6 @@ function M.bindings()
 		{ "l", "Timemator" },
 		{
 			"m",
-			"Messages",
 			{
 
 				"Messages",
@@ -52,7 +50,7 @@ function M.bindings()
 		{ "t", "WezTerm" },
 		{ "u", "Due" },
 		{ "i", "Neovide" },
-		{ "v", function() M.vpn_chooser:show() end },
+		{ "v", { "ClearVPN", "NordVPN" } },
 		{ "z", "zoom.us" },
 	}
 end
