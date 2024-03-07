@@ -80,6 +80,7 @@ function M.setupMessagingChooser()
 		{ text = "Telegram" },
 		{ text = "WhatsApp" },
 		{ text = "Discord" },
+		{ text = "Element" },
 		{ text = "Messenger", subText = "Facebook" },
 		{ text = "Messages", subText = "macOS" },
 		{ text = "Slack" },
