@@ -40,7 +40,7 @@ end
 function M.open(app)
 	local fn = function()
 		local curr = hs.application.find(app)
-		if curr and curr:isFrontmost() then
+		if curr and type(curr.isFrontmost) == "function" and curr:isFrontmost() then
 			if curr:hide() then return end
 			local name
 			if app and app.name then
