@@ -2,6 +2,17 @@ local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
 
+M.chat_apps = {
+	"Messages",
+	"Telegram",
+	"WhatsApp",
+	"Mail",
+	"Discord",
+	"Element",
+	"Messenger",
+	"Slack",
+}
+
 function M.setup()
 	M.setupVpnChooser()
 
@@ -43,16 +54,6 @@ end
 
 M.vpn_chooser = nil
 
-M.chat_apps = {
-	{ text = "Messages", subText = "macOS" },
-	{ text = "Telegram" },
-	{ text = "WhatsApp" },
-	{ text = "Discord" },
-	{ text = "Element" },
-	{ text = "Messenger", subText = "Facebook" },
-	{ text = "Slack" },
-}
-
 function M.open(app)
 	local fn = function()
 		local curr = hs.application.find(app)
@@ -86,30 +87,17 @@ function M.setupVpnChooser()
 	M.vpn_chooser = chooser
 end
 
-function M.setupMessagingChooser()
-	local chooser = hs.chooser.new(function(choice)
-		if choice == nil or choice.text == nil then return end
-		M.open(choice.text)()
-		M.messaging_chooser:query(nil)
-	end)
-	chooser:choices {
-		{ text = "Telegram" },
-		{ text = "WhatsApp" },
-		{ text = "Discord" },
-		{ text = "Element" },
-		{ text = "Messenger", subText = "Facebook" },
-		{ text = "Messages", subText = "macOS" },
-		{ text = "Slack" },
-	}
-	M.messaging_chooser = chooser
-end
-
 function M.chatFns(defaultApp)
 	local chooser = hs.chooser.new(function(choice)
 		if choice == nil or choice.text == nil then return end
 		M.open(choice.text)()
 	end)
-	chooser:choices(M.chat_apps)
+
+	local choices = {}
+	for i, v in ipairs(M.chat_apps) do
+		choices[i] = { text = v }
+	end
+	chooser:choices(choices)
 
 	local isRepeating = false
 
