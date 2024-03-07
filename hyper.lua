@@ -2,26 +2,17 @@ local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
 
-M.chat_apps = {
-	"Messages",
-	"Telegram",
-	"WhatsApp",
-	"Mail",
-	"Discord",
-	"Element",
-	"Messenger",
-	"Slack",
-}
+M.chat_apps = {}
+
+M.vpn_apps = { "ClearVPN", "NordVPN" }
 
 function M.setup()
-	M.setupVpnChooser()
-
 	for _, definition in ipairs(M.bindings()) do
-		local key, app, helper = table.unpack(definition)
+		local key, app, apps = table.unpack(definition)
 		--- @type function[]
 		local args = {}
-		if helper and type(helper) == "function" then
-			args = { helper(app) }
+		if apps ~= nil then
+			args = { M.chooser(app, apps) }
 		else
 			args = { M.open(app) }
 		end
@@ -30,7 +21,7 @@ function M.setup()
 end
 
 function M.bindings()
-	--- @type { [1]: string, [2]: string|function, [3]: function? }[]
+	--- @type { [1]: string, [2]: string|function, [3]: string[]? }[]
 	return {
 		{ "1", "1Password" },
 		{ "b", "Firefox" },
@@ -40,7 +31,21 @@ function M.bindings()
 		{ "f", "Figma" },
 		{ "h", "Hammerspoon" },
 		{ "l", "Timemator" },
-		{ "m", "Messages", M.chatFns },
+		{
+			"m",
+			"Messages",
+			{
+
+				"Messages",
+				"Telegram",
+				"WhatsApp",
+				"Mail",
+				"Discord",
+				"Element",
+				"Messenger",
+				"Slack",
+			},
+		},
 		{ "n", "Notion" },
 		{ "p", "Spotify" },
 		{ "s", "Slack" },
@@ -51,8 +56,6 @@ function M.bindings()
 		{ "z", "zoom.us" },
 	}
 end
-
-M.vpn_chooser = nil
 
 function M.open(app)
 	local fn = function()
@@ -74,32 +77,22 @@ function M.open(app)
 	return fn
 end
 
-function M.setupVpnChooser()
-	local chooser = hs.chooser.new(function(choice)
-		if choice == nil or choice.text == nil then return end
-		M.open(choice.text)()
-		M.vpn_chooser:query(nil)
-	end)
-	chooser:choices {
-		{ text = "ClearVPN" },
-		{ text = "NordVPN" },
-	}
-	M.vpn_chooser = chooser
-end
+function M.chooser(defaultApp, apps)
+	local isRepeating = false
 
-function M.chatFns(defaultApp)
-	local chooser = hs.chooser.new(function(choice)
+	local chooser
+	chooser = hs.chooser.new(function(choice)
+		isRepeating = false
 		if choice == nil or choice.text == nil then return end
 		M.open(choice.text)()
+		chooser:query(nil)
 	end)
 
 	local choices = {}
-	for i, v in ipairs(M.chat_apps) do
+	for i, v in ipairs(apps) do
 		choices[i] = { text = v }
 	end
 	chooser:choices(choices)
-
-	local isRepeating = false
 
 	local pressedfn = function() end
 	local releasedfn = function()
