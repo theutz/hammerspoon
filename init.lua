@@ -1,5 +1,8 @@
 hs.loadSpoon "SpoonInstall"
-local log = require "log"
+
+_G.log = hs.logger.new("utz", "info")
+_G.info = log.i
+_G.dump = function(arg) log.i(hs.inspect(arg)) end
 
 local mods = { "cmd", "ctrl", "alt" }
 
