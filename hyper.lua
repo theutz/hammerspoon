@@ -8,7 +8,7 @@ M.bindings = {
 	{ "b", { "Firefox", "Safari", "Google Chrome", "Vivaldi" } },
 	{ "c", "Calendar" },
 	{ "d", "Dash" },
-	{ "e", "Mail" },
+	{ "e", "Neovide" },
 	{ "f", "Figma" },
 	{ "h", "Hammerspoon" },
 	{ "l", "Timemator" },
@@ -25,10 +25,10 @@ M.bindings = {
 			"Slack",
 		},
 	},
-	{ "n", "Notion" },
+	{ "n", { "Notion", "Notes" } },
 	{ "p", "Spotify" },
 	{ "s", "Slack" },
-	{ "t", "WezTerm" },
+	{ "t", { "WezTerm", "iTerm 2", "Kitty" } },
 	{ "u", "Due" },
 	{ "i", "Neovide" },
 	{ "v", { "ClearVPN", "NordVPN" } },
@@ -37,18 +37,21 @@ M.bindings = {
 
 function M.setup()
 	for _, definition in ipairs(M.bindings) do
-		local key, appOrApps = table.unpack(definition)
-		--- @type function[]
-		local args = {}
-		if type(appOrApps) == "table" then
-			local app = appOrApps[1]
-			local apps = appOrApps
-			args = { M.chooser(app, apps) }
+		local key, apps = table.unpack(definition)
+		local keySpec = { M.hyper, key }
+		if type(apps) == "table" and #apps > 1 then
+			local app = apps[1]
+			local apps = apps
+			hs.hotkey.bindSpec(keySpec, M.chooser(app, apps))
 		else
-			local app = appOrApps
-			args = { M.open(app) }
+			local app
+			if type(apps) == "table" and #apps == 1 then
+				app = apps[1]
+			else
+				app = apps
+			end
+			hs.hotkey.bindSpec(keySpec, M.open(app))
 		end
-		hs.hotkey.bind(M.hyper, key, table.unpack(args))
 	end
 end
 
