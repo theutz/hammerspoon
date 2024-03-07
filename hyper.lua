@@ -1,41 +1,58 @@
-local log = require "log"
-
 local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
-
-M.hyper_bindings = {
-	{ "1", "1Password" },
-	{ "b", "Arc" },
-	{ "c", "Calendar" },
-	{ "d", "Dash" },
-	{ "e", "Mail" },
-	{ "f", "Figma" },
-	{ "g", function() M.messaging_chooser:show() end },
-	{ "h", "Hammerspoon" },
-	{ "l", "Timemator" },
-	{ "m", "Messages" },
-	{ "n", "Notion" },
-	{ "p", "Spotify" },
-	{ "s", "Slack" },
-	{ "t", "WezTerm" },
-	{ "u", "Due" },
-	{ "i", "Neovide" },
-	{ "v", function() M.vpn_chooser:show() end },
-	{ "z", "zoom.us" },
-}
-
-M.vpn_chooser = nil
 
 function M.setup()
 	M.setupVpnChooser()
 	M.setupMessagingChooser()
 
-	for _, definition in ipairs(M.hyper_bindings) do
-		local key, app = table.unpack(definition)
-		hs.hotkey.bind(M.hyper, key, M.open(app))
+	for _, definition in ipairs(M.bindings()) do
+		local key, app, helper = table.unpack(definition)
+		--- @type function[]
+		local args = {}
+		if helper and type(helper) == "function" then
+			args = { helper(app) }
+		else
+			args = { M.open(app) }
+		end
+		hs.hotkey.bind(M.hyper, key, table.unpack(args))
 	end
 end
+
+function M.bindings()
+	--- @type { [1]: string, [2]: string|function, [3]: function? }[]
+	return {
+		{ "1", "1Password" },
+		{ "b", "Arc" },
+		{ "c", "Calendar" },
+		{ "d", "Dash" },
+		{ "e", "Mail" },
+		{ "f", "Figma" },
+		{ "h", "Hammerspoon" },
+		{ "l", "Timemator" },
+		{ "m", "Messages", M.chatFns },
+		{ "n", "Notion" },
+		{ "p", "Spotify" },
+		{ "s", "Slack" },
+		{ "t", "WezTerm" },
+		{ "u", "Due" },
+		{ "i", "Neovide" },
+		{ "v", function() M.vpn_chooser:show() end },
+		{ "z", "zoom.us" },
+	}
+end
+
+M.vpn_chooser = nil
+
+M.chat_apps = {
+	{ text = "Messages", subText = "macOS" },
+	{ text = "Telegram" },
+	{ text = "WhatsApp" },
+	{ text = "Discord" },
+	{ text = "Element" },
+	{ text = "Messenger", subText = "Facebook" },
+	{ text = "Slack" },
+}
 
 function M.open(app)
 	local fn = function()
@@ -86,6 +103,28 @@ function M.setupMessagingChooser()
 		{ text = "Slack" },
 	}
 	M.messaging_chooser = chooser
+end
+
+function M.chatFns(defaultApp)
+	local chooser = hs.chooser.new(function(choice)
+		if choice == nil or choice.text == nil then return end
+		M.open(choice.text)()
+	end)
+	chooser:choices(M.chat_apps)
+
+	local isRepeating = false
+
+	local pressedfn = function() end
+	local releasedfn = function()
+		if not isRepeating then M.open(defaultApp)() end
+	end
+	local repeatfn = function()
+		if chooser:isVisible() then return end
+		isRepeating = true
+		chooser:show()
+	end
+
+	return pressedfn, releasedfn, repeatfn
 end
 
 return M
