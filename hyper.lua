@@ -4,7 +4,6 @@ M.hyper = { "cmd", "ctrl", "alt", "shift" }
 
 function M.setup()
 	M.setupVpnChooser()
-	M.setupMessagingChooser()
 
 	for _, definition in ipairs(M.bindings()) do
 		local key, app, helper = table.unpack(definition)
@@ -23,7 +22,7 @@ function M.bindings()
 	--- @type { [1]: string, [2]: string|function, [3]: function? }[]
 	return {
 		{ "1", "1Password" },
-		{ "b", "Arc" },
+		{ "b", "Firefox" },
 		{ "c", "Calendar" },
 		{ "d", "Dash" },
 		{ "e", "Mail" },
