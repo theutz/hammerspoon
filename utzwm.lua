@@ -22,20 +22,30 @@ function M.setup(mods)
 	M.mods = mods
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
 	M.bindDefinitions()
-	M.bindCenterOnScreen()
 	hs.hotkey.bind(mods, "p", M.maximizeAllWindows)
+	hs.hotkey.bind(mods, "space", M.centerOnScreen)
 end
 
 function M.maximizeAllWindows()
-	local apps = hs.application.runningApplications()
-	for _, app in ipairs(apps) do
-		local windows = app:visibleWindows()
-		if windows then
-			for _, window in ipairs(windows) do
-				hs.grid.set(window, "0,0 12x12")
-			end
+	local wins = hs.window.visibleWindows()
+
+	local count = 0
+	local alert = nil
+	local shouldStop = function() return count == #wins end
+	hs.timer.doUntil(shouldStop, function(timer)
+		hs.alert.closeSpecific(alert, 0)
+		alert = hs.alert.show("Resizing " .. count .. " of " .. #wins, { fadeInDuration = 0, fadeOutDuration = 0 })
+		count = count + 1
+		local win = wins[count]
+		hs.grid.set(win, "0,0 12x12")
+		win:centerOnScreen(nil, true, 0)
+		if shouldStop() then
+			hs.alert.closeSpecific(alert, 0)
+			timer:stop()
+			timer = nil
+			return
 		end
-	end
+	end, 0.1)
 end
 
 function M.bindDefinitions()
@@ -63,14 +73,9 @@ function M.bindDefinitions()
 	end
 end
 
-function M.bindCenterOnScreen()
-	hs.hotkey.bind(M.mods, "space", function()
-		local win = hs.window.frontmostWindow()
-		---@type table
-		local frame = win:centerOnScreen():frame()
-		frame.y = frame.y - (M.gridMargin.h / 2)
-		win:move(frame)
-	end)
+function M.centerOnScreen()
+	local win = hs.window.frontmostWindow()
+	win:centerOnScreen(nil, true)
 end
 
 return M
