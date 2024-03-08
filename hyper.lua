@@ -9,7 +9,7 @@ M.bindings = function()
 		{ "b", { "Firefox", "Vivaldi", "Safari", "Google Chrome" } },
 		{ "c", "Calendar" },
 		{ "d", "Dash" },
-		{ "e", "Neovide" },
+		{ "e", M.launchNeovide },
 		{ "f", "Figma" },
 		{ "h", "Hammerspoon" },
 		{ "l", M.launchTimematorOverview },
@@ -128,6 +128,30 @@ function M.launchTimematorOverview()
 			app:selectMenuItem(menuItem) -- show the overview window
 		end
 	end, 0.2)
+end
+
+function M.launchNeovide()
+	local appName = "Neovide"
+	local app = hs.application.find(appName, true)
+	local appWasClosed = app == nil
+
+	if appWasClosed then hs.application.launchOrFocus(appName) end
+	hs.timer.waitUntil(function()
+		app = hs.application.find(appName, true)
+		return app
+	end, function()
+		local win
+		if app:setFrontmost(true) and appWasClosed then
+			hs.timer.waitUntil(function()
+				win = app:mainWindow()
+				return win
+			end, function()
+				assert(win, appName .. ": window could not be found")
+				local grid = hs.geometry:new "1,1 10x10"
+				hs.grid.set(win, grid)
+			end, 0.1)
+		end
+	end, 0.1)
 end
 
 return M
