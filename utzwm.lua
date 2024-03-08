@@ -20,33 +20,31 @@ M.definitions = {
 }
 
 function M.setup(mods)
+	hs.window.animationDuration = 0
 	M.mods = mods
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
+
 	M.bindDefinitions()
+
 	hs.hotkey.bind(mods, "p", M.maximizeAllWindows)
 	hs.hotkey.bind(mods, "space", M.centerOnScreen)
 end
 
 function M.maximizeAllWindows()
-	local wins = hs.window.visibleWindows()
-
+	local wins = hs.window.orderedWindows()
 	local count = 0
-	local alert = nil
-	local shouldStop = function() return count == #wins end
-	hs.timer.doUntil(shouldStop, function(timer)
-		hs.alert.closeSpecific(alert, 0)
-		alert = hs.alert.show("Resizing " .. count .. " of " .. #wins, { fadeInDuration = 0, fadeOutDuration = 0 })
+	local grid = M.gridSize
+	grid.xy = "0,0"
+
+	local shouldStop = function()
 		count = count + 1
+		return count > #wins
+	end
+
+	hs.timer.doUntil(shouldStop, function()
 		local win = wins[count]
-		hs.grid.set(win, "0,0 12x12")
-		win:centerOnScreen(nil, true, 0)
-		if shouldStop() then
-			hs.alert.closeSpecific(alert, 0)
-			timer:stop()
-			timer = nil
-			return
-		end
-	end, 0.1)
+		hs.grid.set(win, grid)
+	end, 0.01)
 end
 
 function M.bindDefinitions()
@@ -77,6 +75,7 @@ end
 function M.centerOnScreen()
 	local win = hs.window.frontmostWindow()
 	win:centerOnScreen(nil, true)
+	win:move(hs.geometry.point(0, -2))
 end
 
 return M
