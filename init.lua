@@ -1,4 +1,5 @@
 hs.loadSpoon "SpoonInstall"
+hs.notify.withdrawAll()
 
 _G.log = hs.logger.new("utz", "info")
 _G.info = log.i
@@ -27,19 +28,12 @@ utzwm.setup(mods)
 local hyper = require "hyper"
 hyper.setup()
 
-local function logTaskErr(taskName)
-	return function(exitCode, stdOut, stdErr)
-		log.f("Running %s", taskName)
-		log.d(stdOut)
-
-		if exitCode > 0 then log.ef("%s: %d %s", taskName, exitCode, stdErr) end
-	end
-end
-
-local function runInShell(command)
-	return function() hs.task.new("/opt/homebrew/bin/zsh", logTaskErr(command), { "-l", "-c", command }):start() end
-end
-
 hs.application.enableSpotlightForNameSearches(true)
 
-hs.alert.show "Hammerspoon Reloaded!"
+hs.notify
+	.new({
+		title = "Hammerspoon",
+		informativeText = "Config reloaded!",
+		withdrawAfter = 1,
+	})
+	:send()
