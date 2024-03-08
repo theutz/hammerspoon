@@ -16,6 +16,7 @@ M.bindings = function()
 		{ "m", { "Messages", "Telegram", "WhatsApp", "Discord", "Element", "Messenger", "Slack" } },
 		{ "n", { "Notion", "Notes" } },
 		{ "p", "Spotify" },
+		{ "q", function() hs.notify.withdrawAll() end },
 		{ "s", { "Slack", "Mail" } },
 		{ "t", { "WezTerm", "iTerm 2", "Kitty" } },
 		{ "u", "Due" },
