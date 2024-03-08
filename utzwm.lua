@@ -1,8 +1,5 @@
 local M = {}
 
--- local log = require "log"
--- local wf = hs.window.filter
-
 M.mods = { "ctrl", "alt", "cmd" }
 
 M.gridSize = hs.geometry.size(12, 12) or {}
