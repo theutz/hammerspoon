@@ -14,7 +14,6 @@ M.definitions = {
 	{ "m", { "6,6 6x6", "8,6 4x6", "10,6 2x6" } },
 	{ "n", { "0,6 6x6", "0,6 4x6", "0,6 2x6" } },
 	{ "o", { "1,1 10x10", "2,2 8x8", "3,3 6x6", "4,4 3x3" } },
-	{ "p", { "0,0 12x9", "0,3 12x9", "0,0 12x3", "0,9 12x3" } },
 	{ "return", { "0,0 12x12" } },
 	{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
 }
@@ -24,6 +23,19 @@ function M.setup(mods)
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
 	M.bindDefinitions()
 	M.bindCenterOnScreen()
+	hs.hotkey.bind(mods, "p", M.maximizeAllWindows)
+end
+
+function M.maximizeAllWindows()
+	local apps = hs.application.runningApplications()
+	for _, app in ipairs(apps) do
+		local windows = app:visibleWindows()
+		if windows then
+			for _, window in ipairs(windows) do
+				hs.grid.set(window, "0,0 12x12")
+			end
+		end
+	end
 end
 
 function M.bindDefinitions()
