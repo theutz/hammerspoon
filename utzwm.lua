@@ -6,7 +6,6 @@ M.gridSize = hs.geometry.size(12, 12) or {}
 M.gridMargin = hs.geometry.size(16, 16) or {}
 
 M.definitions = {
-	{ "c", { "1,1 10x10", "2,2 8x8", "3,3 6x6", "4,4 3x3" } },
 	{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
 	{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
 	{ "j", { "0,6 12x6", "4,6 4x6" } },
@@ -16,13 +15,13 @@ M.definitions = {
 	{ "n", { "0,6 6x6", "0,6 4x6", "0,6 2x6" } },
 	{ "return", { "0,0 12x12" } },
 	{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
-	{ "w", { "1,0 10x12", "2,0 8x12", "3,0 6x12", "4,0 4x12" } },
 }
 
 function M.setup(mods)
 	hs.window.animationDuration = 0
 	M.mods = mods
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
+	M.setupMoveModal()
 
 	M.bindDefinitions()
 
@@ -43,7 +42,7 @@ function M.maximizeAllWindows()
 
 	hs.timer.doUntil(shouldStop, function()
 		local win = wins[count]
-		hs.grid.set(win, grid)
+		hs.grid.snap(win)
 	end, 0.01)
 end
 
@@ -75,7 +74,54 @@ end
 function M.centerOnScreen()
 	local win = hs.window.frontmostWindow()
 	win:centerOnScreen(nil, true)
-	win:move(hs.geometry.point(0, -2))
+	hs.grid.snap(win)
+end
+
+function M.setupMoveModal()
+	local modal = hs.hotkey.modal.new(M.mods, "c")
+
+	local timer
+
+	function modal:entered() ---@diagnostic disable-line duplicate-set-field
+		hs.alert.closeAll()
+		hs.alert.show("WinMove", "forever")
+		timer = hs.timer.doAfter(10, function() modal:exit() end)
+	end
+
+	function modal:exited() ---@diagnostic disable-line duplicate-set-field
+		hs.alert.closeAll()
+		timer:stop()
+		timer = nil
+	end
+
+	local function move(dir)
+		local fn = function()
+			timer:stop()
+			hs.grid["pushWindow" .. dir](hs.window.frontmostWindow())
+			timer:start()
+		end
+		return nil, fn, fn
+	end
+
+	local function resize(dir)
+		local fn = function()
+			timer:stop()
+			hs.grid["resizeWindow" .. dir](hs.window.frontmostWindow())
+			timer:start()
+		end
+		return nil, fn, fn
+	end
+
+	modal:bind("", "escape", function() modal:exit() end)
+
+	modal:bind("", "h", move "Left")
+	modal:bind("", "j", move "Down")
+	modal:bind("", "k", move "Up")
+	modal:bind("", "l", move "Right")
+	modal:bind("", "d", resize "Taller")
+	modal:bind("", "s", resize "Shorter")
+	modal:bind("", "a", resize "Thinner")
+	modal:bind("", "f", resize "Wider")
 end
 
 return M
