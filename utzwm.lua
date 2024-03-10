@@ -7,7 +7,7 @@ M.gridMargin = hs.geometry.size(16, 16) or {}
 
 M.grid = hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
 
-M.definitions = {
+M.snap_to_grid_definitions = {
 	{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
 	{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
 	{ "j", { "0,6 12x6", "4,6 4x6" } },
@@ -23,7 +23,7 @@ function M.setup()
 	hs.window.animationDuration = 0
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
 
-	for _, definition in ipairs(M.definitions) do
+	for _, definition in ipairs(M.snap_to_grid_definitions) do
 		M.bindDefinition(definition)
 	end
 	hs.hotkey.bind(M.mods, "e", M.autoTiler)
@@ -54,14 +54,9 @@ function M.autoTiler()
 		for column = 1, columns do
 			local win = windows[i]
 			if win ~= nil then
-				local height = 12 / rows
-				local width = 12 / columns
-				local cell = hs.geometry.new {
-					x = (column - 1) * width,
-					y = (row - 1) * height,
-					h = height,
-					w = width,
-				}
+				local cell = hs.geometry.new { h = 12 / rows, w = 12 / columns }
+				cell.x = (column - 1) * cell.w
+				cell.y = (row - 1) * cell.h
 				M.withAxHotfix(function()
 					win:move(hs.grid.getCell(cell, win:screen()))
 					hs.grid.snap(win)
