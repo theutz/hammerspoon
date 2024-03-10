@@ -172,34 +172,47 @@ function M.setupMover(modal)
 		timer = nil
 	end
 
-	local function move(dir)
-		local fn = function()
+	local function withTimerReset(fn)
+		return function(...)
 			timer:stop()
-			M.withAxHotfix(function(w) hs.grid["pushWindow" .. dir](w) end)(hs.window.frontmostWindow())
+			fn(...)
 			timer:start()
 		end
-		return nil, fn, fn
+	end
+
+	local function move(dir)
+		return withTimerReset(function()
+			M.withAxHotfix(function(win) hs.grid["pushWindow" .. dir](win) end)(hs.window.frontmostWindow())
+		end)
 	end
 
 	local function resize(dir)
-		local fn = function()
-			timer:stop()
-			M.withAxHotfix(function(w) hs.grid["resizeWindow" .. dir](w) end)(hs.window.frontmostWindow())
-			timer:start()
-		end
-		return nil, fn, fn
+		return withTimerReset(function()
+			M.withAxHotfix(function(win) hs.grid["resizeWindow" .. dir](win) end)(hs.window.frontmostWindow())
+		end)
 	end
 
 	modal:bind("", "escape", function() modal:exit() end)
-
-	modal:bind("", "h", move "Left")
-	modal:bind("", "j", move "Down")
-	modal:bind("", "k", move "Up")
-	modal:bind("", "l", move "Right")
-	modal:bind("", "f", resize "Taller")
-	modal:bind("", "d", resize "Shorter")
-	modal:bind("", "s", resize "Thinner")
-	modal:bind("", "g", resize "Wider")
+	local bindings = {
+		{ "", "h", { move "Left" } },
+		{ "", "j", { move "Down" } },
+		{ "", "k", { move "Up" } },
+		{ "", "l", { move "Right" } },
+		{ "", "=", { resize "Taller", resize "Wider" } },
+		{ "", "-", { resize "Shorter", resize "Thinner" } },
+		{ "Shift", "h", { resize "Thinner" } },
+		{ "Shift", "j", { resize "Taller" } },
+		{ "Shift", "k", { resize "Shorter" } },
+		{ "Shift", "l", { resize "Wider" } },
+	}
+	for _, binding in ipairs(bindings) do
+		local mods, key, steps = table.unpack(binding)
+		modal:bind(mods, key, function()
+			for _, step in ipairs(steps) do
+				step()
+			end
+		end)
+	end
 end
 
 function M.axHotfix(win)
