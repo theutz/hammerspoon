@@ -62,8 +62,12 @@ function M.nextWindow()
 		next.index = M.current_window.index + 1
 	end
 	next.win = M.ordered_windows[next.index]
-	next.win:focus()
-	M.current_window = next
+	local success = pcall(next.win:focus())
+	if success then
+		M.current_window = next
+	else
+		table.remove(M.ordered_windows, next.index)
+	end
 end
 
 function M.previousWindow()
@@ -76,7 +80,12 @@ function M.previousWindow()
 	end
 	prev.win = M.ordered_windows[prev.index]
 	prev.win:focus()
-	M.current_window = prev
+	local success = pcall(prev.win:focus())
+	if success then
+		M.current_window = prev
+	else
+		table.remove(M.ordered_windows, prev.index)
+	end
 end
 
 function M.maximizeAllWindows()
