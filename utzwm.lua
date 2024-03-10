@@ -5,6 +5,8 @@ M.mods = { "ctrl", "alt", "cmd" }
 M.gridSize = hs.geometry.size(12, 12) or {}
 M.gridMargin = hs.geometry.size(16, 16) or {}
 
+M.grid = hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
+
 M.definitions = {
 	{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
 	{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
@@ -17,19 +19,18 @@ M.definitions = {
 	{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
 }
 
-M.grid = hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
-
 function M.setup(mods)
 	hs.window.animationDuration = 0
 	M.mods = mods
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
-	M.setupMoveModal()
 
-	M.bindDefinitions()
-
+	for _, definition in ipairs(M.definitions) do
+		M.bindDefinition(definition)
+	end
 	hs.hotkey.bind(mods, "e", M.autoTiler)
 	hs.hotkey.bind(mods, "p", M.tidyUpWindows)
 	hs.hotkey.bind(mods, "space", M.centerOnScreen)
+	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
 end
 
 function M.autoTiler()
@@ -77,29 +78,29 @@ function M.tidyUpWindows()
 	end, 0.01)
 end
 
-function M.bindDefinitions()
-	for _, definition in ipairs(M.definitions) do
-		local key, dimensions = table.unpack(definition)
+function M.bindDefinitions() end
 
-		hs.hotkey.bind(M.mods, key, function()
-			local win = hs.window.frontmostWindow()
-			local current_grid = hs.grid.get(win)
+function M.bindDefinition(definition)
+	local key, dimensions = table.unpack(definition)
 
-			local grids = {}
+	hs.hotkey.bind(M.mods, key, function()
+		local win = hs.window.frontmostWindow()
+		local current_grid = hs.grid.get(win)
 
-			for _, dimension in ipairs(dimensions) do
-				table.insert(grids, hs.geometry:new(dimension))
-			end
+		local grids = {}
 
-			local new_grid = grids[1]
+		for _, dimension in ipairs(dimensions) do
+			table.insert(grids, hs.geometry:new(dimension))
+		end
 
-			for index, grid in ipairs(grids) do
-				if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
-			end
+		local new_grid = grids[1]
 
-			M.withAxHotfix(function(w) hs.grid.set(w, new_grid) end)(win)
-		end)
-	end
+		for index, grid in ipairs(grids) do
+			if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
+		end
+
+		M.withAxHotfix(function(w) hs.grid.set(w, new_grid) end)(win)
+	end)
 end
 
 function M.centerOnScreen()
@@ -110,9 +111,7 @@ function M.centerOnScreen()
 	end)(win)
 end
 
-function M.setupMoveModal()
-	local modal = hs.hotkey.modal.new(M.mods, "c")
-
+function M.setupMover(modal)
 	local timer
 
 	function modal:entered() ---@diagnostic disable-line duplicate-set-field
