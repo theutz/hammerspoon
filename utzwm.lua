@@ -97,15 +97,17 @@ function M.bindDefinitions()
 				if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
 			end
 
-			hs.grid.set(win, new_grid)
+			M.withAxHotfix(function(w) hs.grid.set(w, new_grid) end)(win)
 		end)
 	end
 end
 
 function M.centerOnScreen()
 	local win = hs.window.frontmostWindow()
-	win:centerOnScreen(nil, true)
-	hs.grid.snap(win)
+	M.withAxHotfix(function(w)
+		w:centerOnScreen(nil, true)
+		hs.grid.snap(w)
+	end)(win)
 end
 
 function M.setupMoveModal()
@@ -128,7 +130,7 @@ function M.setupMoveModal()
 	local function move(dir)
 		local fn = function()
 			timer:stop()
-			hs.grid["pushWindow" .. dir](hs.window.frontmostWindow())
+			M.withAxHotfix(function(w) hs.grid["pushWindow" .. dir](w) end)(hs.window.frontmostWindow())
 			timer:start()
 		end
 		return nil, fn, fn
@@ -137,7 +139,7 @@ function M.setupMoveModal()
 	local function resize(dir)
 		local fn = function()
 			timer:stop()
-			hs.grid["resizeWindow" .. dir](hs.window.frontmostWindow())
+			M.withAxHotfix(function(w) hs.grid["resizeWindow" .. dir](w) end)(hs.window.frontmostWindow())
 			timer:start()
 		end
 		return nil, fn, fn
@@ -149,10 +151,10 @@ function M.setupMoveModal()
 	modal:bind("", "j", move "Down")
 	modal:bind("", "k", move "Up")
 	modal:bind("", "l", move "Right")
-	modal:bind("", "d", resize "Taller")
-	modal:bind("", "s", resize "Shorter")
-	modal:bind("", "a", resize "Thinner")
-	modal:bind("", "f", resize "Wider")
+	modal:bind("", "f", resize "Taller")
+	modal:bind("", "d", resize "Shorter")
+	modal:bind("", "s", resize "Thinner")
+	modal:bind("", "g", resize "Wider")
 end
 
 function M.axHotfix(win)
