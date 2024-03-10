@@ -19,18 +19,24 @@ M.definitions = {
 	{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
 }
 
-function M.setup(mods)
+function M.setup()
 	hs.window.animationDuration = 0
-	M.mods = mods
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
 
 	for _, definition in ipairs(M.definitions) do
 		M.bindDefinition(definition)
 	end
-	hs.hotkey.bind(mods, "e", M.autoTiler)
-	hs.hotkey.bind(mods, "p", M.tidyUpWindows)
-	hs.hotkey.bind(mods, "space", M.centerOnScreen)
+	hs.hotkey.bind(M.mods, "e", M.autoTiler)
+	hs.hotkey.bind(M.mods, "p", M.tidyUpWindows)
+	hs.hotkey.bind(M.mods, "space", M.centerOnScreen)
+	hs.hotkey.bind(M.mods, "o", M.maximizeAllWindows)
 	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
+end
+
+function M.maximizeAllWindows()
+	for _, win in ipairs(hs.window.orderedWindows()) do
+		M.withAxHotfix(function(w) hs.grid.maximizeWindow(w) end)(win)
+	end
 end
 
 function M.autoTiler()
@@ -77,8 +83,6 @@ function M.tidyUpWindows()
 		M.withAxHotfix(function(w) hs.grid.snap(w) end)(win)
 	end, 0.01)
 end
-
-function M.bindDefinitions() end
 
 function M.bindDefinition(definition)
 	local key, dimensions = table.unpack(definition)

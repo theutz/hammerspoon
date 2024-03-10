@@ -5,25 +5,24 @@ _G.log = hs.logger.new("utz", "info")
 _G.info = log.i
 _G.dump = function(arg) log.i(hs.inspect(arg)) end
 
-local mods = { "cmd", "ctrl", "alt" }
+local utzwm = require "utzwm"
 
 -- spoon.SpoonInstall:andUse("EmmyLua")
 spoon.SpoonInstall:andUse("ReloadConfiguration", {
 	hotkeys = {
-		reloadConfiguration = { mods, "r" },
+		reloadConfiguration = { utzwm.mods, "r" },
 	},
 	start = true,
 })
 
 spoon.SpoonInstall:andUse("WindowScreenLeftAndRight", {
 	hotkeys = {
-		screen_left = { mods, "[" },
-		screen_right = { mods, "]" },
+		screen_left = { utzwm.mods, "[" },
+		screen_right = { utzwm.mods, "]" },
 	},
 })
 
-local utzwm = require "utzwm"
-utzwm.setup(mods)
+utzwm.setup()
 
 local hyper = require "hyper"
 hyper.setup()
