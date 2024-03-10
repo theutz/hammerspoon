@@ -30,7 +30,53 @@ function M.setup()
 	hs.hotkey.bind(M.mods, "p", M.tidyUpWindows)
 	hs.hotkey.bind(M.mods, "space", M.centerOnScreen)
 	hs.hotkey.bind(M.mods, "o", M.maximizeAllWindows)
+	hs.hotkey.bind(M.mods, "0", M.nextWindow)
+	hs.hotkey.bind(M.mods, "9", M.previousWindow)
 	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
+end
+
+M.ordered_windows = {}
+M.current_window = {}
+
+function M.saveWindowOrder()
+	M.ordered_windows = {}
+
+	local activeScreen = hs.window.frontmostWindow():screen()
+	for _, win in ipairs(hs.window.orderedWindows()) do
+		if win:screen() == activeScreen then table.insert(M.ordered_windows, win) end
+	end
+
+	M.current_window = { win = hs.window.frontmostWindow() }
+
+	for i, win in ipairs(M.ordered_windows) do
+		if M.current_window.win == win then M.current_window.index = i end
+	end
+end
+
+function M.nextWindow()
+	if #M.ordered_windows == 0 then M.saveWindowOrder() end
+	local next = {}
+	if M.current_window.index >= #M.ordered_windows then
+		next.index = 1
+	else
+		next.index = M.current_window.index + 1
+	end
+	next.win = M.ordered_windows[next.index]
+	next.win:focus()
+	M.current_window = next
+end
+
+function M.previousWindow()
+	if #M.ordered_windows == 0 then M.saveWindowOrder() end
+	local prev = {}
+	if M.current_window.index <= 1 then
+		prev.index = #M.ordered_windows
+	else
+		prev.index = M.current_window.index - 1
+	end
+	prev.win = M.ordered_windows[prev.index]
+	prev.win:focus()
+	M.current_window = prev
 end
 
 function M.maximizeAllWindows()
@@ -40,19 +86,15 @@ function M.maximizeAllWindows()
 end
 
 function M.autoTiler()
-	local activeScreen = hs.window.frontmostWindow():screen()
-	local windows = {}
-	for _, win in ipairs(hs.window.orderedWindows()) do
-		if win:screen() == activeScreen then table.insert(windows, win) end
-	end
-	local rows = math.floor(math.sqrt(#windows))
-	local columns = math.ceil(math.sqrt(#windows))
-	if rows * columns < #windows then rows = rows + 1 end
+	M.saveWindowOrder()
+	local rows = math.floor(math.sqrt(#M.ordered_windows))
+	local columns = math.ceil(math.sqrt(#M.ordered_windows))
+	if rows * columns < #M.ordered_windows then rows = rows + 1 end
 
 	local i = 1
 	for row = 1, rows do
 		for column = 1, columns do
-			local win = windows[i]
+			local win = M.ordered_windows[i]
 			if win ~= nil then
 				local cell = hs.geometry.new { h = 12 / rows, w = 12 / columns }
 				cell.x = (column - 1) * cell.w
