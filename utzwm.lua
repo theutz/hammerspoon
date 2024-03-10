@@ -40,23 +40,28 @@ function M.maximizeAllWindows()
 end
 
 function M.autoTiler()
-	local screen = hs.window.frontmostWindow():screen()
+	local activeScreen = hs.window.frontmostWindow():screen()
 	local windows = {}
-	for _, w in ipairs(hs.window.orderedWindows()) do
-		if w:screen() == screen then table.insert(windows, w) end
+	for _, win in ipairs(hs.window.orderedWindows()) do
+		if win:screen() == activeScreen then table.insert(windows, win) end
 	end
 	local rows = math.floor(math.sqrt(#windows))
-	local cols = math.ceil(math.sqrt(#windows))
-	if rows * cols < #windows then rows = rows + 1 end
+	local columns = math.ceil(math.sqrt(#windows))
+	if rows * columns < #windows then rows = rows + 1 end
 
 	local i = 1
-	for r = 0, rows - 1 do
-		for c = 0, cols - 1 do
+	for row = 1, rows do
+		for column = 1, columns do
 			local win = windows[i]
 			if win ~= nil then
-				local h = 12 / rows
-				local w = 12 / cols
-				local cell = hs.geometry.new { x = c * w, y = r * h, h = h, w = h }
+				local height = 12 / rows
+				local width = 12 / columns
+				local cell = hs.geometry.new {
+					x = (column - 1) * width,
+					y = (row - 1) * height,
+					h = height,
+					w = width,
+				}
 				M.withAxHotfix(function()
 					win:move(hs.grid.getCell(cell, win:screen()))
 					hs.grid.snap(win)
