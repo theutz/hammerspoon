@@ -17,6 +17,8 @@ M.definitions = {
 	{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
 }
 
+M.grid = hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
+
 function M.setup(mods)
 	hs.window.animationDuration = 0
 	M.mods = mods
@@ -25,11 +27,40 @@ function M.setup(mods)
 
 	M.bindDefinitions()
 
-	hs.hotkey.bind(mods, "p", M.maximizeAllWindows)
+	hs.hotkey.bind(mods, "e", M.autoTiler)
+	hs.hotkey.bind(mods, "p", M.tidyUpWindows)
 	hs.hotkey.bind(mods, "space", M.centerOnScreen)
 end
 
-function M.maximizeAllWindows()
+function M.autoTiler()
+	local screen = hs.window.frontmostWindow():screen()
+	local windows = {}
+	for _, w in ipairs(hs.window.orderedWindows()) do
+		if w:screen() == screen then table.insert(windows, w) end
+	end
+	local rows = math.floor(math.sqrt(#windows))
+	local cols = math.ceil(math.sqrt(#windows))
+	if rows * cols < #windows then rows = rows + 1 end
+
+	local i = 1
+	for r = 0, rows - 1 do
+		for c = 0, cols - 1 do
+			local win = windows[i]
+			if win ~= nil then
+				local h = 12 / rows
+				local w = 12 / cols
+				local cell = hs.geometry.new { x = c * w, y = r * h, h = h, w = h }
+				M.withAxHotfix(function()
+					win:move(hs.grid.getCell(cell, win:screen()))
+					hs.grid.snap(win)
+				end)(win)
+			end
+			i = i + 1
+		end
+	end
+end
+
+function M.tidyUpWindows()
 	local wins = hs.window.orderedWindows()
 	local count = 0
 	local grid = M.gridSize
@@ -42,7 +73,7 @@ function M.maximizeAllWindows()
 
 	hs.timer.doUntil(shouldStop, function()
 		local win = wins[count]
-		hs.grid.snap(win)
+		M.withAxHotfix(function(w) hs.grid.snap(w) end)(win)
 	end, 0.01)
 end
 
@@ -122,6 +153,28 @@ function M.setupMoveModal()
 	modal:bind("", "s", resize "Shorter")
 	modal:bind("", "a", resize "Thinner")
 	modal:bind("", "f", resize "Wider")
+end
+
+function M.axHotfix(win)
+	if not win then win = hs.window.frontmostWindow() end
+
+	local axApp = hs.axuielement.applicationElement(win:application()) or {}
+	local wasEnhanced = axApp.AXEnhancedUserInterface
+	if wasEnhanced then axApp.AXEnhancedUserInterface = false end
+
+	return function()
+		if wasEnhanced then axApp.AXEnhancedUserInterface = true end
+	end
+end
+
+function M.withAxHotfix(fn, position)
+	if not position then position = 1 end
+	return function(...)
+		local args = { ... }
+		local revert = M.axHotfix(args[position])
+		fn(...)
+		revert()
+	end
 end
 
 return M
