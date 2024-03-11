@@ -284,6 +284,8 @@ function M.setupMover(modal)
 
 	modal:bind("", "escape", function() modal:exit() end)
 	local bindings = {
+		{ "", "a", { M.focusPreviousSpace } },
+		{ "", "d", { M.focusNextSpace } },
 		{ "", "h", { move "Left" } },
 		{ "", "j", { move "Down" } },
 		{ "", "k", { move "Up" } },
@@ -309,26 +311,50 @@ function M.setupMover(modal)
 	end
 end
 
-function M.moveToPreviousSpace()
-	local win = hs.window.frontmostWindow()
-	local space = hs.spaces.activeSpaceOnScreen()
-	local spaces = hs.spaces.spacesForScreen(win:screen())
+---@param win hs.window
+---@return integer
+function M.getNextSpaceId(win)
+	local screen = win:screen()
+	local spaces = hs.spaces.spacesForScreen(screen)
 	assert(spaces)
+	local space = hs.spaces.focusedSpace()
+	local index = hs.fnutils.indexOf(spaces, space)
+	local new_index = index + 1
+	if new_index < #spaces then new_index = 1 end
+	return spaces[new_index]
+end
+
+---@param win hs.window
+---@return integer
+function M.getPreviousSpaceId(win)
+	local screen = win:screen()
+	local spaces = hs.spaces.spacesForScreen(screen)
+	assert(spaces)
+	local space = hs.spaces.focusedSpace()
 	local index = hs.fnutils.indexOf(spaces, space)
 	local new_index = index - 1
 	if new_index < 1 then new_index = #spaces end
-	hs.spaces.moveWindowToSpace(win, spaces[new_index])
+	return spaces[new_index]
+end
+
+function M.moveToPreviousSpace()
+	local win = hs.window.frontmostWindow()
+	hs.spaces.moveWindowToSpace(win, M.getPreviousSpaceId(win))
 end
 
 function M.moveToNextSpace()
 	local win = hs.window.frontmostWindow()
-	local space = hs.spaces.activeSpaceOnScreen()
-	local spaces = hs.spaces.spacesForScreen(win:screen())
-	assert(spaces)
-	local index = hs.fnutils.indexOf(spaces, space)
-	local new_index = index + 1
-	if new_index > #spaces then new_index = 1 end
-	hs.spaces.moveWindowToSpace(win, spaces[new_index])
+	hs.spaces.moveWindowToSpace(win, M.getNextSpaceId(win))
+end
+
+function M.focusNextSpace()
+	local win = hs.window.frontmostWindow()
+	hs.spaces.gotoSpace(M.getNextSpaceId(win))
+end
+
+function M.focusPreviousSpace()
+	local win = hs.window.frontmostWindow()
+	hs.spaces.gotoSpace(M.getPreviousSpaceId(win))
 end
 
 function M.axHotfix(win)
