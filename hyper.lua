@@ -6,7 +6,7 @@ M.bindings = function()
 	--- @type { [1]: string, [2]: string|string[]|function?, [3]: function?, [4]: function? }[]
 	return {
 		{ "1", "1Password" },
-		{ "b", { "Firefox", "Vivaldi", "Safari", "Google Chrome" } },
+		{ "b", { "Vivaldi", "Firefox", "Safari", "Google Chrome" } },
 		{ "c", "Calendar" },
 		{ "d", "Dash" },
 		{ "e", M.launchNeovide },
