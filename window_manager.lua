@@ -64,6 +64,8 @@ M.getBindings = function()
 		{ "o", M.maximizeAllWindows },
 		{ "0", M.nextWindow },
 		{ "9", M.previousWindow },
+		{ "]", M.nextScreen },
+		{ "[", M.prevScreen },
 	}
 end
 
@@ -169,6 +171,28 @@ function M.centerOnScreen()
 	M.withAxHotfix(function(w)
 		w:centerOnScreen(nil, true)
 		hs.grid.snap(w)
+	end)(win)
+end
+
+function M.nextScreen()
+	local win = hs.window.frontmostWindow()
+	M.withAxHotfix(function(w)
+		local grid = hs.grid.get(w)
+		local noResize = true
+		local ensureInScreenBounds = false
+		w:moveOneScreenEast(noResize, ensureInScreenBounds)
+		hs.grid.set(w, grid)
+	end)(win)
+end
+
+function M.prevScreen()
+	local win = hs.window.frontmostWindow()
+	M.withAxHotfix(function(w)
+		local grid = hs.grid.get(w)
+		local noResize = true
+		local ensureInScreenBounds = false
+		w:moveOneScreenWest(noResize, ensureInScreenBounds)
+		hs.grid.set(w, grid)
 	end)(win)
 end
 

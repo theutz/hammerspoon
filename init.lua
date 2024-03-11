@@ -10,13 +10,6 @@ spoon.SpoonInstall:andUse("ReloadConfiguration", {
 	start = true,
 })
 
-spoon.SpoonInstall:andUse("WindowScreenLeftAndRight", {
-	hotkeys = {
-		screen_left = { { "ctrl", "alt", "cmd" }, "[" },
-		screen_right = { { "ctrl", "alt", "cmd" }, "]" },
-	},
-})
-
 local window_manager = require "window_manager"
 window_manager.setup()
 
