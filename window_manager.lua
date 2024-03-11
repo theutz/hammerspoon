@@ -48,7 +48,7 @@ function M.bind(definition)
 end
 
 M.getBindings = function()
-	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
+	M.setupMover(hs.hotkey.modal.new(M.mods, ";"))
 	return {
 		{ "0", M.nextWindow },
 		{ "9", M.previousWindow },
@@ -221,7 +221,22 @@ function M.setupMover(modal)
 
 	local function move(dir)
 		return withTimerReset(function()
-			M.withAxHotfix(function(win) hs.grid["pushWindow" .. dir](win) end)(hs.window.frontmostWindow())
+			M.withAxHotfix(function(win)
+				local winGrid = hs.grid.get(win)
+				assert(winGrid)
+				local screen = win:screen()
+				hs.grid["pushWindow" .. dir](win)
+				if screen ~= win:screen() then
+					local screenGrid = hs.grid.getGrid(win:screen())
+					assert(screenGrid)
+					if dir == "Left" then
+						winGrid.x = screenGrid.w - winGrid.w
+					elseif dir == "Right" then
+						winGrid.x = 0
+					end
+					hs.grid.set(win, winGrid)
+				end
+			end)(hs.window.frontmostWindow())
 		end)
 	end
 
