@@ -18,6 +18,36 @@ function M.setup()
 	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
 end
 
+function M.bind(definition)
+	local key, action = table.unpack(definition)
+	local fn
+
+	if type(action) == "function" then
+		fn = action
+	elseif type(action) == "table" then
+		fn = function()
+			local win = hs.window.frontmostWindow()
+			local current_grid = hs.grid.get(win)
+
+			local grids = {}
+
+			for _, dimension in ipairs(action) do
+				table.insert(grids, hs.geometry:new(dimension))
+			end
+
+			local new_grid = grids[1]
+
+			for index, grid in ipairs(grids) do
+				if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
+			end
+
+			M.withAxHotfix(function(w) hs.grid.set(w, new_grid) end)(win)
+		end
+	end
+
+	hs.hotkey.bind(M.mods, key, fn)
+end
+
 M.getBindings = function()
 	return {
 		{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
@@ -132,36 +162,6 @@ function M.tidyUpWindows()
 		local win = wins[count]
 		M.withAxHotfix(function(w) hs.grid.snap(w) end)(win)
 	end, 0.01)
-end
-
-function M.bind(definition)
-	local key, action = table.unpack(definition)
-	local fn
-
-	if type(action) == "function" then
-		fn = action
-	elseif type(action) == "table" then
-		fn = function()
-			local win = hs.window.frontmostWindow()
-			local current_grid = hs.grid.get(win)
-
-			local grids = {}
-
-			for _, dimension in ipairs(action) do
-				table.insert(grids, hs.geometry:new(dimension))
-			end
-
-			local new_grid = grids[1]
-
-			for index, grid in ipairs(grids) do
-				if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
-			end
-
-			M.withAxHotfix(function(w) hs.grid.set(w, new_grid) end)(win)
-		end
-	end
-
-	hs.hotkey.bind(M.mods, key, fn)
 end
 
 function M.centerOnScreen()
