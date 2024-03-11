@@ -54,6 +54,7 @@ M.getBindings = function()
 		{ "9", M.previousWindow },
 		{ "[", M.prevScreen },
 		{ "]", M.nextScreen },
+		{ "c", { "1,1 10x10", "2,2 8x8", "3,3 6x6", "4,4 4x4", "0,0 12x12" } },
 		{ "e", M.autoTiler },
 		{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
 		{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
@@ -121,7 +122,9 @@ end
 
 function M.maximizeAllWindows()
 	for _, win in ipairs(hs.window.orderedWindows()) do
-		M.withAxHotfix(function(w) hs.grid.maximizeWindow(w) end)(win)
+		if win:screen() == hs.window.frontmostWindow():screen() then
+			M.withAxHotfix(function(w) hs.grid.maximizeWindow(w) end)(win)
+		end
 	end
 end
 
