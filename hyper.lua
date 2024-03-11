@@ -9,7 +9,7 @@ M.bindings = function()
 		{ "b", { "Vivaldi", "Firefox", "Safari", "Google Chrome" } },
 		{ "c", "Calendar" },
 		{ "d", "Dash" },
-		{ "e", M.launchNeovide },
+		{ "e", "Mail" },
 		{ "f", "Figma" },
 		{ "h", "Hammerspoon" },
 		{ "l", M.launchTimematorOverview },
@@ -17,11 +17,12 @@ M.bindings = function()
 		{ "n", { "Notion", "Notes" } },
 		{ "p", "Spotify" },
 		{ "q", function() hs.notify.withdrawAll() end },
-		{ "s", { "Slack", "Mail" } },
+		{ "s", { "Slack" } },
 		{ "t", { "WezTerm", "iTerm 2", "Kitty" } },
 		{ "u", "Due" },
 		{ "i", "Neovide" },
 		{ "v", { "ClearVPN", "NordVPN" } },
+		{ "w", M.launchNeovide },
 		{ "z", "zoom.us" },
 	}
 end
