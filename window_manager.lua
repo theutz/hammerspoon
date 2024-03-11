@@ -56,7 +56,7 @@ M.getBindings = function()
 		{ "]", M.nextScreen },
 		{ "c", { "1,1 10x10", "2,2 8x8", "3,3 6x6", "4,4 4x4", "0,0 12x12" } },
 		{ "e", M.autoTiler },
-		{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
+		{ "h", { "1,0 9x12", "0,0 6x12", "0,0 3x12" } },
 		{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
 		{ "j", { "0,6 12x6", "4,6 4x6" } },
 		{ "k", { "0,0 12x6", "4,0 4x6" } },
@@ -64,6 +64,13 @@ M.getBindings = function()
 		{ "m", { "6,6 6x6", "8,6 4x6", "10,6 2x6" } },
 		{ "n", { "0,6 6x6", "0,6 4x6", "0,6 2x6" } },
 		{ "o", M.maximizeAllWindows },
+		{
+			"r",
+			function()
+				M.saveWindowOrder()
+				M.autoTiler()
+			end,
+		},
 		{ "return", { "0,0 12x12" } },
 		{ "space", M.centerOnScreen },
 		{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
@@ -156,7 +163,6 @@ function M.maximizeAllWindows()
 end
 
 function M.autoTiler()
-	M.saveWindowOrder()
 	local rows = math.floor(math.sqrt(#M.tiles))
 	local columns = math.ceil(math.sqrt(#M.tiles))
 	if rows * columns < #M.tiles then rows = rows + 1 end
