@@ -10,7 +10,7 @@ M.current_window = {}
 function M.setup()
 	hs.window.animationDuration = 0
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
-	hs.grid.ui.textSize = 100
+	hs.grid.ui.textSize = 20
 
 	for _, definition in ipairs(M.getBindings()) do
 		M.bind(definition)
@@ -50,6 +50,11 @@ end
 M.getBindings = function()
 	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
 	return {
+		{ "0", M.nextWindow },
+		{ "9", M.previousWindow },
+		{ "[", M.prevScreen },
+		{ "]", M.nextScreen },
+		{ "e", M.autoTiler },
 		{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
 		{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
 		{ "j", { "0,6 12x6", "4,6 4x6" } },
@@ -57,15 +62,10 @@ M.getBindings = function()
 		{ "l", { "3,0 9x12", "6,0 6x12", "9,0 3x12" } },
 		{ "m", { "6,6 6x6", "8,6 4x6", "10,6 2x6" } },
 		{ "n", { "0,6 6x6", "0,6 4x6", "0,6 2x6" } },
-		{ "return", { "0,0 12x12" } },
-		{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
-		{ "e", M.autoTiler },
-		{ "space", M.centerOnScreen },
 		{ "o", M.maximizeAllWindows },
-		{ "0", M.nextWindow },
-		{ "9", M.previousWindow },
-		{ "]", M.nextScreen },
-		{ "[", M.prevScreen },
+		{ "return", { "0,0 12x12" } },
+		{ "space", M.centerOnScreen },
+		{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
 	}
 end
 
