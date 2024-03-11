@@ -15,7 +15,6 @@ function M.setup()
 	for _, definition in ipairs(M.getBindings()) do
 		M.bind(definition)
 	end
-	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
 end
 
 function M.bind(definition)
@@ -49,6 +48,7 @@ function M.bind(definition)
 end
 
 M.getBindings = function()
+	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
 	return {
 		{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
 		{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
