@@ -1,42 +1,41 @@
 local M = {}
 
 M.mods = { "ctrl", "alt", "cmd" }
-
 M.gridSize = hs.geometry.size(12, 12) or {}
 M.gridMargin = hs.geometry.size(16, 16) or {}
-
 M.grid = hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
-
-M.snap_to_grid_definitions = {
-	{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
-	{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
-	{ "j", { "0,6 12x6", "4,6 4x6" } },
-	{ "k", { "0,0 12x6", "4,0 4x6" } },
-	{ "l", { "3,0 9x12", "6,0 6x12", "9,0 3x12" } },
-	{ "m", { "6,6 6x6", "8,6 4x6", "10,6 2x6" } },
-	{ "n", { "0,6 6x6", "0,6 4x6", "0,6 2x6" } },
-	{ "return", { "0,0 12x12" } },
-	{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
-}
+M.ordered_windows = {}
+M.current_window = {}
 
 function M.setup()
 	hs.window.animationDuration = 0
 	hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
+	hs.grid.ui.textSize = 100
 
-	for _, definition in ipairs(M.snap_to_grid_definitions) do
-		M.bindDefinition(definition)
+	for _, definition in ipairs(M.getBindings()) do
+		M.bind(definition)
 	end
-	hs.hotkey.bind(M.mods, "e", M.autoTiler)
-	hs.hotkey.bind(M.mods, "p", M.tidyUpWindows)
-	hs.hotkey.bind(M.mods, "space", M.centerOnScreen)
-	hs.hotkey.bind(M.mods, "o", M.maximizeAllWindows)
-	hs.hotkey.bind(M.mods, "0", M.nextWindow)
-	hs.hotkey.bind(M.mods, "9", M.previousWindow)
 	M.setupMover(hs.hotkey.modal.new(M.mods, "c"))
 end
 
-M.ordered_windows = {}
-M.current_window = {}
+M.getBindings = function()
+	return {
+		{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
+		{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
+		{ "j", { "0,6 12x6", "4,6 4x6" } },
+		{ "k", { "0,0 12x6", "4,0 4x6" } },
+		{ "l", { "3,0 9x12", "6,0 6x12", "9,0 3x12" } },
+		{ "m", { "6,6 6x6", "8,6 4x6", "10,6 2x6" } },
+		{ "n", { "0,6 6x6", "0,6 4x6", "0,6 2x6" } },
+		{ "return", { "0,0 12x12" } },
+		{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
+		{ "e", M.autoTiler },
+		{ "space", M.centerOnScreen },
+		{ "o", M.maximizeAllWindows },
+		{ "0", M.nextWindow },
+		{ "9", M.previousWindow },
+	}
+end
 
 function M.saveWindowOrder()
 	M.ordered_windows = {}
@@ -66,7 +65,7 @@ function M.nextWindow()
 	if success then
 		M.current_window = next
 	else
-		table.remove(M.ordered_windows, next.index)
+		M.saveWindowOrder()
 	end
 end
 
@@ -84,7 +83,7 @@ function M.previousWindow()
 	if success then
 		M.current_window = prev
 	else
-		table.remove(M.ordered_windows, prev.index)
+		M.saveWindowOrder()
 	end
 end
 
@@ -135,27 +134,34 @@ function M.tidyUpWindows()
 	end, 0.01)
 end
 
-function M.bindDefinition(definition)
-	local key, dimensions = table.unpack(definition)
+function M.bind(definition)
+	local key, action = table.unpack(definition)
+	local fn
 
-	hs.hotkey.bind(M.mods, key, function()
-		local win = hs.window.frontmostWindow()
-		local current_grid = hs.grid.get(win)
+	if type(action) == "function" then
+		fn = action
+	elseif type(action) == "table" then
+		fn = function()
+			local win = hs.window.frontmostWindow()
+			local current_grid = hs.grid.get(win)
 
-		local grids = {}
+			local grids = {}
 
-		for _, dimension in ipairs(dimensions) do
-			table.insert(grids, hs.geometry:new(dimension))
+			for _, dimension in ipairs(action) do
+				table.insert(grids, hs.geometry:new(dimension))
+			end
+
+			local new_grid = grids[1]
+
+			for index, grid in ipairs(grids) do
+				if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
+			end
+
+			M.withAxHotfix(function(w) hs.grid.set(w, new_grid) end)(win)
 		end
+	end
 
-		local new_grid = grids[1]
-
-		for index, grid in ipairs(grids) do
-			if current_grid and current_grid:equals(grid) then new_grid = grids[index + 1] or grids[1] end
-		end
-
-		M.withAxHotfix(function(w) hs.grid.set(w, new_grid) end)(win)
-	end)
+	hs.hotkey.bind(M.mods, key, fn)
 end
 
 function M.centerOnScreen()
