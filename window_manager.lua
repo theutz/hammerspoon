@@ -254,6 +254,8 @@ function M.setupMover(modal)
 		{ "", "l", { move "Right" } },
 		{ "", "=", { resize "Taller", resize "Wider" } },
 		{ "", "-", { resize "Shorter", resize "Thinner" } },
+		{ "", "n", { M.nextWindow } },
+		{ "", "p", { M.previousWindow } },
 		{ "Shift", "h", { resize "Thinner" } },
 		{ "Shift", "j", { resize "Taller" } },
 		{ "Shift", "k", { resize "Shorter" } },
