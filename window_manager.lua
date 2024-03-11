@@ -4,8 +4,8 @@ M.mods = { "ctrl", "alt", "cmd" }
 M.gridSize = hs.geometry.size(12, 12) or {}
 M.gridMargin = hs.geometry.size(16, 16) or {}
 M.grid = hs.grid.setGrid(M.gridSize).setMargins(M.gridMargin)
-M.ordered_windows = {}
-M.current_window = {}
+M.tiles = {}
+M.current_tile = 1
 
 function M.setup()
 	hs.window.animationDuration = 0
@@ -67,57 +67,84 @@ M.getBindings = function()
 		{ "return", { "0,0 12x12" } },
 		{ "space", M.centerOnScreen },
 		{ "u", { "0,0 6x6", "0,0 4x6", "0,0 2x6" } },
+		{ "x", M.maxWidth },
+		{ "y", M.maxHeight },
 	}
 end
 
+function M.maxWidth()
+	M.withAxHotfix(function(win)
+		local winGrid = hs.grid.get(win)
+		assert(winGrid)
+		local screenGrid = hs.grid.getGrid(win:screen())
+		assert(screenGrid)
+
+		winGrid.x = 0
+		winGrid.w = screenGrid.w
+
+		hs.grid.set(win, winGrid)
+	end)(hs.window.frontmostWindow())
+end
+
+function M.maxHeight()
+	M.withAxHotfix(function(win)
+		local winGrid = hs.grid.get(win)
+		assert(winGrid)
+		local screenGrid = hs.grid.getGrid(win:screen())
+		assert(screenGrid)
+
+		winGrid.y = 0
+		winGrid.h = screenGrid.h
+
+		hs.grid.set(win, winGrid)
+	end)(hs.window.frontmostWindow())
+end
+
 function M.saveWindowOrder()
-	M.ordered_windows = {}
+	M.tiles = {}
+	local win = hs.window.frontmostWindow()
 
-	local activeScreen = hs.window.frontmostWindow():screen()
-	for _, win in ipairs(hs.window.orderedWindows()) do
-		if win:screen() == activeScreen then table.insert(M.ordered_windows, win) end
-	end
-
-	M.current_window = { win = hs.window.frontmostWindow() }
-
-	for i, win in ipairs(M.ordered_windows) do
-		if M.current_window.win == win then M.current_window.index = i end
+	local activeScreen = win:screen()
+	for i, w in ipairs(hs.window.orderedWindows()) do
+		if w:screen() == activeScreen then
+			table.insert(M.tiles, w)
+			if win == w then M.current_tile = i end
+		end
 	end
 end
 
+function M.getCurrentTile() return M.tiles[M.current_tile] end
+
 function M.nextWindow()
-	if #M.ordered_windows == 0 then M.saveWindowOrder() end
-	local next = {}
-	if M.current_window.index >= #M.ordered_windows then
-		next.index = 1
+	local index
+	if M.current_tile >= #M.tiles then
+		index = 1
 	else
-		next.index = M.current_window.index + 1
+		index = M.current_tile + 1
 	end
-	next.win = M.ordered_windows[next.index]
-	local success = pcall(next.win:focus())
-	if success then
-		M.current_window = next
-	else
+	local win = M.tiles[index]
+	if win == nil then
 		M.saveWindowOrder()
+		return M.nextWindow()
 	end
+	win:focus()
+	M.current_tile = index
 end
 
 function M.previousWindow()
-	if #M.ordered_windows == 0 then M.saveWindowOrder() end
-	local prev = {}
-	if M.current_window.index <= 1 then
-		prev.index = #M.ordered_windows
+	local index
+	if M.current_tile <= 1 then
+		index = #M.tiles
 	else
-		prev.index = M.current_window.index - 1
+		index = M.current_tile - 1
 	end
-	prev.win = M.ordered_windows[prev.index]
-	prev.win:focus()
-	local success = pcall(prev.win:focus())
-	if success then
-		M.current_window = prev
-	else
+	local win = M.tiles[index]
+	if win == nil then
 		M.saveWindowOrder()
+		return M.previousWindow()
 	end
+	win:focus()
+	M.current_tile = index
 end
 
 function M.maximizeAllWindows()
@@ -130,14 +157,14 @@ end
 
 function M.autoTiler()
 	M.saveWindowOrder()
-	local rows = math.floor(math.sqrt(#M.ordered_windows))
-	local columns = math.ceil(math.sqrt(#M.ordered_windows))
-	if rows * columns < #M.ordered_windows then rows = rows + 1 end
+	local rows = math.floor(math.sqrt(#M.tiles))
+	local columns = math.ceil(math.sqrt(#M.tiles))
+	if rows * columns < #M.tiles then rows = rows + 1 end
 
 	local i = 1
 	for row = 1, rows do
 		for column = 1, columns do
-			local win = M.ordered_windows[i]
+			local win = M.tiles[i]
 			if win ~= nil then
 				local cell = hs.geometry.new { h = 12 / rows, w = 12 / columns }
 				cell.x = (column - 1) * cell.w
