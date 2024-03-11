@@ -56,7 +56,7 @@ M.getBindings = function()
 		{ "]", M.nextScreen },
 		{ "c", { "1,1 10x10", "2,2 8x8", "3,3 6x6", "4,4 4x4", "0,0 12x12" } },
 		{ "e", M.autoTiler },
-		{ "h", { "1,0 9x12", "0,0 6x12", "0,0 3x12" } },
+		{ "h", { "0,0 9x12", "0,0 6x12", "0,0 3x12" } },
 		{ "i", { "6,0 6x6", "8,0 4x6", "10,0 2x6" } },
 		{ "j", { "0,6 12x6", "4,6 4x6" } },
 		{ "k", { "0,0 12x6", "4,0 4x6" } },
@@ -292,6 +292,8 @@ function M.setupMover(modal)
 		{ "", "-", { resize "Shorter", resize "Thinner" } },
 		{ "", "n", { M.nextWindow } },
 		{ "", "p", { M.previousWindow } },
+		{ "shift", "a", { M.moveToPreviousSpace } },
+		{ "shift", "d", { M.moveToNextSpace } },
 		{ "Shift", "h", { resize "Thinner" } },
 		{ "Shift", "j", { resize "Taller" } },
 		{ "Shift", "k", { resize "Shorter" } },
@@ -305,6 +307,28 @@ function M.setupMover(modal)
 			end
 		end)
 	end
+end
+
+function M.moveToPreviousSpace()
+	local win = hs.window.frontmostWindow()
+	local space = hs.spaces.activeSpaceOnScreen()
+	local spaces = hs.spaces.spacesForScreen(win:screen())
+	assert(spaces)
+	local index = hs.fnutils.indexOf(spaces, space)
+	local new_index = index - 1
+	if new_index < 1 then new_index = #spaces end
+	hs.spaces.moveWindowToSpace(win, spaces[new_index])
+end
+
+function M.moveToNextSpace()
+	local win = hs.window.frontmostWindow()
+	local space = hs.spaces.activeSpaceOnScreen()
+	local spaces = hs.spaces.spacesForScreen(win:screen())
+	assert(spaces)
+	local index = hs.fnutils.indexOf(spaces, space)
+	local new_index = index + 1
+	if new_index > #spaces then new_index = 1 end
+	hs.spaces.moveWindowToSpace(win, spaces[new_index])
 end
 
 function M.axHotfix(win)
