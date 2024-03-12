@@ -91,10 +91,22 @@ function mouse.right()
 	hs.mouse.absolutePosition(pos)
 end
 
+local actions = {
+	["click"] = { "", "space" },
+	["rightClick"] = { "shift", "space" },
+}
+
+function mouse.click() hs.eventtap.leftClick(hs.mouse.absolutePosition()) end
+
+function mouse.rightClick() hs.eventtap.rightClick(hs.mouse.absolutePosition()) end
+
 ---@return nil
 local function bind_movements()
 	for key, direction in pairs(directions) do
 		modal:bind("", key, mouse[direction], nil, mouse[direction])
+	end
+	for action, spec in pairs(actions) do
+		modal:bind(spec[1], spec[2], mouse[action], nil, mouse[action])
 	end
 end
 
