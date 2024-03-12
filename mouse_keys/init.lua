@@ -16,52 +16,70 @@ local directions = {
 	d = "right",
 }
 
-local alert
+---@type hs.canvas[]
+local alerts = {}
 
-local function show_alert()
-	local screen = hs.screen.mainScreen()
-	local frame = screen:frame()
-	alert = hs.canvas.new { x = 0, y = 24, h = frame.h, w = frame.w } ---@cast alert hs.canvas
-	alert:appendElements {
-		{
-			type = "rectangle",
-			action = "build",
-		},
-		{
-			type = "rectangle",
-			action = "clip",
-			reversePath = true,
-			frame = { x = 10, y = 10, h = frame.h - 24 + 6, w = frame.w - 10 - 10 },
-			roundedRectRadii = { xRadius = 4, yRadius = 4 },
-		},
-		{
-			type = "rectangle",
-			fillColor = { hex = "#f00", alpha = 0.8 },
-			roundedRectRadii = { xRadius = 6, yRadius = 6 },
-		},
-		{
-			type = "text",
-			text = "Mouse Keys Active",
-			textColor = { hex = "#fff", alpha = 1.0 },
-			textAlignment = "center",
-			textSize = 8,
-		},
-	}
-	alert:show()
-	-- alert:sendToBack()
+local function show_alerts()
+	---@param frame hs.geometry
+	local function makeElements(frame)
+		local margin = 16
+		return {
+			{ type = "rectangle", action = "build" },
+			{
+				type = "rectangle",
+				action = "clip",
+				reversePath = true,
+				frame = { x = 16, y = margin + 24, h = frame.h - 24 - (margin / 2), w = frame.w - (margin * 2) },
+				roundedRectRadii = { xRadius = 8, yRadius = 8 },
+			},
+			{
+				type = "rectangle",
+				fillColor = { hex = "#f00", alpha = 0.5 },
+				roundedRectRadii = { xRadius = 6, yRadius = 6 },
+			},
+			{
+				type = "text",
+				text = "Mouse Keys Active",
+				textColor = { hex = "#fff", alpha = 1.0 },
+				textAlignment = "center",
+				textSize = 16,
+				padding = 8,
+			},
+		}
+	end
+
+	local screens = hs.screen.allScreens() ---@cast screens hs.screen[]
+	for i, screen in ipairs(screens) do
+		local frame = screen:frame()
+		alerts[i] = hs.canvas.new(screen:fullFrame())
+		alerts[i]:appendElements(makeElements(frame))
+		alerts[i]:behavior { "canJoinAllSpaces", "stationary" }
+	end
+
+	-- alerts[1] = hs.canvas.new { x = 0, y = 24, h = frame.h, w = frame.w }
+	-- alerts[1]:appendElements(elements)
+
+	for _, alert in ipairs(alerts) do
+		alert:show()
+	end
 end
--- show_alert()
+
+local function hide_alerts()
+	for _, alert in ipairs(alerts) do
+		alert:hide()
+	end
+end
 
 ---@param self hs.hotkey.modal
 ---@return nil
 local function on_modal_enter(self) ---@diagnostic disable-line unused-local
-	show_alert()
+	show_alerts()
 end
 
 ---@param self hs.hotkey.modal
 ---@return nil
 local function on_modal_exit(self) ---@diagnostic disable-line unused-local
-	alert:hide()
+	hide_alerts()
 end
 
 ---@return nil
