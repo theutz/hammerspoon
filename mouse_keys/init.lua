@@ -16,10 +16,65 @@ local directions = {
 	d = "right",
 }
 
+local alert
+
+local function show_alert()
+	local screen = hs.screen.mainScreen()
+	local frame = screen:frame()
+	alert = hs.canvas.new { x = 0, y = 24, h = frame.h, w = frame.w } ---@cast alert hs.canvas
+	alert:appendElements {
+		{
+			type = "rectangle",
+			action = "build",
+		},
+		{
+			type = "rectangle",
+			action = "clip",
+			reversePath = true,
+			frame = { x = 10, y = 10, h = frame.h - 24 + 6, w = frame.w - 10 - 10 },
+			roundedRectRadii = { xRadius = 4, yRadius = 4 },
+		},
+		{
+			type = "rectangle",
+			fillColor = { hex = "#f00", alpha = 0.8 },
+			roundedRectRadii = { xRadius = 6, yRadius = 6 },
+		},
+		{
+			type = "text",
+			text = "Mouse Keys Active",
+			textColor = { hex = "#fff", alpha = 1.0 },
+			textAlignment = "center",
+			textSize = 8,
+		},
+	}
+	alert:show()
+	-- alert:sendToBack()
+end
+-- show_alert()
+
+---@param self hs.hotkey.modal
+---@return nil
+local function on_modal_enter(self) ---@diagnostic disable-line unused-local
+	show_alert()
+end
+
+---@param self hs.hotkey.modal
+---@return nil
+local function on_modal_exit(self) ---@diagnostic disable-line unused-local
+	alert:hide()
+end
+
 ---@return nil
 local function createModal()
-	modal = hs.hotkey.modal.new("", "f20", "Mouse Keys")
-	modal:bind("", "escape", function() modal:exit() end)
+	local activation_key = "f20"
+	modal = hs.hotkey.modal.new("", activation_key)
+
+	modal.exited = on_modal_exit
+	modal.entered = on_modal_enter
+
+	for _, key in ipairs { "escape", activation_key } do
+		modal:bind("", key, function() modal:exit() end)
+	end
 end
 
 ---@type integer
