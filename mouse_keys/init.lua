@@ -1,8 +1,3 @@
-local hk = hs.hotkey
-local bind = hk.bind
-local mp = hs.mouse.absolutePosition
-local fnu = hs.fnutils
-
 ---@module "mouse_keys"
 local M = {}
 
@@ -23,7 +18,7 @@ local directions = {
 
 ---@return nil
 local function createModal()
-	modal = hk.modal.new("", "f20", "Mouse Keys")
+	modal = hs.hotkey.modal.new("", "f20", "Mouse Keys")
 	modal:bind("", "escape", function() modal:exit() end)
 end
 
@@ -73,35 +68,37 @@ end
 local mouse = {}
 
 function mouse.up()
-	local pos = mp()
+	local pos = hs.mouse.absolutePosition()
 	pos.y = pos.y - get_step()
-	mp(pos)
+	hs.mouse.absolutePosition(pos)
 end
 
 function mouse.down()
-	local pos = mp()
+	local pos = hs.mouse.absolutePosition()
 	pos.y = pos.y + get_step()
-	mp(pos)
+	hs.mouse.absolutePosition(pos)
 end
 
 function mouse.left()
-	local pos = mp()
+	local pos = hs.mouse.absolutePosition()
 	pos.x = pos.x - get_step()
-	mp(pos)
+	hs.mouse.absolutePosition(pos)
 end
 
 function mouse.right()
-	local pos = mp()
+	local pos = hs.mouse.absolutePosition()
 	pos.x = pos.x + get_step()
-	mp(pos)
+	hs.mouse.absolutePosition(pos)
 end
 
+---@return nil
 local function bind_movements()
 	for key, direction in pairs(directions) do
 		modal:bind("", key, mouse[direction], nil, mouse[direction])
 	end
 end
 
+---@return nil
 function M.setup()
 	createModal()
 	bind_movements()
