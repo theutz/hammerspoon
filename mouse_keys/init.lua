@@ -27,10 +27,16 @@ local step_size = 2
 
 ---@type integer[]
 local step_sizes = {
-	15,
-	30,
+	5,
+	20,
 	60,
 	90,
+}
+
+---@type { [string]: string }
+local step_mods = {
+	inc = "ctrl",
+	dec = "shift",
 }
 
 ---@return nil
@@ -46,15 +52,22 @@ local function decrease_step_size()
 end
 
 ---@return integer
-local function get_step() return step_sizes[step_size] end
+local function get_step()
+	local mods = hs.eventtap.checkKeyboardModifiers() ---@cast mods { ["shift"|"ctrl"|"alt"]: boolean }
+
+	if mods[step_mods.dec] and step_size > 1 then return step_sizes[step_size - 1] end
+	if mods[step_mods.inc] and step_size < #step_sizes then return step_sizes[step_size + 1] end
+
+	return step_sizes[step_size]
+end
 
 ---@return nil
 local function bind_stepper()
 	modal:bind("", "q", increase_step, nil, increase_step)
 	modal:bind("", "u", increase_step, nil, increase_step)
 
-	modal:bind("shift", "q", decrease_step_size, nil, decrease_step_size)
-	modal:bind("shift", "u", decrease_step_size, nil, decrease_step_size)
+	modal:bind(step_mods.dec, "q", decrease_step_size, nil, decrease_step_size)
+	modal:bind(step_mods.dec, "u", decrease_step_size, nil, decrease_step_size)
 
 	for i = 1, #step_sizes do
 		modal:bind("", i .. "", function()
@@ -102,9 +115,17 @@ function mouse.rightClick() hs.eventtap.rightClick(hs.mouse.absolutePosition()) 
 
 ---@return nil
 local function bind_movements()
-	for key, direction in pairs(directions) do
-		modal:bind("", key, mouse[direction], nil, mouse[direction])
+	local mods = { "" }
+	for _, v in pairs(step_mods) do
+		table.insert(mods, v)
 	end
+
+	for key, direction in pairs(directions) do
+		for _, mod in ipairs(mods) do
+			modal:bind(mod, key, mouse[direction], nil, mouse[direction])
+		end
+	end
+
 	for action, spec in pairs(actions) do
 		modal:bind(spec[1], spec[2], mouse[action], nil, mouse[action])
 	end

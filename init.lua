@@ -2,8 +2,7 @@ hs.loadSpoon "SpoonInstall"
 hs.notify.withdrawAll()
 
 _G.log = hs.logger.new("utz", "info")
-_G.info = log.i
-_G.dump = function(arg) log.i(hs.inspect(arg)) end
+_G.dump = function(...) print(hs.inspect(...)) end
 
 -- spoon.SpoonInstall:andUse("EmmyLua")
 spoon.SpoonInstall:andUse("ReloadConfiguration", {
