@@ -16,6 +16,9 @@ window_manager.setup()
 local hyper = require "hyper"
 hyper.setup()
 
+local mouse_keys = require "mouse_keys"
+mouse_keys.setup()
+
 hs.application.enableSpotlightForNameSearches(true)
 
 hs.notify
