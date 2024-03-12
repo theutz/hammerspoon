@@ -11,7 +11,18 @@ M.bindings = function()
 		{ "d", "Dash" },
 		{ "e", "Mail" },
 		{ "f", "Figma" },
-		{ "h", "Hammerspoon" },
+		{
+			"h",
+			function()
+				local win = hs.window.focusedWindow()
+				local app = win:application()
+				if app and app:name() == "Hammerspoon" then
+					app:hide()
+				else
+					hs.openConsole(true)
+				end
+			end,
+		},
 		{ "l", M.launchTimematorOverview },
 		{ "m", { "Messages", "Telegram", "WhatsApp", "Discord", "Element", "Messenger", "Slack" } },
 		{ "n", { "Notion", "Notes" } },
