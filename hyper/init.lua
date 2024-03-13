@@ -27,13 +27,20 @@ M.bindings = function()
 		{ "m", { "Messages", "Telegram", "WhatsApp", "Discord", "Element", "Messenger", "Slack" } },
 		{ "n", { "Notion", "Notes" } },
 		{ "p", "Spotify" },
-		{ "q", function() hs.notify.withdrawAll() end },
 		{ "s", { "Slack" } },
 		{ "t", { "WezTerm", "iTerm 2", "Kitty" } },
 		{ "u", "Due" },
 		{ "i", "Neovide" },
 		{ "v", { "ClearVPN", "NordVPN" } },
 		{ "w", M.launchNeovide },
+		{
+			"x",
+			function()
+				local task = hs.task.new("/opt/homebrew/bin/neovide", nil, { "today.md" })
+				task:setWorkingDirectory "~/code/theutz/agenda"
+				task:start()
+			end,
+		},
 		{ "z", "zoom.us" },
 	}
 end
