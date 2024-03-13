@@ -3,6 +3,7 @@ hs.loadSpoon "SpoonInstall"
 spoon.SpoonInstall:andUse "EmmyLua"
 hs.application.enableSpotlightForNameSearches(true)
 
+require("urlr").setup()
 require("reloadr").setup():start()
 require("windowr").setup()
 require("hyperr").setup()
