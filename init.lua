@@ -3,22 +3,14 @@ hs.loadSpoon "SpoonInstall"
 spoon.SpoonInstall:andUse "EmmyLua"
 hs.application.enableSpotlightForNameSearches(true)
 
-local reloadr = require "reloadr"
-reloadr.setup():start()
-
-local windowr = require "windowr"
-windowr.setup()
-
-local hyperr = require "hyperr"
-hyperr.setup()
-
-local mouser = require "mouser"
-mouser.setup()
+require("reloadr").setup():start()
+require("windowr").setup()
+require("hyperr").setup()
+require("mouser").setup()
 
 hs.notify
 	.new({
 		title = "Hammerspoon",
 		informativeText = "Config reloaded!",
-		withdrawAfter = 1,
 	})
-	:send()
+	:send() ---@diagnostic disable-line undefined-field
