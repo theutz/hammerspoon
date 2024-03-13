@@ -3,16 +3,16 @@ hs.loadSpoon "SpoonInstall"
 spoon.SpoonInstall:andUse "EmmyLua"
 hs.application.enableSpotlightForNameSearches(true)
 
-local reloadr = require "modules.reloadr"
+local reloadr = require "reloadr"
 reloadr.setup():start()
 
-local window_manager = require "modules.window_manager"
+local window_manager = require "window_manager"
 window_manager.setup()
 
-local hyper = require "modules.hyper"
+local hyper = require "hyper"
 hyper.setup()
 
-local mouse_keys = require "modules.mouse_keys"
+local mouse_keys = require "mouse_keys"
 mouse_keys.setup()
 
 hs.notify
