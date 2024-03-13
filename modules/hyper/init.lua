@@ -2,10 +2,6 @@ local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
 
-local wf = hs.window.filter
-local neovide_wf = wf.new "Neovide"
-dump(neovide_wf:getWindows())
-
 M.bindings = function()
 	--- @type { [1]: string, [2]: string|string[]|function?, [3]: function?, [4]: function? }[]
 	return {
