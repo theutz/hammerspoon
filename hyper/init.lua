@@ -2,11 +2,15 @@ local M = {}
 
 M.hyper = { "cmd", "ctrl", "alt", "shift" }
 
+local wf = hs.window.filter
+local neovide_wf = wf.new "Neovide"
+dump(neovide_wf:getWindows())
+
 M.bindings = function()
 	--- @type { [1]: string, [2]: string|string[]|function?, [3]: function?, [4]: function? }[]
 	return {
 		{ "1", "1Password" },
-		{ "b", { "Vivaldi", "Firefox", "Safari", "Google Chrome", "Opera", "Microsoft Edge" } },
+		{ "b", { "Firefox", "Vivaldi", "Safari", "Google Chrome", "Opera", "Microsoft Edge" } },
 		{ "c", "Calendar" },
 		{ "d", "Dash" },
 		{ "e", "Mail" },
