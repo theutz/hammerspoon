@@ -6,11 +6,12 @@ M.bindings = function()
 	--- @type { [1]: string, [2]: string|string[]|function?, [3]: function?, [4]: function? }[]
 	return {
 		{ "1", "1Password" },
-		{ "b", { "Firefox", "Vivaldi", "Safari", "Google Chrome", "Opera", "Microsoft Edge" } },
+		{ "b", { "Firefox", "Google Chrome", "Vivaldi", "Safari", "Opera", "Microsoft Edge" } },
 		{ "c", "Calendar" },
 		{ "d", "Dash" },
 		{ "e", "Mail" },
 		{ "f", "Figma" },
+		{ "g", "Google Chrome" },
 		{
 			"h",
 			function()
