@@ -1,71 +1,11 @@
 local M = {}
 
-M.hyper = { "cmd", "ctrl", "alt", "shift" }
-
-M.bindings = function()
-	--- @type { [1]: string, [2]: string|string[]|function?, [3]: function?, [4]: function? }[]
-	return {
-		{ "1", "1Password" },
-		{ "b", { "Firefox", "Google Chrome", "Vivaldi", "Safari", "Opera", "Microsoft Edge" } },
-		{ "c", "Calendar" },
-		{ "d", "Dash" },
-		{ "e", "Mail" },
-		{ "f", "Figma" },
-		{ "g", "Google Chrome" },
-		{
-			"h",
-			function()
-				local win = hs.window.focusedWindow()
-				local app = win:application()
-				local name = "Hammerspoon"
-				if app and app:name() == name then
-					app:hide()
-				else
-					hs.openConsole(true)
-					app = hs.application.get(name)
-					local console = app:findWindow "Hammerspoon Console"
-					if #hs.screen.allScreens() > 1 then
-						if console:screen() == hs.screen.primaryScreen() then
-							local otherScreen = hs.fnutils.find(
-								hs.screen.allScreens(),
-								function(screen) return screen ~= hs.screen.primaryScreen() end
-							)
-							console:moveToScreen(otherScreen)
-						end
-						hs.grid.set(console, "7,0 5x12")
-					else
-						hs.grid.set(console, "8,0 4x12")
-					end
-				end
-			end,
-		},
-		{ "l", M.launchTimematorOverview },
-		{ "m", { "Messages", "Telegram", "WhatsApp", "Discord", "Element", "Messenger", "Slack" } },
-		{ "n", { "Notion", "Notes" } },
-		{ "p", "Spotify" },
-		{ "s", { "Slack" } },
-		{ "t", { "WezTerm", "iTerm 2", "Kitty" } },
-		{ "u", "Due" },
-		{ "v", { "ClearVPN", "NordVPN" } },
-		{ "w", "Neovide" },
-		{
-			"x",
-			function()
-				local workingDir = os.getenv "HOME" .. "/code/theutz/agenda"
-				local cmd = { "start", "--", "/opt/homebrew/bin/nvim", workingDir .. "/today.md" }
-				local task = hs.task.new("/opt/homebrew/bin/wezterm", nil, cmd)
-				task:setWorkingDirectory(workingDir)
-				task:start()
-			end,
-		},
-		{ "z", "zoom.us" },
-	}
-end
+M.hyper_keys = { "cmd", "ctrl", "alt", "shift" }
 
 function M.setup()
-	for _, definition in ipairs(M.bindings()) do
+	for _, definition in ipairs(require "hyperr.bindings") do
 		local key, apps, releasedfn, repeatfn = table.unpack(definition)
-		local keySpec = { M.hyper, key }
+		local keySpec = { M.hyper_keys, key }
 		if type(apps) == "table" and #apps > 1 then
 			local app = apps[1]
 			hs.hotkey.bindSpec(keySpec, M.chooser(app, apps))
@@ -132,39 +72,6 @@ function M.chooser(defaultApp, apps)
 	end
 
 	return pressedfn, releasedfn, repeatfn
-end
-
-function M.launchTimematorOverview()
-	local appName = "Timemator"
-	local menuItem = { "Window", "Overview" }
-	local app = hs.application.find(appName, true)
-	local appWasClosed = app == nil
-
-	if app == nil then hs.application.launchOrFocus(appName) end
-
-	hs.timer.waitUntil(function()
-		app = hs.application.find(appName, true)
-		return app
-	end, function()
-		assert(app, string.format("Could not find an app named %s", appName))
-
-		local window
-
-		for _, w in ipairs(app:allWindows()) do
-			if not w:isStandard() then window = w end
-			break
-		end
-
-		if window == nil and appWasClosed == false then
-			if app:isFrontmost() then
-				app:hide() -- hide the app
-			else
-				app:selectMenuItem(menuItem) -- hide the overview window
-			end
-		else
-			app:selectMenuItem(menuItem) -- show the overview window
-		end
-	end, 0.2)
 end
 
 return M
