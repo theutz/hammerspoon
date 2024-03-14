@@ -1,27 +1,18 @@
 local M = {}
 
-local routes = {
-	["Google Chrome"] = {
-		"bugherd.com",
-	},
-	["Firefox"] = {
-		"reddit.com",
-		"facebook.com",
-		"instagram.com",
-		"threads.net",
-		"x.com",
-		"twitter.com",
-		"hachyderm.io",
-		"bsky.app",
-	},
-}
-
 local default_browser = "Firefox"
 
-function M.setup() hs.urlevent.httpCallback = M.http_callback end
+function M.setup()
+	M.routes = require "urlr.routes"
+	hs.urlevent.httpCallback = M.http_callback
+end
 
+---@param scheme string
+---@param host string
+---@param params { [string]: string }
+---@param fullURL string
 function M.http_callback(scheme, host, params, fullURL)
-	for browser, patterns in pairs(routes) do
+	for browser, patterns in pairs(M.routes) do
 		if hs.fnutils.some(patterns, function(pattern) return string.match(host, pattern) end) then
 			M.open_url_in_browser(fullURL, browser)
 			return
