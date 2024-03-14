@@ -29,7 +29,7 @@ local function show_alerts()
 				type = "rectangle",
 				action = "clip",
 				reversePath = true,
-				frame = { x = 16, y = margin + 24, h = frame.h - 24 - (margin / 2), w = frame.w - (margin * 2) },
+				frame = { x = 8, y = (margin / 2) + 22, h = frame.h, w = frame.w - margin },
 				roundedRectRadii = { xRadius = 8, yRadius = 8 },
 			},
 			{
@@ -42,8 +42,8 @@ local function show_alerts()
 				text = "Mouse Keys Active",
 				textColor = { hex = "#fff", alpha = 1.0 },
 				textAlignment = "center",
-				textSize = 16,
-				padding = 8,
+				textSize = 12,
+				padding = 6,
 			},
 		}
 	end
