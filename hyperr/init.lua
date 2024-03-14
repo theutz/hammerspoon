@@ -31,14 +31,15 @@ M.bindings = function()
 		{ "s", { "Slack" } },
 		{ "t", { "WezTerm", "iTerm 2", "Kitty" } },
 		{ "u", "Due" },
-		{ "i", "Neovide" },
 		{ "v", { "ClearVPN", "NordVPN" } },
-		{ "w", M.launchNeovide },
+		{ "w", "Neovide" },
 		{
 			"x",
 			function()
-				local task = hs.task.new("/opt/homebrew/bin/neovide", nil, { "today.md" })
-				task:setWorkingDirectory "~/code/theutz/agenda"
+				local workingDir = os.getenv "HOME" .. "/code/theutz/agenda"
+				local cmd = { "start", "--", "/opt/homebrew/bin/nvim", workingDir .. "/today.md" }
+				local task = hs.task.new("/opt/homebrew/bin/wezterm", nil, cmd)
+				task:setWorkingDirectory(workingDir)
 				task:start()
 			end,
 		},
@@ -149,30 +150,6 @@ function M.launchTimematorOverview()
 			app:selectMenuItem(menuItem) -- show the overview window
 		end
 	end, 0.2)
-end
-
-function M.launchNeovide()
-	local appName = "Neovide"
-	local app = hs.application.find(appName, true)
-	local appWasClosed = app == nil
-
-	if appWasClosed then hs.application.launchOrFocus(appName) end
-	hs.timer.waitUntil(function()
-		app = hs.application.find(appName, true)
-		return app
-	end, function()
-		local win
-		if app:setFrontmost(true) and appWasClosed then
-			hs.timer.waitUntil(function()
-				win = app:mainWindow()
-				return win
-			end, function()
-				assert(win, appName .. ": window could not be found")
-				local grid = hs.geometry:new "1,1 10x10"
-				hs.grid.set(win, grid)
-			end, 0.1)
-		end
-	end, 0.1)
 end
 
 return M
