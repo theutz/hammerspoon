@@ -14,5 +14,6 @@ hs.notify
 	.new({
 		title = "Hammerspoon",
 		informativeText = "Config reloaded!",
+		autoWithdraw = true,
 	})
 	:send() ---@diagnostic disable-line undefined-field
