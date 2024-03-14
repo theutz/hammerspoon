@@ -4,6 +4,8 @@ return function()
 	local name = "Hammerspoon"
 	if app and app:name() == name then
 		app:hide()
+		hs.notify.withdrawAll()
+		hs.console.clearConsole()
 	else
 		hs.openConsole(true)
 		app = hs.application.get(name)
