@@ -3,6 +3,7 @@ return {
 	["Google Chrome"] = {
 		"bugherd.com",
 		"google.com",
+		"hubspot.com",
 	},
 	["Firefox"] = {
 		"reddit.com",
