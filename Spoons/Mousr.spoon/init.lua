@@ -1,5 +1,11 @@
 local obj = {}
 
+obj.name = "Mousr"
+obj.version = "0.0.0"
+obj.author = "Michael Utz <michael@theutz.com>"
+obj.license = "MIT"
+obj.homepage = "https://theutz.com"
+
 ---@type hs.hotkey.modal
 local modal
 
@@ -18,7 +24,7 @@ local directions = {
 ---@type hs.canvas[]
 local alerts = {}
 
-local function show_alerts()
+local function showAlerts()
 	---@param frame hs.geometry
 	local function makeElements(frame)
 		local margin = 16
@@ -55,15 +61,12 @@ local function show_alerts()
 		alerts[i]:behavior { "canJoinAllSpaces", "stationary" }
 	end
 
-	-- alerts[1] = hs.canvas.new { x = 0, y = 24, h = frame.h, w = frame.w }
-	-- alerts[1]:appendElements(elements)
-
 	for _, alert in ipairs(alerts) do
 		alert:show()
 	end
 end
 
-local function hide_alerts()
+local function hideAlerts()
 	for _, alert in ipairs(alerts) do
 		alert:hide()
 	end
@@ -71,14 +74,14 @@ end
 
 ---@param self hs.hotkey.modal
 ---@return nil
-local function on_modal_enter(self) ---@diagnostic disable-line unused-local
-	show_alerts()
+local function onModalEnter(self) ---@diagnostic disable-line unused-local
+	showAlerts()
 end
 
 ---@param self hs.hotkey.modal
 ---@return nil
-local function on_modal_exit(self) ---@diagnostic disable-line unused-local
-	hide_alerts()
+local function onModalExit(self) ---@diagnostic disable-line unused-local
+	hideAlerts()
 end
 
 ---@return nil
@@ -86,8 +89,8 @@ local function createModal()
 	local activation_key = "f20"
 	modal = hs.hotkey.modal.new("", activation_key)
 
-	modal.exited = on_modal_exit
-	modal.entered = on_modal_enter
+	modal.exited = onModalExit
+	modal.entered = onModalEnter
 
 	for _, key in ipairs { "escape", activation_key } do
 		modal:bind("", key, function() modal:exit() end)
@@ -112,19 +115,19 @@ local step_mods = {
 }
 
 ---@return nil
-local function increase_step()
+local function increaseStep()
 	if step_size == #step_sizes then return end
 	step_size = step_size + 1
 end
 
 ---@return nil
-local function decrease_step_size()
+local function decreaseStepSize()
 	if step_size == 1 then return end
 	step_size = step_size - 1
 end
 
 ---@return integer
-local function get_step()
+local function getStep()
 	local mods = hs.eventtap.checkKeyboardModifiers() ---@cast mods { ["shift"|"ctrl"|"alt"]: boolean }
 
 	if mods[step_mods.dec] and step_size > 1 then return step_sizes[step_size - 1] end
@@ -134,12 +137,12 @@ local function get_step()
 end
 
 ---@return nil
-local function bind_stepper()
-	modal:bind("", "q", increase_step, nil, increase_step)
-	modal:bind("", "u", increase_step, nil, increase_step)
+local function bindStepper()
+	modal:bind("", "q", increaseStep, nil, increaseStep)
+	modal:bind("", "u", increaseStep, nil, increaseStep)
 
-	modal:bind(step_mods.dec, "q", decrease_step_size, nil, decrease_step_size)
-	modal:bind(step_mods.dec, "u", decrease_step_size, nil, decrease_step_size)
+	modal:bind(step_mods.dec, "q", decreaseStepSize, nil, decreaseStepSize)
+	modal:bind(step_mods.dec, "u", decreaseStepSize, nil, decreaseStepSize)
 
 	for i = 1, #step_sizes do
 		modal:bind("", i .. "", function()
@@ -154,25 +157,25 @@ local mouse = {}
 
 function mouse.up()
 	local pos = hs.mouse.absolutePosition()
-	pos.y = pos.y - get_step()
+	pos.y = pos.y - getStep()
 	hs.mouse.absolutePosition(pos)
 end
 
 function mouse.down()
 	local pos = hs.mouse.absolutePosition()
-	pos.y = pos.y + get_step()
+	pos.y = pos.y + getStep()
 	hs.mouse.absolutePosition(pos)
 end
 
 function mouse.left()
 	local pos = hs.mouse.absolutePosition()
-	pos.x = pos.x - get_step()
+	pos.x = pos.x - getStep()
 	hs.mouse.absolutePosition(pos)
 end
 
 function mouse.right()
 	local pos = hs.mouse.absolutePosition()
-	pos.x = pos.x + get_step()
+	pos.x = pos.x + getStep()
 	hs.mouse.absolutePosition(pos)
 end
 
@@ -186,7 +189,7 @@ function mouse.click() hs.eventtap.leftClick(hs.mouse.absolutePosition()) end
 function mouse.rightClick() hs.eventtap.rightClick(hs.mouse.absolutePosition()) end
 
 ---@return nil
-local function bind_movements()
+local function bindMovements()
 	local mods = { "" }
 	for _, v in pairs(step_mods) do
 		table.insert(mods, v)
@@ -204,14 +207,17 @@ local function bind_movements()
 end
 
 ---@return nil
-function obj.init()
+function obj:init()
 	createModal()
-	return obj
+	return self
 end
 
-function obj.start()
-	bind_movements()
-	bind_stepper()
+function obj:bindHotKeys(mapping) return self end
+
+function obj:start()
+	bindMovements()
+	bindStepper()
+	return self
 end
 
 return obj

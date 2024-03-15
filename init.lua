@@ -9,6 +9,7 @@ hs.loadSpoon "SpoonInstall"
 
 --- Initialize my custom spoons
 hs.loadSpoon "Mousr"
+spoon.Mousr:bindHotKeys {}
 spoon.Mousr:start()
 
 require("urlr").setup()
