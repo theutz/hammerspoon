@@ -1,5 +1,4 @@
----@module "mouse_keys"
-local M = {}
+local obj = {}
 
 ---@type hs.hotkey.modal
 local modal
@@ -205,10 +204,14 @@ local function bind_movements()
 end
 
 ---@return nil
-function M.setup()
+function obj.init()
 	createModal()
+	return obj
+end
+
+function obj.start()
 	bind_movements()
 	bind_stepper()
 end
 
-return M
+return obj

@@ -1,13 +1,20 @@
+--- Settings
+hs.application.enableSpotlightForNameSearches(true)
+
+--- Load spoons
 hs.loadSpoon "SpoonInstall"
 
+--- Install third-party spoons
 -- spoon.SpoonInstall:andUse "EmmyLua"
-hs.application.enableSpotlightForNameSearches(true)
+
+--- Initialize my custom spoons
+hs.loadSpoon "Mousr"
+spoon.Mousr:start()
 
 require("urlr").setup()
 require("reloadr").setup():start()
 require("windowr").setup()
 require("hyperr").setup()
-require("mouser").setup()
 require("appr").setup():start()
 
 hs.notify
