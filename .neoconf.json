@@ -1,19 +1,18 @@
 {
   "neoconf": {
     "plugins": {
-      "sumneko_lua": {
+      "lua_ls": {
         "enabled": true
       }
     }
   },
   "lspconfig": {
-    "sumneko_lua": {
+    "lua_ls": {
       "Lua": {
         "workspace": {
           "library": [
-            "/Users/michaelutz/.hammerspoon/Spoons/EmmyLua.spoon/annotations/"
+            "~/.hammerspoon/Spoons/EmmyLua.spoon/annotations/"
           ],
-          "ignoreDir": ["Spoons/"]
         }
       }
     }
