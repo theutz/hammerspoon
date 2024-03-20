@@ -1,19 +1,24 @@
 --- Settings
 hs.application.enableSpotlightForNameSearches(true)
 
+require("reloadr").setup():start()
+
 --- Load spoons
 hs.loadSpoon "SpoonInstall"
 
 --- Install third-party spoons
--- spoon.SpoonInstall:andUse "EmmyLua"
+spoon.SpoonInstall:andUse "EmmyLua"
 
 --- Initialize my custom spoons
-hs.loadSpoon "Mousr"
-spoon.Mousr:bindHotKeys {}
-spoon.Mousr:start()
+hs.spoons.use("Mousr", { start = true })
+hs.spoons.use("Urlr", {
+	config = {
+		default_browser = "Firefox",
+		routes = require "routes",
+	},
+	start = true,
+})
 
-require("urlr").setup()
-require("reloadr").setup():start()
 require("windowr").setup()
 require("hyperr").setup()
 require("appr").setup():start()

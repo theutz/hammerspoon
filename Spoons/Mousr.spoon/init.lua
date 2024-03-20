@@ -1,9 +1,24 @@
+---@class (exact) Mousr
+---@field name string
+---@field version string
+---@field author string
+---@field license string
+---@field homepage string
 local obj = {}
 
+---@public
 obj.name = "Mousr"
+
+---@public
 obj.version = "0.0.0"
+
+---@public
 obj.author = "Michael Utz <michael@theutz.com>"
+
+---@public
 obj.license = "MIT"
+
+---@public
 obj.homepage = "https://theutz.com"
 
 ---@type hs.hotkey.modal
@@ -206,14 +221,19 @@ local function bindMovements()
 	end
 end
 
----@return nil
+---@public
+---@nodiscard
 function obj:init()
 	createModal()
 	return self
 end
 
+---@public
+---@nodiscard
 function obj:bindHotKeys(mapping) return self end
 
+---@public
+---@nodiscard
 function obj:start()
 	bindMovements()
 	bindStepper()
