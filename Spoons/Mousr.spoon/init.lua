@@ -5,6 +5,7 @@
 ---@field license string
 ---@field homepage string
 ---@field indicator Indicator
+---@field mouse Mouse
 local obj = {}
 
 ---@public
@@ -59,8 +60,6 @@ local step_sizes = {
 
 ---@type hs.hotkey.modal
 local modal
-
-local indicator
 
 ---@return nil
 local function createModal()
@@ -118,37 +117,6 @@ local function bindStepper()
 	end
 end
 
----@type { [string]: fun(): nil }
-local mouse = {}
-
-function mouse.up()
-	local pos = hs.mouse.absolutePosition()
-	pos.y = pos.y - getStep()
-	hs.mouse.absolutePosition(pos)
-end
-
-function mouse.down()
-	local pos = hs.mouse.absolutePosition()
-	pos.y = pos.y + getStep()
-	hs.mouse.absolutePosition(pos)
-end
-
-function mouse.left()
-	local pos = hs.mouse.absolutePosition()
-	pos.x = pos.x - getStep()
-	hs.mouse.absolutePosition(pos)
-end
-
-function mouse.right()
-	local pos = hs.mouse.absolutePosition()
-	pos.x = pos.x + getStep()
-	hs.mouse.absolutePosition(pos)
-end
-
-function mouse.click() hs.eventtap.leftClick(hs.mouse.absolutePosition()) end
-
-function mouse.rightClick() hs.eventtap.rightClick(hs.mouse.absolutePosition()) end
-
 ---@return nil
 local function bindMovements()
 	local mods = { "" }
@@ -158,12 +126,13 @@ local function bindMovements()
 
 	for key, direction in pairs(directions) do
 		for _, mod in ipairs(mods) do
-			modal:bind(mod, key, mouse[direction], nil, mouse[direction])
+			local fn = function() obj.mouse[direction](getStep()) end
+			modal:bind(mod, key, fn, nil, fn)
 		end
 	end
 
 	for action, spec in pairs(actions) do
-		modal:bind(spec[1], spec[2], mouse[action], nil, mouse[action])
+		modal:bind(spec[1], spec[2], obj.mouse[action], nil, obj.mouse[action])
 	end
 end
 
@@ -171,6 +140,7 @@ end
 ---@nodiscard
 function obj:init()
 	self.indicator = dofile(hs.spoons.resourcePath "indicator.lua")
+	self.mouse = dofile(hs.spoons.resourcePath "mouse.lua")
 	createModal()
 	return self
 end
