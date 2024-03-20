@@ -24,7 +24,13 @@ obj.homepage = "https://theutz.com"
 ---@type hs.hotkey.modal
 local modal
 
----@type { [string]: string }
+---@enum step_mods
+local step_mods = {
+	INC = "ctrl",
+	DEC = "shift",
+}
+
+---@enum directions
 local directions = {
 	h = "left",
 	j = "down",
@@ -34,6 +40,12 @@ local directions = {
 	s = "down",
 	w = "up",
 	d = "right",
+}
+
+---@enum actions
+local actions = {
+	click = { "", "space" },
+	rightClick = { "shift", "space" },
 }
 
 ---@type hs.canvas[]
@@ -69,6 +81,7 @@ local function showAlerts()
 	end
 
 	local screens = hs.screen.allScreens() ---@cast screens hs.screen[]
+
 	for i, screen in ipairs(screens) do
 		local frame = screen:frame()
 		alerts[i] = hs.canvas.new(screen:fullFrame())
@@ -123,12 +136,6 @@ local step_sizes = {
 	90,
 }
 
----@type { [string]: string }
-local step_mods = {
-	inc = "ctrl",
-	dec = "shift",
-}
-
 ---@return nil
 local function increaseStep()
 	if step_size == #step_sizes then return end
@@ -145,8 +152,8 @@ end
 local function getStep()
 	local mods = hs.eventtap.checkKeyboardModifiers() ---@cast mods { ["shift"|"ctrl"|"alt"]: boolean }
 
-	if mods[step_mods.dec] and step_size > 1 then return step_sizes[step_size - 1] end
-	if mods[step_mods.inc] and step_size < #step_sizes then return step_sizes[step_size + 1] end
+	if mods[step_mods.DEC] and step_size > 1 then return step_sizes[step_size - 1] end
+	if mods[step_mods.INC] and step_size < #step_sizes then return step_sizes[step_size + 1] end
 
 	return step_sizes[step_size]
 end
@@ -156,8 +163,8 @@ local function bindStepper()
 	modal:bind("", "q", increaseStep, nil, increaseStep)
 	modal:bind("", "u", increaseStep, nil, increaseStep)
 
-	modal:bind(step_mods.dec, "q", decreaseStepSize, nil, decreaseStepSize)
-	modal:bind(step_mods.dec, "u", decreaseStepSize, nil, decreaseStepSize)
+	modal:bind(step_mods.DEC, "q", decreaseStepSize, nil, decreaseStepSize)
+	modal:bind(step_mods.DEC, "u", decreaseStepSize, nil, decreaseStepSize)
 
 	for i = 1, #step_sizes do
 		modal:bind("", i .. "", function()
@@ -193,11 +200,6 @@ function mouse.right()
 	pos.x = pos.x + getStep()
 	hs.mouse.absolutePosition(pos)
 end
-
-local actions = {
-	["click"] = { "", "space" },
-	["rightClick"] = { "shift", "space" },
-}
 
 function mouse.click() hs.eventtap.leftClick(hs.mouse.absolutePosition()) end
 
