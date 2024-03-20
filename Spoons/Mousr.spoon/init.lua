@@ -1,4 +1,5 @@
 ---@class (exact) Mousr
+---@field logger hs.logger
 ---@field name string
 ---@field version string
 ---@field author string
@@ -139,9 +140,17 @@ end
 ---@public
 ---@nodiscard
 function obj:init()
-	self.indicator = dofile(hs.spoons.resourcePath "indicator.lua")
+	self.logger = hs.logger.new "mousr"
+
+	self.indicator = dofile(hs.spoons.resourcePath "indicator.lua"):new {
+		logger = self.logger,
+		margin = 16,
+	}
+
 	self.mouse = dofile(hs.spoons.resourcePath "mouse.lua")
+
 	createModal()
+
 	return self
 end
 

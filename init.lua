@@ -1,5 +1,6 @@
 --- Settings
 hs.application.enableSpotlightForNameSearches(true)
+hs.logger.defaultLogLevel = "info"
 
 require("reloadr").setup():start()
 

@@ -1,26 +1,67 @@
 ---@class (exact) Indicator
----@field private canvases hs.canvas[]
----@field private makeElements fun(frame: hs.geometry): hs.canvas[]
----@field private margin integer
----@field public show fun(self: self): nil
----@field public hide fun(self: self): nil
----@field new fun(margin?: integer): self
+---@field logger hs.logger
+---@field canvases hs.canvas[]
+---@field makeElements fun(self: self, frame: hs.geometry): hs.canvas[]
+---@field margin integer
+---@field show fun(self: self): nil
+---@field hide fun(self: self): nil
+---@field new fun(self: self, o: table?): self
+---@field __index self
 local M = {}
 
+---@private
 M.canvases = {}
 
+---@private
 M.margin = 16
 
+---@public
 ---@nodiscard
-function M.makeElements(frame)
-	local margin = 16
+function M:new(o)
+	o = o or {}
+	setmetatable(o, self)
+	self.__index = self
+	o.logger.i "indicator loaded"
+	return o
+end
+
+---@public
+function M:show()
+	---@diagnostic disable-next-line param-type-mismatch
+	self.logger.df("margin: %d", self.margin)
+
+	local screens = hs.screen.allScreens() --[=[@as hs.screen[]]=]
+
+	for i, screen in ipairs(screens) do
+		self.canvases[i] = hs
+			.canvas
+			.new(screen:fullFrame()) --[[@as hs.canvas]]
+			:appendElements(self:makeElements(screen:frame())) --[[@as hs.canvas]]
+			:behavior { "canJoinAllSpaces", "stationary" }
+	end
+
+	for _, canvas in ipairs(self.canvases) do
+		canvas:show()
+	end
+end
+
+---@public
+function M:hide()
+	for _, canvas in ipairs(self.canvases) do
+		canvas:hide()
+	end
+end
+
+---@private
+---@nodiscard
+function M:makeElements(frame)
 	return {
 		{ type = "rectangle", action = "build" },
 		{
 			type = "rectangle",
 			action = "clip",
 			reversePath = true,
-			frame = { x = 8, y = (margin / 2) + 22, h = frame.h, w = frame.w - margin },
+			frame = { x = 8, y = (self.margin / 2) + 22, h = frame.h, w = frame.w - self.margin },
 			roundedRectRadii = { xRadius = 8, yRadius = 8 },
 		},
 		{
@@ -37,34 +78,6 @@ function M.makeElements(frame)
 			padding = 6,
 		},
 	}
-end
-
----@nodiscard
-function M.new(margin)
-	local metatable = {}
-	local instance = setmetatable(metatable, M)
-	return instance
-end
-
-function M:show()
-	local screens = hs.screen.allScreens() ---@cast screens hs.screen[]
-
-	for i, screen in ipairs(screens) do
-		local frame = screen:frame()
-		M.canvases[i] = hs.canvas.new(screen:fullFrame())
-		M.canvases[i]:appendElements(M.makeElements(frame))
-		M.canvases[i]:behavior { "canJoinAllSpaces", "stationary" }
-	end
-
-	for _, alert in ipairs(M.canvases) do
-		alert:show()
-	end
-end
-
-function M:hide()
-	for _, alert in ipairs(M.canvases) do
-		alert:hide()
-	end
 end
 
 return M
