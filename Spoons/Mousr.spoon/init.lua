@@ -127,8 +127,8 @@ local function bindMovements()
 
 	for key, direction in pairs(directions) do
 		for _, mod in ipairs(mods) do
-			local fn = function() obj.mouse[direction](getStep()) end
-			modal:bind(mod, key, fn, nil, fn)
+			local cb = function() obj.mouse[direction](obj.mouse, getStep()) end
+			modal:bind(mod, key, cb, nil, cb)
 		end
 	end
 
@@ -147,8 +147,11 @@ function obj:init()
 		margin = 16,
 	}
 
-	self.mouse = dofile(hs.spoons.resourcePath "mouse.lua")
+	self.mouse = dofile(hs.spoons.resourcePath "mouse.lua"):new {
+		logger = self.logger,
+	}
 
+	-- TODO: move this out to another module
 	createModal()
 
 	return self
