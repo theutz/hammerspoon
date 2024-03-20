@@ -15,7 +15,7 @@ return {
 	{ "s", { "Slack" } },
 	{ "t", { "WezTerm", "iTerm 2", "Kitty" } },
 	{ "u", "Due" },
-	{ "v", { "ClearVPN", "NordVPN" } },
+	{ "v", { "ClearVPN", "NordVPN", "Surfshark" } },
 	{ "w", "Neovide" },
 	{ "x", require "hyperr.agenda" },
 	{ "z", "zoom.us" },
