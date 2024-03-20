@@ -4,6 +4,7 @@
 ---@field author string
 ---@field license string
 ---@field homepage string
+---@field indicator Indicator
 local obj = {}
 
 ---@public
@@ -20,9 +21,6 @@ obj.license = "MIT"
 
 ---@public
 obj.homepage = "https://theutz.com"
-
----@type hs.hotkey.modal
-local modal
 
 ---@enum step_mods
 local step_mods = {
@@ -48,83 +46,6 @@ local actions = {
 	rightClick = { "shift", "space" },
 }
 
----@type hs.canvas[]
-local alerts = {}
-
-local function showAlerts()
-	---@param frame hs.geometry
-	local function makeElements(frame)
-		local margin = 16
-		return {
-			{ type = "rectangle", action = "build" },
-			{
-				type = "rectangle",
-				action = "clip",
-				reversePath = true,
-				frame = { x = 8, y = (margin / 2) + 22, h = frame.h, w = frame.w - margin },
-				roundedRectRadii = { xRadius = 8, yRadius = 8 },
-			},
-			{
-				type = "rectangle",
-				fillColor = { hex = "#f00", alpha = 0.5 },
-				roundedRectRadii = { xRadius = 6, yRadius = 6 },
-			},
-			{
-				type = "text",
-				text = "Mouse Keys Active",
-				textColor = { hex = "#fff", alpha = 1.0 },
-				textAlignment = "center",
-				textSize = 12,
-				padding = 6,
-			},
-		}
-	end
-
-	local screens = hs.screen.allScreens() ---@cast screens hs.screen[]
-
-	for i, screen in ipairs(screens) do
-		local frame = screen:frame()
-		alerts[i] = hs.canvas.new(screen:fullFrame())
-		alerts[i]:appendElements(makeElements(frame))
-		alerts[i]:behavior { "canJoinAllSpaces", "stationary" }
-	end
-
-	for _, alert in ipairs(alerts) do
-		alert:show()
-	end
-end
-
-local function hideAlerts()
-	for _, alert in ipairs(alerts) do
-		alert:hide()
-	end
-end
-
----@param self hs.hotkey.modal
----@return nil
-local function onModalEnter(self) ---@diagnostic disable-line unused-local
-	showAlerts()
-end
-
----@param self hs.hotkey.modal
----@return nil
-local function onModalExit(self) ---@diagnostic disable-line unused-local
-	hideAlerts()
-end
-
----@return nil
-local function createModal()
-	local activation_key = "f20"
-	modal = hs.hotkey.modal.new("", activation_key)
-
-	modal.exited = onModalExit
-	modal.entered = onModalEnter
-
-	for _, key in ipairs { "escape", activation_key } do
-		modal:bind("", key, function() modal:exit() end)
-	end
-end
-
 ---@type integer
 local step_size = 2
 
@@ -135,6 +56,29 @@ local step_sizes = {
 	60,
 	90,
 }
+
+---@type hs.hotkey.modal
+local modal
+
+local indicator
+
+---@return nil
+local function createModal()
+	local activation_key = "f20"
+	modal = hs.hotkey.modal.new("", activation_key)
+
+	function modal:entered() ---@diagnostic disable-line duplicate-set-field
+		obj.indicator:show()
+	end
+
+	function modal:exited() ---@diagnostic disable-line duplicate-set-field
+		obj.indicator:hide()
+	end
+
+	for _, key in ipairs { "escape", activation_key } do
+		modal:bind("", key, function() modal:exit() end)
+	end
+end
 
 ---@return nil
 local function increaseStep()
@@ -226,6 +170,7 @@ end
 ---@public
 ---@nodiscard
 function obj:init()
+	self.indicator = dofile(hs.spoons.resourcePath "indicator.lua")
 	createModal()
 	return self
 end
