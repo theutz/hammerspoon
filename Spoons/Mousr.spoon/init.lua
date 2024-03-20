@@ -1,27 +1,28 @@
+---@alias keyspec { [1]: string, [2]: string }
+---@alias mapping { activate: keyspec, deactivate: keyspec }
+
 ---@class (exact) Mousr
----@field logger hs.logger
----@field name string
----@field version string
----@field author string
----@field license string
----@field homepage string
----@field indicator Indicator
----@field mouse Mouse
+---@field private logger hs.logger
+---@field public name string
+---@field public version string
+---@field public author string
+---@field public license string
+---@field public homepage string
+---@field public bindHotkeys fun(s: self, m: mapping): self
+---@field public init function
+---@field public start function
+---@field private indicator Indicator
+---@field private mouse Mouse
+---@field private modal hs.hotkey.modal
+---@field private onModalEntered fun(s: self): nil
+---@field private onModalExited fun(s: self): nil
+---@field private mapping mapping
 local obj = {}
 
----@public
 obj.name = "Mousr"
-
----@public
 obj.version = "0.0.0"
-
----@public
 obj.author = "Michael Utz <michael@theutz.com>"
-
----@public
 obj.license = "MIT"
-
----@public
 obj.homepage = "https://theutz.com"
 
 ---@enum step_mods
@@ -59,26 +60,10 @@ local step_sizes = {
 	90,
 }
 
----@type hs.hotkey.modal
-local modal
-
----@return nil
-local function createModal()
-	local activation_key = "f20"
-	modal = hs.hotkey.modal.new("", activation_key)
-
-	function modal:entered() ---@diagnostic disable-line duplicate-set-field
-		obj.indicator:show()
-	end
-
-	function modal:exited() ---@diagnostic disable-line duplicate-set-field
-		obj.indicator:hide()
-	end
-
-	for _, key in ipairs { "escape", activation_key } do
-		modal:bind("", key, function() modal:exit() end)
-	end
-end
+obj.mapping = {
+	activate = { "", "f20" },
+	deactivate = { "", "escape" },
+}
 
 ---@return nil
 local function increaseStep()
@@ -103,15 +88,15 @@ local function getStep()
 end
 
 ---@return nil
-local function bindStepper()
-	modal:bind("", "q", increaseStep, nil, increaseStep)
-	modal:bind("", "u", increaseStep, nil, increaseStep)
+function obj:bindStepper()
+	self.modal:bind("", "q", increaseStep, nil, increaseStep)
+	self.modal:bind("", "u", increaseStep, nil, increaseStep)
 
-	modal:bind(step_mods.DEC, "q", decreaseStepSize, nil, decreaseStepSize)
-	modal:bind(step_mods.DEC, "u", decreaseStepSize, nil, decreaseStepSize)
+	self.modal:bind(step_mods.DEC, "q", decreaseStepSize, nil, decreaseStepSize)
+	self.modal:bind(step_mods.DEC, "u", decreaseStepSize, nil, decreaseStepSize)
 
 	for i = 1, #step_sizes do
-		modal:bind("", i .. "", function()
+		self.modal:bind("", i .. "", function()
 			step_size = i
 			print(step_size, step_sizes[step_size])
 		end)
@@ -119,7 +104,7 @@ local function bindStepper()
 end
 
 ---@return nil
-local function bindMovements()
+function obj:bindMovements()
 	local mods = { "" }
 	for _, v in pairs(step_mods) do
 		table.insert(mods, v)
@@ -128,16 +113,15 @@ local function bindMovements()
 	for key, direction in pairs(directions) do
 		for _, mod in ipairs(mods) do
 			local cb = function() obj.mouse[direction](obj.mouse, getStep()) end
-			modal:bind(mod, key, cb, nil, cb)
+			self.modal:bind(mod, key, cb, nil, cb)
 		end
 	end
 
 	for action, spec in pairs(actions) do
-		modal:bind(spec[1], spec[2], obj.mouse[action], nil, obj.mouse[action])
+		self.modal:bind(spec[1], spec[2], obj.mouse[action], nil, obj.mouse[action])
 	end
 end
 
----@public
 ---@nodiscard
 function obj:init()
 	self.logger = hs.logger.new "mousr"
@@ -151,21 +135,34 @@ function obj:init()
 		logger = self.logger,
 	}
 
-	-- TODO: move this out to another module
-	createModal()
+	self.modal = hs.hotkey.modal.new()
+	self.modal.entered = self.onModalEntered
+	self.modal.exited = self.onModalExited
 
 	return self
 end
 
----@public
 ---@nodiscard
-function obj:bindHotKeys(mapping) return self end
+function obj:bindHotkeys(mapping)
+	hs.hotkey.bind(mapping.activate[1], mapping.activate[2], self.enterModal)
+	self.modal:bind(mapping.deactivate[1], mapping.deactivate[2], self.exitModal)
+	self.modal:bind(mapping.activate[1], mapping.activate[2], self.exitModal)
+	return self
+end
 
----@public
+function obj:onModalEntered() obj.indicator:show() end
+
+function obj:onModalExited() obj.indicator:hide() end
+
+function obj:enterModal() obj.modal:enter() end
+
+function obj:exitModal() obj.modal:exit() end
+
 ---@nodiscard
 function obj:start()
-	bindMovements()
-	bindStepper()
+	self:bindMovements()
+	self:bindStepper()
+
 	return self
 end
 

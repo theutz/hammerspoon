@@ -11,7 +11,11 @@ hs.loadSpoon "SpoonInstall"
 spoon.SpoonInstall:andUse "EmmyLua"
 
 --- Initialize my custom spoons
-hs.spoons.use("Mousr", { start = true })
+hs.spoons.use("Mousr", {
+	start = true,
+	hotkeys = { activate = { "", "f20" }, deactivate = { "", "escape" } },
+})
+
 hs.spoons.use("Urlr", {
 	config = {
 		default_browser = "Firefox",
