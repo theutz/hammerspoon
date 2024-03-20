@@ -27,8 +27,8 @@ obj.homepage = "https://theutz.com"
 
 ---@enum step_mods
 local step_mods = {
-	INC = "ctrl",
-	DEC = "shift",
+	DEC = "ctrl",
+	INC = "shift",
 }
 
 ---@enum directions
