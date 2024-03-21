@@ -1,31 +1,27 @@
 ---@class (exact) Indicator
----@field logger hs.logger
----@field canvases hs.canvas[]
----@field makeElements fun(self: self, frame: hs.geometry): hs.canvas[]
----@field margin integer
----@field show fun(self: self): nil
----@field hide fun(self: self): nil
----@field new fun(self: self, o: table?): self
----@field __index self
+---@field private canvases hs.canvas[]
+---@field private logger hs.logger
+---@field private makeElements fun(s: self, frame: hs.geometry): hs.canvas[]
+---@field private margin integer
+---@field public __index self
+---@field public hide fun(s: self): nil
+---@field public new fun(s: self, o: table?): self
+---@field public show fun(s: self): nil
 local M = {}
 
----@private
 M.canvases = {}
 
----@private
 M.margin = 16
 
----@public
 ---@nodiscard
 function M:new(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
-	o.logger.i "indicator loaded"
+	o.logger.i("indicator loaded")
 	return o
 end
 
----@public
 function M:show()
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("margin: %d", self.margin)
@@ -37,7 +33,7 @@ function M:show()
 			.canvas
 			.new(screen:fullFrame()) --[[@as hs.canvas]]
 			:appendElements(self:makeElements(screen:frame())) --[[@as hs.canvas]]
-			:behavior { "canJoinAllSpaces", "stationary" }
+			:behavior({ "canJoinAllSpaces", "stationary" })
 	end
 
 	for _, canvas in ipairs(self.canvases) do
@@ -45,14 +41,12 @@ function M:show()
 	end
 end
 
----@public
 function M:hide()
 	for _, canvas in ipairs(self.canvases) do
 		canvas:hide()
 	end
 end
 
----@private
 ---@nodiscard
 function M:makeElements(frame)
 	return {

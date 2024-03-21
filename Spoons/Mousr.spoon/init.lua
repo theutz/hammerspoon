@@ -11,6 +11,7 @@
 ---@field public bindHotkeys fun(s: self, m: mapping): self
 ---@field public init function
 ---@field public start function
+---@field private initModal fun(s: self): hs.hotkey.modal
 ---@field private indicator Indicator
 ---@field private mouse Mouse
 ---@field private modal hs.hotkey.modal
@@ -67,13 +68,17 @@ obj.mapping = {
 
 ---@return nil
 local function increaseStep()
-	if step_size == #step_sizes then return end
+	if step_size == #step_sizes then
+		return
+	end
 	step_size = step_size + 1
 end
 
 ---@return nil
 local function decreaseStepSize()
-	if step_size == 1 then return end
+	if step_size == 1 then
+		return
+	end
 	step_size = step_size - 1
 end
 
@@ -117,7 +122,9 @@ function obj:bindMovements()
 
 	for key, direction in pairs(directions) do
 		for _, mod in ipairs(mods) do
-			local cb = function() obj.mouse[direction](obj.mouse, getStep()) end
+			local cb = function()
+				obj.mouse[direction](obj.mouse, getStep())
+			end
 			self.modal:bind(mod, key, cb, nil, cb)
 		end
 	end
@@ -135,22 +142,25 @@ end
 
 ---@nodiscard
 function obj:init()
-	self.logger = hs.logger.new "mousr"
-
-	self.indicator = dofile(hs.spoons.resourcePath "indicator.lua"):new {
+	self.logger = hs.logger.new("mousr")
+	self.indicator = dofile(hs.spoons.resourcePath("indicator.lua")):new({
 		logger = self.logger,
 		margin = 16,
-	}
-
-	self.mouse = dofile(hs.spoons.resourcePath "mouse.lua"):new {
+	})
+	self.mouse = dofile(hs.spoons.resourcePath("mouse.lua")):new({
 		logger = self.logger,
-	}
-
-	self.modal = hs.hotkey.modal.new()
-	self.modal.entered = self.onModalEntered
-	self.modal.exited = self.onModalExited
+	})
+	self.modal = self:initModal()
 
 	return self
+end
+
+---@nodiscard
+function obj:initModal()
+	local modal = hs.hotkey.modal.new()
+	modal.entered = self.onModalEntered
+	modal.exited = self.onModalExited
+	return modal
 end
 
 ---@nodiscard
@@ -165,13 +175,21 @@ function obj:bindHotkeys(mapping)
 	return self
 end
 
-function obj:onModalEntered() obj.indicator:show() end
+function obj:onModalEntered()
+	obj.indicator:show()
+end
 
-function obj:onModalExited() obj.indicator:hide() end
+function obj:onModalExited()
+	obj.indicator:hide()
+end
 
-function obj:enterModal() obj.modal:enter() end
+function obj:enterModal()
+	obj.modal:enter()
+end
 
-function obj:exitModal() obj.modal:exit() end
+function obj:exitModal()
+	obj.modal:exit()
+end
 
 ---@nodiscard
 function obj:start()

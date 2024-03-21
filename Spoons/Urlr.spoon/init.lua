@@ -27,7 +27,9 @@ obj.default_browser = "Firefox"
 obj.routes = {}
 
 ---@nodiscard
-function obj:init() return self end
+function obj:init()
+	return self
+end
 
 ---@nodiscard
 function obj:start()
@@ -57,10 +59,9 @@ function obj:http_callback()
 	return function(_, host, _, fullURL)
 		for browser, patterns in pairs(obj.routes) do
 			if
-				hs.fnutils.some(
-					patterns,
-					function(pattern) return string.match(host, pattern) end
-				)
+				hs.fnutils.some(patterns, function(pattern)
+					return string.match(host, pattern)
+				end)
 			then
 				self.open_url_in_browser(fullURL, browser)
 				return
