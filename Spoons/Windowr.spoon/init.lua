@@ -81,6 +81,9 @@ obj.watcher = nil
 ---@private
 obj.hidden_apps = {}
 
+---@private
+obj.tiling_is_on = false
+
 function obj:init()
 	hs.window.animationDuration = 0
 	hs.grid.setGrid(self.gridSize).setMargins(self.gridMargin)
@@ -95,6 +98,7 @@ function obj:bindHotkeys(map)
 	-- Create functions for the grid cyclers
 	for name, _ in pairs(self.sizes) do
 		self[name] = function()
+			self.tiling_is_on = false
 			self:cycleThroughGrids(self.sizes[name])
 		end
 	end
@@ -125,10 +129,19 @@ function obj:onAppChange(name, eventType, app)
 	local w = hs.application.watcher
 	local shouldSnapshot = { w.launched, w.terminated, w.hidden, w.unhidden }
 
-	if hs.fnutils.contains(shouldSnapshot, eventType) then
-		---@diagnostic disable-next-line: param-type-mismatch
-		self.logger.df("app should snapshot: %s, %d", name, eventType)
-		self:saveWindowOrder()
+	if self.tiling_is_on then
+		if hs.fnutils.contains(shouldSnapshot, eventType) then
+			---@diagnostic disable-next-line: param-type-mismatch
+			self.logger.df("app should snapshot: %s, %d", name, eventType)
+			self:saveWindowOrder()
+		end
+
+		if eventType == w.activated then
+			---@diagnostic disable-next-line: param-type-mismatch
+			self.logger.df("app activated: %s", app)
+			self.current_tile =
+				hs.fnutils.indexOf(self.tiles, app:focusedWindow())
+		end
 	end
 
 	if eventType == w.hidden then
@@ -138,12 +151,6 @@ function obj:onAppChange(name, eventType, app)
 	if eventType == w.unhidden then
 		local index = hs.fnutils.indexOf(self.hidden_apps, app)
 		table.remove(self.hidden_apps, index)
-	end
-
-	if eventType == w.activated then
-		---@diagnostic disable-next-line: param-type-mismatch
-		self.logger.df("app activated: %s", app)
-		self.current_tile = hs.fnutils.indexOf(self.tiles, app:focusedWindow())
 	end
 end
 
@@ -172,6 +179,7 @@ function obj:cycleThroughGrids(sizes)
 end
 
 function obj:maxWidth()
+	self.tiling_is_on = false
 	self:withAxHotfix(function(win)
 		local winGrid = hs.grid.get(win)
 		assert(winGrid)
@@ -187,6 +195,7 @@ function obj:maxWidth()
 end
 
 function obj:maxHeight()
+	self.tiling_is_on = false
 	self:withAxHotfix(function(win)
 		local winGrid = hs.grid.get(win)
 		assert(winGrid)
@@ -265,6 +274,7 @@ function obj:prevWindow()
 end
 
 function obj:maximizeAllWindows()
+	self.tiling_is_on = false
 	for _, win in ipairs(hs.window.orderedWindows()) do
 		if win:screen() == hs.window.frontmostWindow():screen() then
 			self:withAxHotfix(function(w)
@@ -275,6 +285,7 @@ function obj:maximizeAllWindows()
 end
 
 function obj:tileAllWindows(skipReset)
+	self.tiling_is_on = true
 	if not skipReset then
 		self:saveWindowOrder()
 	end
