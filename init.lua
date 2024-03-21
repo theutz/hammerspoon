@@ -34,7 +34,10 @@ hs.spoons.use("Urlr", {
 	start = true,
 })
 
-require("windowr").setup()
+hs.spoons.use("Windowr", {
+	hotkeys = "default",
+})
+
 require("hyperr").setup()
 
 hs.spoons.use("Frontr", {
@@ -49,7 +52,6 @@ hs.spoons.use("Frontr", {
 		},
 		grid = "1,1 10x10",
 	},
-	loglevel = "warning",
 })
 
 spoon.Reloadr:notifyReloaded()
