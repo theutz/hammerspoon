@@ -1,19 +1,24 @@
----@alias mover fun(self: self, step:integer): nil
----@alias clicker fun(self: self): nil
+---@alias mover fun(self: Mouse, step:integer): nil
+---@alias clicker fun(self: Mouse): nil
 
----@class (exact) Mouse
----@field public new fun(self: self, o: self): self
----@field public up mover
----@field public down mover
----@field public left mover
----@field public right mover
----@field public click clicker
----@field public rightClick clicker
----@field public __index self
----@field private logger hs.logger
+---@class Mouse
 local M = {}
 
+---@enum
+M.direction = {
+	UP = "up",
+	DOWN = "down",
+	LEFT = "left",
+	RIGHT = "right",
+}
+
+M.action = {
+	LEFT_CLICK = "leftClick",
+	RIGHT_CLICK = "rightClick",
+}
+
 ---@nodiscard
+---@return self
 function M:new(o)
 	o = o or {}
 	setmetatable(o, M)
@@ -21,6 +26,7 @@ function M:new(o)
 	return o
 end
 
+---@type mover
 function M:up(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("up %d", step)
@@ -29,6 +35,7 @@ function M:up(step)
 	hs.mouse.absolutePosition(pos)
 end
 
+---@type mover
 function M:down(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("down %d", step)
@@ -37,6 +44,7 @@ function M:down(step)
 	hs.mouse.absolutePosition(pos)
 end
 
+---@type mover
 function M:left(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("left %d", step)
@@ -45,6 +53,7 @@ function M:left(step)
 	hs.mouse.absolutePosition(pos)
 end
 
+---@type mover
 function M:right(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("right %d", step)
@@ -53,12 +62,14 @@ function M:right(step)
 	hs.mouse.absolutePosition(pos)
 end
 
-function M:click()
+---@type clicker
+function M:leftClick()
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.d("do click")
 	hs.eventtap.leftClick(hs.mouse.absolutePosition())
 end
 
+---@type clicker
 function M:rightClick()
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.d("do right click")

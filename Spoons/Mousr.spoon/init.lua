@@ -1,23 +1,9 @@
+local partial = hs.fnutils.partial
+
 ---@alias keyspec { [1]: string, [2]: string }
 ---@alias mapping { activate: keyspec, deactivate: keyspec }
 
----@class (exact) Mousr
----@field private logger hs.logger
----@field public name string
----@field public version string
----@field public author string
----@field public license string
----@field public homepage string
----@field public bindHotkeys fun(s: self, m: mapping): self
----@field public init function
----@field public start function
----@field private initModal fun(s: self): hs.hotkey.modal
----@field private indicator Indicator
----@field private mouse Mouse
----@field private modal hs.hotkey.modal
----@field private onModalEntered fun(s: self): nil
----@field private onModalExited fun(s: self): nil
----@field private mapping mapping
+---@class Mousr
 local obj = {}
 
 obj.name = "Mousr"
@@ -26,119 +12,18 @@ obj.author = "Michael Utz <michael@theutz.com>"
 obj.license = "MIT"
 obj.homepage = "https://theutz.com"
 
----@enum step_mods
-local step_mods = {
-	DEC = "ctrl",
-	INC = "shift",
-}
-
----@enum directions
-local directions = {
-	h = "left",
-	j = "down",
-	k = "up",
-	l = "right",
-	a = "left",
-	s = "down",
-	w = "up",
-	d = "right",
-}
-
----@enum actions
-local actions = {
-	click = { "", "space" },
-	rightClick = { "shift", "space" },
-}
-
----@type integer
-local step_size = 2
-
----@type integer[]
-local step_sizes = {
-	5,
-	20,
-	60,
-	90,
-}
-
 obj.mapping = {
 	activate = { "", "f20" },
 	deactivate = { "", "escape" },
+	leftClick = { "", "space" },
+	rightClick = { "shift", "space" },
+	faster = { "shift" },
+	slower = { "ctrl" },
+	left = { "", "h" },
+	down = { "", "j" },
+	up = { "", "k" },
+	right = { "", "l" },
 }
-
----@return nil
-local function increaseStep()
-	if step_size == #step_sizes then
-		return
-	end
-	step_size = step_size + 1
-end
-
----@return nil
-local function decreaseStepSize()
-	if step_size == 1 then
-		return
-	end
-	step_size = step_size - 1
-end
-
----@return integer
-local function getStep()
-	local mods = hs.eventtap.checkKeyboardModifiers()
-	---@cast mods { ["shift"|"ctrl"|"alt"]: boolean }
-
-	if mods[step_mods.DEC] and step_size > 1 then
-		return step_sizes[step_size - 1]
-	end
-	if mods[step_mods.INC] and step_size < #step_sizes then
-		return step_sizes[step_size + 1]
-	end
-
-	return step_sizes[step_size]
-end
-
----@return nil
-function obj:bindStepper()
-	self.modal:bind("", "q", increaseStep, nil, increaseStep)
-	self.modal:bind("", "u", increaseStep, nil, increaseStep)
-
-	self.modal:bind(step_mods.DEC, "q", decreaseStepSize, nil, decreaseStepSize)
-	self.modal:bind(step_mods.DEC, "u", decreaseStepSize, nil, decreaseStepSize)
-
-	for i = 1, #step_sizes do
-		self.modal:bind("", i .. "", function()
-			step_size = i
-			print(step_size, step_sizes[step_size])
-		end)
-	end
-end
-
----@return nil
-function obj:bindMovements()
-	local mods = { "" }
-	for _, v in pairs(step_mods) do
-		table.insert(mods, v)
-	end
-
-	for key, direction in pairs(directions) do
-		for _, mod in ipairs(mods) do
-			local cb = function()
-				obj.mouse[direction](obj.mouse, getStep())
-			end
-			self.modal:bind(mod, key, cb, nil, cb)
-		end
-	end
-
-	for action, spec in pairs(actions) do
-		self.modal:bind(
-			spec[1],
-			spec[2],
-			obj.mouse[action],
-			nil,
-			obj.mouse[action]
-		)
-	end
-end
 
 ---@nodiscard
 function obj:init()
@@ -165,13 +50,46 @@ end
 
 ---@nodiscard
 function obj:bindHotkeys(mapping)
-	hs.hotkey.bind(mapping.activate[1], mapping.activate[2], self.enterModal)
-	self.modal:bind(
-		mapping.deactivate[1],
-		mapping.deactivate[2],
-		self.exitModal
-	)
-	self.modal:bind(mapping.activate[1], mapping.activate[2], self.exitModal)
+	local m = {}
+
+	-- set default values
+	for k, _ in pairs(self.mapping) do
+		m[k] = mapping[k] or self.mapping[k]
+	end
+
+	-- activate the modal
+	do
+		local mod, key = table.unpack(m.activate)
+		hs.hotkey.bind(mod, key, self.enterModal)
+		self.modal:bind(mod, key, self.exitModal)
+	end
+
+	-- deactivate the modal
+	do
+		local mod, key = table.unpack(m.deactivate)
+		self.modal:bind(mod, key, self.exitModal)
+	end
+
+	-- perform actions
+	for _, act in pairs(self.mouse.action) do
+		local mod, key = table.unpack(m[act])
+		local cb = partial(self.mouse[act], self.mouse)
+		self.modal:bind(mod, key, cb)
+	end
+
+	-- move the mouse
+	for mod, step in pairs({
+		[m.slower] = 10,
+		[""] = 20,
+		[m.faster] = 50,
+	}) do
+		for _, dir in pairs(self.mouse.direction) do
+			local _, key = table.unpack(m[dir])
+			local cb = partial(self.mouse[dir], self.mouse, step)
+			self.modal:bind(mod, key, cb, nil, cb)
+		end
+	end
+
 	return self
 end
 
@@ -189,14 +107,6 @@ end
 
 function obj:exitModal()
 	obj.modal:exit()
-end
-
----@nodiscard
-function obj:start()
-	self:bindMovements()
-	self:bindStepper()
-
-	return self
 end
 
 return obj
