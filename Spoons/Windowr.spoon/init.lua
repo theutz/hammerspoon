@@ -59,6 +59,7 @@ obj.defaultHotkeys = {
 	prevWindow = "9",
 	southeast = "m",
 	southwest = "n",
+	unhideAll = "a",
 }
 
 obj.sizes = {
@@ -282,6 +283,14 @@ function obj:prevScreen()
 		w:moveOneScreenWest(noResize, ensureInScreenBounds)
 		hs.grid.set(w, grid)
 	end)(win)
+end
+
+function obj:unhideAll()
+	for _, app in ipairs(hs.application.runningApplications()) do
+		if app:isHidden() then
+			app:unhide()
+		end
+	end
 end
 
 function obj.axHotfix(win)
