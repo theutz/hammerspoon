@@ -12,7 +12,14 @@ spoon.SpoonInstall:andUse("EmmyLua")
 
 --- Initialize my custom spoons
 hs.spoons.use("Mousr", {
-	hotkeys = {},
+	hotkeys = "default",
+	config = {
+		speeds = {
+			slow = 5,
+			normal = 20,
+			fast = 100,
+		},
+	},
 })
 
 hs.spoons.use("Urlr", {

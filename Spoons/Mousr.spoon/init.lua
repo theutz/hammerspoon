@@ -12,17 +12,23 @@ obj.author = "Michael Utz <michael@theutz.com>"
 obj.license = "MIT"
 obj.homepage = "https://theutz.com"
 
-obj.mapping = {
+obj.defaultHotkeys = {
 	activate = { "", "f20" },
 	deactivate = { "", "escape" },
 	leftClick = { "", "space" },
 	rightClick = { "shift", "space" },
-	faster = { "shift" },
-	slower = { "ctrl" },
+	fast_mod = { "shift" },
+	slow_mod = { "ctrl" },
 	left = { "", "h" },
 	down = { "", "j" },
 	up = { "", "k" },
 	right = { "", "l" },
+}
+
+obj.speeds = {
+	slow = 10,
+	normal = 20,
+	fast = 40,
 }
 
 ---@nodiscard
@@ -53,8 +59,8 @@ function obj:bindHotkeys(mapping)
 	local m = {}
 
 	-- set default values
-	for k, _ in pairs(self.mapping) do
-		m[k] = mapping[k] or self.mapping[k]
+	for k, _ in pairs(self.defaultHotkeys) do
+		m[k] = mapping[k] or self.defaultHotkeys[k]
 	end
 
 	-- activate the modal
@@ -71,21 +77,21 @@ function obj:bindHotkeys(mapping)
 	end
 
 	-- perform actions
-	for _, act in pairs(self.mouse.action) do
-		local mod, key = table.unpack(m[act])
-		local cb = partial(self.mouse[act], self.mouse)
+	for _, action in pairs(self.mouse.action) do
+		local mod, key = table.unpack(m[action])
+		local cb = partial(self.mouse[action], self.mouse)
 		self.modal:bind(mod, key, cb)
 	end
 
 	-- move the mouse
 	for mod, step in pairs({
-		[m.slower] = 10,
-		[""] = 20,
-		[m.faster] = 50,
+		[m.slow_mod] = obj.speeds.slow,
+		[""] = obj.speeds.normal,
+		[m.fast_mod] = obj.speeds.fast,
 	}) do
-		for _, dir in pairs(self.mouse.direction) do
-			local _, key = table.unpack(m[dir])
-			local cb = partial(self.mouse[dir], self.mouse, step)
+		for _, direction in pairs(self.mouse.direction) do
+			local _, key = table.unpack(m[direction])
+			local cb = partial(self.mouse[direction], self.mouse, step)
 			self.modal:bind(mod, key, cb, nil, cb)
 		end
 	end
