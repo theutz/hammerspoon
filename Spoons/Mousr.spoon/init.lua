@@ -15,14 +15,14 @@ obj.homepage = "https://theutz.com"
 obj.defaultHotkeys = {
 	activate = { "", "f20" },
 	deactivate = { "", "escape" },
-	leftClick = { "", "space" },
-	rightClick = { "shift", "space" },
 	fast_mod = { "shift" },
 	slow_mod = { "ctrl" },
-	left = { "", "h" },
-	down = { "", "j" },
-	up = { "", "k" },
-	right = { "", "l" },
+	move_left = { "", "h" },
+	move_down = { "", "j" },
+	move_up = { "", "k" },
+	move_right = { "", "l" },
+	left_click = { "", "space" },
+	right_click = { "shift", "space" },
 }
 
 obj.speeds = {
@@ -31,21 +31,26 @@ obj.speeds = {
 	fast = 40,
 }
 
+---@return Mousr
 ---@nodiscard
 function obj:init()
 	self.logger = hs.logger.new("mousr")
+
 	self.indicator = dofile(hs.spoons.resourcePath("indicator.lua")):new({
 		logger = self.logger,
 		margin = 16,
-	})
+	})--[[@as Indicator]]
+
 	self.mouse = dofile(hs.spoons.resourcePath("mouse.lua")):new({
 		logger = self.logger,
-	})
+	})--[[@as Mouse]]
+
 	self.modal = self:initModal()
 
 	return self
 end
 
+---@return hs.hotkey.modal
 ---@nodiscard
 function obj:initModal()
 	local modal = hs.hotkey.modal.new()

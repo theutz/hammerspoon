@@ -1,27 +1,30 @@
----@class (exact) Indicator
----@field private canvases hs.canvas[]
----@field private logger hs.logger
----@field private makeElements fun(s: self, frame: hs.geometry): hs.canvas[]
----@field private margin integer
----@field public __index self
----@field public hide fun(s: self): nil
----@field public new fun(s: self, o: table?): self
----@field public show fun(s: self): nil
+---@class Indicator
 local M = {}
 
-M.canvases = {}
+---@private
+M.canvases = {} --[=[ @as hs.canvas[] ]=]
 
+---@private
 M.margin = 16
 
+---@private
+M.logger = hs.logger.new("mousr")
+
+---@return self
 ---@nodiscard
 function M:new(o)
 	o = o or {}
 	setmetatable(o, self)
+
+	---@private
 	self.__index = self
+
 	o.logger.i("indicator loaded")
+
 	return o
 end
 
+---@return nil
 function M:show()
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("margin: %d", self.margin)
@@ -41,12 +44,16 @@ function M:show()
 	end
 end
 
+---@return nil
 function M:hide()
 	for _, canvas in ipairs(self.canvases) do
 		canvas:hide()
 	end
 end
 
+---@private
+---@param frame hs.geometry
+---@return hs.canvas[]
 ---@nodiscard
 function M:makeElements(frame)
 	return {

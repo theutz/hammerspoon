@@ -4,17 +4,18 @@
 ---@class Mouse
 local M = {}
 
----@enum
+---@enum direction
 M.direction = {
-	UP = "up",
-	DOWN = "down",
-	LEFT = "left",
-	RIGHT = "right",
+	UP = "move_up",
+	DOWN = "move_down",
+	LEFT = "move_left",
+	RIGHT = "move_right",
 }
 
+---@enum action
 M.action = {
-	LEFT_CLICK = "leftClick",
-	RIGHT_CLICK = "rightClick",
+	LEFT_CLICK = "left_click",
+	RIGHT_CLICK = "right_click",
 }
 
 ---@nodiscard
@@ -22,12 +23,15 @@ M.action = {
 function M:new(o)
 	o = o or {}
 	setmetatable(o, M)
+
+	---@private
 	self.__index = self
+
 	return o
 end
 
----@type mover
-function M:up(step)
+---@param step integer
+function M:move_up(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("up %d", step)
 	local pos = hs.mouse.absolutePosition()
@@ -35,8 +39,8 @@ function M:up(step)
 	hs.mouse.absolutePosition(pos)
 end
 
----@type mover
-function M:down(step)
+---@param step integer
+function M:move_down(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("down %d", step)
 	local pos = hs.mouse.absolutePosition()
@@ -44,8 +48,8 @@ function M:down(step)
 	hs.mouse.absolutePosition(pos)
 end
 
----@type mover
-function M:left(step)
+---@param step integer
+function M:move_left(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("left %d", step)
 	local pos = hs.mouse.absolutePosition()
@@ -53,8 +57,8 @@ function M:left(step)
 	hs.mouse.absolutePosition(pos)
 end
 
----@type mover
-function M:right(step)
+---@param step integer
+function M:move_right(step)
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.df("right %d", step)
 	local pos = hs.mouse.absolutePosition()
@@ -62,15 +66,13 @@ function M:right(step)
 	hs.mouse.absolutePosition(pos)
 end
 
----@type clicker
-function M:leftClick()
+function M:left_click()
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.d("do click")
 	hs.eventtap.leftClick(hs.mouse.absolutePosition())
 end
 
----@type clicker
-function M:rightClick()
+function M:right_click()
 	---@diagnostic disable-next-line param-type-mismatch
 	self.logger.d("do right click")
 	hs.eventtap.rightClick(hs.mouse.absolutePosition())
