@@ -1,6 +1,8 @@
 --- Settings
 hs.application.enableSpotlightForNameSearches(true)
-hs.logger.defaultLogLevel = "info" -- nothing, error, warning, info, debug, verbose
+
+-- nothing, error, warning, info, debug, verbose
+hs.logger.defaultLogLevel = "warning"
 
 hs.spoons.use("Reloadr", {
 	start = true,
@@ -10,7 +12,7 @@ hs.spoons.use("Reloadr", {
 hs.loadSpoon("SpoonInstall")
 
 --- Install third-party spoons
-spoon.SpoonInstall:andUse("EmmyLua")
+-- spoon.SpoonInstall:andUse("EmmyLua")
 
 --- Initialize my custom spoons
 hs.spoons.use("Mousr", {
@@ -34,6 +36,13 @@ hs.spoons.use("Urlr", {
 
 require("windowr").setup()
 require("hyperr").setup()
-require("appr").setup():start()
+
+hs.spoons.use("Frontr", {
+	start = true,
+	config = {
+		app_names = { "Neovide", "WezTerm", "wezterm-gui" },
+		grid = "1,1 10x10",
+	},
+})
 
 spoon.Reloadr:notifyReloaded()
