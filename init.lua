@@ -1,8 +1,10 @@
 --- Settings
 hs.application.enableSpotlightForNameSearches(true)
-hs.logger.defaultLogLevel = "info"
+hs.logger.defaultLogLevel = "info" -- nothing, error, warning, info, debug, verbose
 
-require("reloadr").setup():start()
+hs.spoons.use("Reloadr", {
+	start = true,
+})
 
 --- Load spoons
 hs.loadSpoon("SpoonInstall")
@@ -34,11 +36,4 @@ require("windowr").setup()
 require("hyperr").setup()
 require("appr").setup():start()
 
-hs
-	.notify
-	.new({
-		title = "Hammerspoon",
-		informativeText = "Config reloaded!",
-		autoWithdraw = true,
-	}) --[[@as hs.notify]]
-	:send()
+spoon.Reloadr:notifyReloaded()
