@@ -56,6 +56,7 @@ obj.defaultHotkeys = {
 	northwest = "u",
 	prevScreen = "[",
 	prevWindow = "9",
+	quit = "q",
 	southeast = "m",
 	southwest = "n",
 	tileAllWindows = "e",
@@ -238,7 +239,19 @@ function obj:hide()
 	if app ~= nil then
 		app:hide()
 	end
-	self:tileAllWindows(true)
+	hs.timer.doAfter(0.2, hs.fnutils.partial(self.tileAllWindows, self, true))
+end
+
+function obj:quit()
+	if #self.tiles > 0 then
+		table.remove(self.tiles, self.current_tile)
+		self.current_tile = self.current_tile + 1
+	end
+	local app = hs.window.frontmostWindow():application()
+	if app ~= nil then
+		app:kill()
+	end
+	hs.timer.doAfter(0.2, hs.fnutils.partial(self.tileAllWindows, self, true))
 end
 
 function obj:nextWindow()
