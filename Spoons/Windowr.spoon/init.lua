@@ -75,10 +75,18 @@ obj.sizes = {
 	southwest = { "0,6 6x6", "0,6 4x6", "0,6 2x6" },
 }
 
+---@private
+obj.watcher = nil
+
+---@private
+obj.hidden_apps = {}
+
 function obj:init()
 	hs.window.animationDuration = 0
 	hs.grid.setGrid(self.gridSize).setMargins(self.gridMargin)
 	hs.grid.ui.textSize = 20
+	obj.watcher =
+		hs.application.watcher.new(hs.fnutils.partial(self.onAppChange, self))
 end
 
 function obj:bindHotkeys(map)
@@ -97,6 +105,47 @@ function obj:bindHotkeys(map)
 	end
 
 	hs.spoons.bindHotkeysToSpec(def, map)
+end
+
+function obj:start()
+	self:saveWindowOrder()
+	self.watcher:start()
+end
+
+function obj:stop()
+	self.watcher:stop()
+end
+
+---@param name string
+---@param eventType any
+---@param app hs.application
+function obj:onAppChange(name, eventType, app)
+	---@diagnostic disable-next-line: param-type-mismatch
+	self.logger.vf("app event: %s, %d", name, eventType)
+
+	local w = hs.application.watcher
+	local shouldSnapshot = { w.launched, w.terminated, w.hidden, w.unhidden }
+
+	if hs.fnutils.contains(shouldSnapshot, eventType) then
+		---@diagnostic disable-next-line: param-type-mismatch
+		self.logger.df("app should snapshot: %s, %d", name, eventType)
+		self:saveWindowOrder()
+	end
+
+	if eventType == w.hidden then
+		table.insert(self.hidden_apps, app)
+	end
+
+	if eventType == w.unhidden then
+		local index = hs.fnutils.indexOf(self.hidden_apps, app)
+		table.remove(self.hidden_apps, index)
+	end
+
+	if eventType == w.activated then
+		---@diagnostic disable-next-line: param-type-mismatch
+		self.logger.df("app activated: %s", app)
+		self.current_tile = hs.fnutils.indexOf(self.tiles, app:focusedWindow())
+	end
 end
 
 ---@param sizes string[]
@@ -286,11 +335,10 @@ function obj:prevScreen()
 end
 
 function obj:unhideAll()
-	for _, app in ipairs(hs.application.runningApplications()) do
-		if app:isHidden() then
-			app:unhide()
-		end
+	for _, app in ipairs(self.hidden_apps) do
+		app:unhide()
 	end
+	hs.timer.doAfter(0.5, hs.fnutils.partial(self.autoTiler, self))
 end
 
 function obj.axHotfix(win)

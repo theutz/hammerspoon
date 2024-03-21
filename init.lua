@@ -12,7 +12,7 @@ hs.spoons.use("Reloadr", {
 hs.loadSpoon("SpoonInstall")
 
 --- Install third-party spoons
-spoon.SpoonInstall:andUse("EmmyLua")
+-- spoon.SpoonInstall:andUse("EmmyLua")
 
 --- Initialize my custom spoons
 hs.spoons.use("Mousr", {
@@ -36,6 +36,8 @@ hs.spoons.use("Urlr", {
 
 hs.spoons.use("Windowr", {
 	hotkeys = "default",
+	start = true,
+	loglevel = "warning",
 })
 
 require("hyperr").setup()
