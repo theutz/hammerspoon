@@ -58,23 +58,23 @@ end
 ---@param app hs.application
 function obj:handleApplicationEvent(name, eventType, app)
 	---@diagnostic disable-next-line: param-type-mismatch
-	obj.logger.df("handling application event: %s", name)
+	obj.logger.vf("handling application event: %s", name)
 
 	local is_watched = hs.fnutils.some(self.app_names, function(app_name)
 		return app_name == name
 	end)
 
 	---@diagnostic disable-next-line: param-type-mismatch
-	obj.logger.df("%s is watched? %s", name, is_watched)
-
-	if is_watched then
-		---@diagnostic disable-next-line: param-type-mismatch
-		self.logger.df("event from %s", name)
-	end
+	obj.logger.vf("%s is watched? %s", name, is_watched)
 
 	local is_launched = eventType == hs.application.watcher.launched
 
 	if is_watched and is_launched then
+		if is_watched then
+			---@diagnostic disable-next-line: param-type-mismatch
+			self.logger.df("fronting %s", name)
+		end
+
 		app:setFrontmost(true)
 
 		local thereAreWindows = function()
@@ -83,6 +83,8 @@ function obj:handleApplicationEvent(name, eventType, app)
 
 		local makeThemBig = function()
 			for _, win in ipairs(app:allWindows()) do
+				---@diagnostic disable-next-line: param-type-mismatch
+				self.logger.df("biggifying %s", win:title())
 				hs.grid.set(win, self.grid)
 			end
 		end

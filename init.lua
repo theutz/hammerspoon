@@ -12,7 +12,7 @@ hs.spoons.use("Reloadr", {
 hs.loadSpoon("SpoonInstall")
 
 --- Install third-party spoons
--- spoon.SpoonInstall:andUse("EmmyLua")
+spoon.SpoonInstall:andUse("EmmyLua")
 
 --- Initialize my custom spoons
 hs.spoons.use("Mousr", {
@@ -40,9 +40,16 @@ require("hyperr").setup()
 hs.spoons.use("Frontr", {
 	start = true,
 	config = {
-		app_names = { "Neovide", "WezTerm", "wezterm-gui" },
+		app_names = {
+			"Neovide",
+			"WezTerm",
+			"wezterm-gui",
+			"Spotify",
+			"Timemator",
+		},
 		grid = "1,1 10x10",
 	},
+	loglevel = "warning",
 })
 
 spoon.Reloadr:notifyReloaded()
