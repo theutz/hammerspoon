@@ -39,7 +39,6 @@ obj.current_tile = 1
 
 ---@public
 obj.defaultHotkeys = {
-	autoTiler = "e",
 	centerOnScreen = "space",
 	centralize = "c",
 	fullscreen = "return",
@@ -59,6 +58,7 @@ obj.defaultHotkeys = {
 	prevWindow = "9",
 	southeast = "m",
 	southwest = "n",
+	tileAllWindows = "e",
 	unhideAll = "a",
 }
 
@@ -108,7 +108,6 @@ function obj:bindHotkeys(map)
 end
 
 function obj:start()
-	self:saveWindowOrder()
 	self.watcher:start()
 end
 
@@ -230,7 +229,7 @@ function obj:hide()
 	if app ~= nil then
 		app:hide()
 	end
-	self:autoTiler(true)
+	self:tileAllWindows(true)
 end
 
 function obj:nextWindow()
@@ -275,7 +274,7 @@ function obj:maximizeAllWindows()
 	end
 end
 
-function obj:autoTiler(skipReset)
+function obj:tileAllWindows(skipReset)
 	if not skipReset then
 		self:saveWindowOrder()
 	end
@@ -338,7 +337,7 @@ function obj:unhideAll()
 	for _, app in ipairs(self.hidden_apps) do
 		app:unhide()
 	end
-	hs.timer.doAfter(0.5, hs.fnutils.partial(self.autoTiler, self))
+	hs.timer.doAfter(0.5, hs.fnutils.partial(self.tileAllWindows, self))
 end
 
 function obj.axHotfix(win)
