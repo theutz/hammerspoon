@@ -43,6 +43,7 @@ obj.defaultHotkeys = {
 	centerOnScreen = "space",
 	centralize = "c",
 	fullscreen = "return",
+	hide = "d",
 	maxHeight = "y",
 	maximizeAllWindows = "o",
 	maxWidth = "x",
@@ -170,6 +171,18 @@ function obj:getCurrentTile()
 	return self.tiles[self.current_tile]
 end
 
+function obj:hide()
+	if #self.tiles > 0 then
+		table.remove(self.tiles, self.current_tile)
+		self.current_tile = self.current_tile + 1
+	end
+	local app = hs.window.frontmostWindow():application()
+	if app ~= nil then
+		app:hide()
+	end
+	self:autoTiler(true)
+end
+
 function obj:nextWindow()
 	local index
 	if self.current_tile >= #self.tiles then
@@ -212,8 +225,10 @@ function obj:maximizeAllWindows()
 	end
 end
 
-function obj:autoTiler()
-	self:saveWindowOrder()
+function obj:autoTiler(skipReset)
+	if not skipReset then
+		self:saveWindowOrder()
+	end
 	local rows = math.floor(math.sqrt(#self.tiles))
 	local columns = math.ceil(math.sqrt(#self.tiles))
 	if rows * columns < #self.tiles then
