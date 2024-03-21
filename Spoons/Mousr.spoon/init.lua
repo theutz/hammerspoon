@@ -79,10 +79,15 @@ end
 
 ---@return integer
 local function getStep()
-	local mods = hs.eventtap.checkKeyboardModifiers() ---@cast mods { ["shift"|"ctrl"|"alt"]: boolean }
+	local mods = hs.eventtap.checkKeyboardModifiers()
+	---@cast mods { ["shift"|"ctrl"|"alt"]: boolean }
 
-	if mods[step_mods.DEC] and step_size > 1 then return step_sizes[step_size - 1] end
-	if mods[step_mods.INC] and step_size < #step_sizes then return step_sizes[step_size + 1] end
+	if mods[step_mods.DEC] and step_size > 1 then
+		return step_sizes[step_size - 1]
+	end
+	if mods[step_mods.INC] and step_size < #step_sizes then
+		return step_sizes[step_size + 1]
+	end
 
 	return step_sizes[step_size]
 end
@@ -118,7 +123,13 @@ function obj:bindMovements()
 	end
 
 	for action, spec in pairs(actions) do
-		self.modal:bind(spec[1], spec[2], obj.mouse[action], nil, obj.mouse[action])
+		self.modal:bind(
+			spec[1],
+			spec[2],
+			obj.mouse[action],
+			nil,
+			obj.mouse[action]
+		)
 	end
 end
 
@@ -145,7 +156,11 @@ end
 ---@nodiscard
 function obj:bindHotkeys(mapping)
 	hs.hotkey.bind(mapping.activate[1], mapping.activate[2], self.enterModal)
-	self.modal:bind(mapping.deactivate[1], mapping.deactivate[2], self.exitModal)
+	self.modal:bind(
+		mapping.deactivate[1],
+		mapping.deactivate[2],
+		self.exitModal
+	)
 	self.modal:bind(mapping.activate[1], mapping.activate[2], self.exitModal)
 	return self
 end

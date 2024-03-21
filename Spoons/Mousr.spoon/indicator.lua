@@ -61,7 +61,12 @@ function M:makeElements(frame)
 			type = "rectangle",
 			action = "clip",
 			reversePath = true,
-			frame = { x = 8, y = (self.margin / 2) + 22, h = frame.h, w = frame.w - self.margin },
+			frame = {
+				x = 8,
+				y = (self.margin / 2) + 22,
+				h = frame.h,
+				w = frame.w - self.margin,
+			},
 			roundedRectRadii = { xRadius = 8, yRadius = 8 },
 		},
 		{
