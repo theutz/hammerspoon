@@ -99,9 +99,9 @@ function M:renderCanvas()
 
 	local container = hs.geometry.new(canvas[2].frame)
 
-	local row = 1
-	local col = 1
 	for i, item in ipairs(self.items) do
+		local row = math.ceil(i / max_cols)
+		local col = i % max_cols == 0 and max_cols or i % max_cols
 		local curr = canvas:elementCount()
 		canvas[curr + 1] = {
 			type = "rectangle",
@@ -120,13 +120,6 @@ function M:renderCanvas()
 			},
 			roundedRectRadii = { xRadius = 8, yRadius = 8 },
 		}
-
-		if i % max_cols == 0 then
-			row = row + 1
-			col = 1
-		else
-			col = col + 1
-		end
 	end
 
 	self.canvas = canvas
