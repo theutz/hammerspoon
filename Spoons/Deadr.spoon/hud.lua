@@ -64,6 +64,15 @@ end
 function M:renderCanvas()
 	local screenFrame = hs.screen.mainScreen():fullFrame()
 
+	local size = 120
+	local padding = 20
+	local gap = padding / 2
+	local max_cols = 8
+
+	local cell_count = #self.items
+	local row_count = math.ceil(cell_count / max_cols)
+	local col_count = cell_count <= max_cols and cell_count or max_cols
+
 	local canvas = hs.canvas.new(screenFrame)--[[@as hs.canvas]]
 
 	canvas[1] = {
@@ -76,7 +85,12 @@ function M:renderCanvas()
 		type = "rectangle",
 		action = "fill",
 		fillColor = { hex = "#33a", alpha = 0.8 },
-		frame = { x = 0, y = 0, w = 1200, h = 800 },
+		frame = {
+			x = 0,
+			y = 0,
+			w = col_count * size + (col_count - 1) * gap + padding * 2,
+			h = row_count * size + (row_count - 1) * gap + padding * 2,
+		},
 		roundedRectRadii = { xRadius = 16, yRadius = 16 },
 	}
 
@@ -84,13 +98,9 @@ function M:renderCanvas()
 	canvas[2].frame.y = (screenFrame.h - canvas[2].frame.h) / 2
 
 	local container = hs.geometry.new(canvas[2].frame)
-	local size = 120
-	local padding = 20
-	local gap = padding / 2
-	local max_cols = 9
+
 	local row = 1
 	local col = 1
-
 	for i, item in ipairs(self.items) do
 		local curr = canvas:elementCount()
 		canvas[curr + 1] = {
