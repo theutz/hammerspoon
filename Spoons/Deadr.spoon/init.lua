@@ -60,6 +60,12 @@ function obj:start()
 		{ "d", "Dash" },
 		{ "t", "WezTerm" },
 		{ "w", "Neovide" },
+		{ "1", "1Password" },
+		{ "b", "Firefox" },
+		{ "d", "Dash" },
+		{ "t", "WezTerm" },
+		{ "w", "Neovide" },
+		{ "1", "1Password" },
 	})
 end
 

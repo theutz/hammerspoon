@@ -72,6 +72,7 @@ function M:renderCanvas()
 	local cell_count = #self.items
 	local row_count = math.ceil(cell_count / max_cols)
 	local col_count = cell_count <= max_cols and cell_count or max_cols
+	local remaining_cells = cell_count % max_cols
 
 	local canvas = hs.canvas.new(screenFrame)--[[@as hs.canvas]]
 
@@ -114,7 +115,7 @@ function M:renderCanvas()
 			},
 		})--[[@as hs.styledtext]]
 
-		canvas[curr + 1] = {
+		local cell = {
 			id = "cell" .. i,
 			type = "rectangle",
 			fillColor = { hex = "#000" },
@@ -133,9 +134,7 @@ function M:renderCanvas()
 			roundedRectRadii = { xRadius = 8, yRadius = 8 },
 		}
 
-		local cell = canvas[curr + 1].frame
-
-		canvas[curr + 2] = {
+		local key_box = {
 			type = "text",
 			text = text
 				.copy(text)--[[@as hs.styledtext]]
@@ -143,23 +142,38 @@ function M:renderCanvas()
 				:setString(key)--[[@as hs.styledtext]]
 				:upper(),
 			frame = {
-				x = cell.x + gap,
-				y = cell.y + gap,
-				w = cell.w - gap * 2,
-				h = (cell.h - gap * 2) / 2,
+				x = cell.frame.x + gap,
+				y = cell.frame.y + gap,
+				w = cell.frame.w - gap * 2,
+				h = (cell.frame.h - gap * 2) / 2,
 			},
 		}
 
-		canvas[curr + 3] = {
+		local name_box = {
 			type = "text",
 			text = text,
 			frame = {
-				x = cell.x + gap,
-				y = cell.y + gap + cell.h / 2,
-				w = cell.w - gap * 2,
-				h = (cell.h - gap * 2) / 2,
+				x = cell.frame.x + gap,
+				y = cell.frame.y + gap + cell.frame.h / 2,
+				w = cell.frame.w - gap * 2,
+				h = (cell.frame.h - gap * 2) / 2,
 			},
 		}
+
+		local is_last_row = (math.ceil(i / max_cols) == row_count)
+
+		if is_last_row and remaining_cells > 0 then
+			local x_offset_count = (max_cols - remaining_cells) / 2
+			print(x_offset_count)
+			local x_offset = x_offset_count * size + x_offset_count * gap
+			cell.frame.x = cell.frame.x + x_offset
+			key_box.frame.x = key_box.frame.x + x_offset
+			name_box.frame.x = name_box.frame.x + x_offset
+		end
+
+		canvas[curr + 1] = cell
+		canvas[curr + 2] = key_box
+		canvas[curr + 3] = name_box
 	end
 
 	self.canvas = canvas
