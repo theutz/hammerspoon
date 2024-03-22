@@ -22,21 +22,38 @@ obj.logger = hs.logger.new(obj.name)
 ---@private
 obj.defaultHotkeys = {}
 
+---@private
+obj.hud = nil
+
 ---@public
 ---@return self
----@nodiscard
 function obj:init()
+	obj.hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
+		logger = self.logger,
+	}) --[[@as Hud]]
+
 	return self
 end
 
 ---@public
 ---@return self
----@nodiscard
 function obj:bindHotkeys(map)
 	local def = {}
 
 	hs.spoons.bindHotkeysToSpec(def, map)
 	return self
+end
+
+function obj:start()
+	obj.hud
+		:setCells({
+			{ "1", "1Password" },
+			{ "b", "Firefox" },
+			{ "d", "Dash" },
+			{ "t", "WezTerm" },
+			{ "w", "Neovide" },
+		})
+		:show()
 end
 
 return obj

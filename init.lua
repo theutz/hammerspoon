@@ -60,7 +60,9 @@ hs.spoons.use("Frontr", {
 })
 
 hs.spoons.use("Deadr", {
+	start = true,
 	hotkeys = "default",
+	loglevel = "debug",
 })
 
 spoon.Reloadr:notifyReloaded()
