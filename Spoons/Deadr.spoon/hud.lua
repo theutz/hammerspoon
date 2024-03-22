@@ -76,12 +76,14 @@ function M:renderCanvas()
 	local canvas = hs.canvas.new(screenFrame)--[[@as hs.canvas]]
 
 	canvas[1] = {
+		id = "overlay",
 		type = "rectangle",
 		action = "fill",
 		fillColor = { hex = "#000", alpha = 0.3 },
 	}
 
 	canvas[2] = {
+		id = "container",
 		type = "rectangle",
 		action = "fill",
 		fillColor = { hex = "#33a", alpha = 0.8 },
@@ -103,7 +105,17 @@ function M:renderCanvas()
 		local row = math.ceil(i / max_cols)
 		local col = i % max_cols == 0 and max_cols or i % max_cols
 		local curr = canvas:elementCount()
+		local key, name = table.unpack(item)
+		local text = hs.styledtext.new(name, {
+			font = { name = "IBM Plex Mono", size = 16 },
+			color = { hex = "#fff" },
+			paragraphStyle = {
+				alignment = "center",
+			},
+		})--[[@as hs.styledtext]]
+
 		canvas[curr + 1] = {
+			id = "cell" .. i,
 			type = "rectangle",
 			fillColor = { hex = "#000" },
 			frame = {
@@ -119,6 +131,34 @@ function M:renderCanvas()
 				h = size,
 			},
 			roundedRectRadii = { xRadius = 8, yRadius = 8 },
+		}
+
+		local cell = canvas[curr + 1].frame
+
+		canvas[curr + 2] = {
+			type = "text",
+			text = text
+				.copy(text)--[[@as hs.styledtext]]
+				:setStyle({ font = { size = 36 } })--[[@as hs.styledtext]]
+				:setString(key)--[[@as hs.styledtext]]
+				:upper(),
+			frame = {
+				x = cell.x + gap,
+				y = cell.y + gap,
+				w = cell.w - gap * 2,
+				h = (cell.h - gap * 2) / 2,
+			},
+		}
+
+		canvas[curr + 3] = {
+			type = "text",
+			text = text,
+			frame = {
+				x = cell.x + gap,
+				y = cell.y + gap + cell.h / 2,
+				w = cell.w - gap * 2,
+				h = (cell.h - gap * 2) / 2,
+			},
 		}
 	end
 
