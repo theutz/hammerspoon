@@ -44,6 +44,10 @@ function M:hide()
 	return self
 end
 
+function M:isShowing()
+	return self.canvas:isShowing()
+end
+
 ---@public
 ---@param cells hud.cells
 function M:setCells(cells)
@@ -57,23 +61,41 @@ function M:setCells(cells)
 	return self
 end
 
+---@private
 function M:renderCanvas()
 	local frame = hs.screen.mainScreen():fullFrame()
 	---@diagnostic disable-next-line: param-type-mismatch
 	self.logger.vf("canvas frame: %s", hs.inspect(frame))
 
-	local overlay = hs.canvas.new(frame) --[[@as hs.canvas]]
-	local main = hs.canvas.new({}) --[[@as hs.canvas]]
+	local cells = self:buildCells()
 
-	overlay:appendElements({
-		{ type = "rectangle", fillColor = { hex = "#000", alpha = 0.2 } },
-		{ type = "canvas", frame = {}, canvas = main },
+	local container_size = frame:copy():scale("0.5x0.5")
+
+	local container = hs.canvas.new(container_size):appendElements({
+		{
+			type = "rectangle",
+			action = "fill",
+			color = { hex = "#fff", alpha = 0.5 },
+		},
+		{
+			type = "canvas",
+			canvas = cells,
+		},
 	})
-	main:appendElements(self:renderCellElements())
+
+	local overlay = hs
+		.canvas
+		.new(frame) --[[@as hs.canvas]]
+		:appendElements({
+			{ type = "rectangle", fillColor = { hex = "#000", alpha = 0.2 } },
+			{ type = "canvas", canvas = container },
+		})
 	M.canvas = overlay
 end
 
-function M:renderCellElements()
+---@private
+---@return hs.canvas
+function M:buildCells()
 	local size = 140
 	local margin = size / 10
 	local rounded = 10
@@ -132,7 +154,10 @@ function M:renderCellElements()
 		table.insert(els, el)
 	end
 
-	return els
+	return hs
+		.canvas
+		.new({}) --[[@as hs.canvas]]
+		:appendElements(els)
 end
 
 return M

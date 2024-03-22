@@ -20,7 +20,9 @@ obj.homepage = "https://theutz.com"
 obj.logger = hs.logger.new(obj.name)
 
 ---@private
-obj.defaultHotkeys = {}
+obj.defaultHotkeys = {
+	toggle = { {}, "f19" },
+}
 
 ---@private
 obj.hud = nil
@@ -38,22 +40,30 @@ end
 ---@public
 ---@return self
 function obj:bindHotkeys(map)
-	local def = {}
+	local def = {
+		toggle = hs.fnutils.partial(self.toggle, self),
+	}
 
 	hs.spoons.bindHotkeysToSpec(def, map)
 	return self
 end
 
 function obj:start()
-	obj.hud
-		:setCells({
-			{ "1", "1Password" },
-			{ "b", "Firefox" },
-			{ "d", "Dash" },
-			{ "t", "WezTerm" },
-			{ "w", "Neovide" },
-		})
-		:show()
+	obj.hud:setCells({
+		{ "1", "1Password" },
+		{ "b", "Firefox" },
+		{ "d", "Dash" },
+		{ "t", "WezTerm" },
+		{ "w", "Neovide" },
+	})
+end
+
+function obj:toggle()
+	if self.hud:isShowing() then
+		self.hud:hide()
+	else
+		self.hud:show()
+	end
 end
 
 return obj
