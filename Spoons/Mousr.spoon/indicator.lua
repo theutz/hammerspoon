@@ -19,8 +19,6 @@ function M:new(o)
 	---@private
 	self.__index = self
 
-	o.logger.i("indicator loaded")
-
 	return o
 end
 
