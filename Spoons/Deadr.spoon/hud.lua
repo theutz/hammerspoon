@@ -63,34 +63,45 @@ end
 
 ---@private
 function M:renderCanvas()
-	local frame = hs.screen.mainScreen():fullFrame()
+	local screen_frame = hs.screen.mainScreen():fullFrame()
+
 	---@diagnostic disable-next-line: param-type-mismatch
-	self.logger.vf("canvas frame: %s", hs.inspect(frame))
+	self.logger.vf("canvas frame: %s", hs.inspect(screen_frame))
 
-	local cells = self:buildCells()
+	local cells_canvas = self:buildCells()
+	local container_geo = hs.geometry.size(1200, 800)--[[@as hs.geometry]]
+	container_geo.x = (screen_frame.w - container_geo.w) / 2
+	container_geo.y = (screen_frame.h - container_geo.h) / 2
 
-	local container_size = frame:copy():scale("0.5x0.5")
-
-	local container = hs.canvas.new(container_size):appendElements({
-		{
-			type = "rectangle",
-			action = "fill",
-			color = { hex = "#fff", alpha = 0.5 },
-		},
-		{
-			type = "canvas",
-			canvas = cells,
-		},
-	})
-
-	local overlay = hs
+	local container_canvas = hs
 		.canvas
-		.new(frame) --[[@as hs.canvas]]
+		.new({}) --[[@as hs.canvas]]
+		:appendElements({
+			{
+				type = "rectangle",
+				action = "fill",
+				fillColor = { hex = "#00f", alpha = 0.5 },
+				roundedRectRadii = { xRadius = 20, yRadius = 20 },
+			},
+			{
+				type = "canvas",
+				canvas = cells_canvas,
+				frame = { x = "10%", y = "10%", w = "80%", h = "80%" },
+			},
+		})
+
+	local overlay_canvas = hs
+		.canvas
+		.new(screen_frame) --[[@as hs.canvas]]
 		:appendElements({
 			{ type = "rectangle", fillColor = { hex = "#000", alpha = 0.2 } },
-			{ type = "canvas", canvas = container },
+			{
+				type = "canvas",
+				frame = container_geo.table,
+				canvas = container_canvas,
+			},
 		})
-	M.canvas = overlay
+	M.canvas = overlay_canvas
 end
 
 ---@private
@@ -110,8 +121,8 @@ function M:buildCells()
 		local el = {
 			type = "canvas",
 			frame = {
-				x = ((i - 1) * size) + (i * margin * 2),
-				y = margin,
+				x = ((i - 1) * size) + ((i - 1) * margin * 2),
+				y = 0,
 				h = size,
 				w = size,
 			},
