@@ -49,7 +49,7 @@ function obj:bindHotkeys(map)
 end
 
 function obj:start()
-	obj.hud:setCells({
+	obj.hud:setItems({
 		{ "1", "1Password" },
 		{ "b", "Firefox" },
 		{ "d", "Dash" },

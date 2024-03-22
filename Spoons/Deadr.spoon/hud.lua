@@ -9,7 +9,7 @@ M.canvas = hs.canvas.new(hs.screen.primaryScreen():frame()) --[[@as hs.canvas]]
 
 ---@alias hud.cells { [string]: { [1]: string[], [2]: string } }[]
 ---@private
-M.cells = {}
+M.items = {}
 
 ---@param o self
 ---@return self
@@ -49,14 +49,14 @@ function M:isShowing()
 end
 
 ---@public
----@param cells hud.cells
-function M:setCells(cells)
+---@param items hud.cells
+function M:setItems(items)
 	---@diagnostic disable param-type-mismatch
 	self.logger.d("setting cells")
-	self.logger.vf(hs.inspect(cells))
+	self.logger.vf(hs.inspect(items))
 	---@diagnostic enable
 
-	self.cells = cells
+	self.items = items
 
 	return self
 end
@@ -116,7 +116,7 @@ function M:buildCells()
 
 	local els = {}
 
-	for i, c in ipairs(self.cells) do
+	for i, c in ipairs(self.items) do
 		local key, name = table.unpack(c)
 		local el = {
 			type = "canvas",
