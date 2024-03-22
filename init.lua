@@ -6,6 +6,9 @@ hs.logger.defaultLogLevel = "warning"
 
 hs.spoons.use("Reloadr", {
 	start = true,
+	config = {
+		clearConsole = true,
+	},
 })
 
 --- Load spoons

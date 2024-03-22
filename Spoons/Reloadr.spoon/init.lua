@@ -7,9 +7,16 @@ obj.version = "0.0.0"
 obj.author = "Michael Utz <michael.utz>"
 obj.homepage = "https://theutz.com"
 
+---@public
 obj.watch_paths = {
 	hs.configdir,
 }
+
+---@public
+obj.clearConsole = false
+
+---@public
+obj.withdrawNotifications = true
 
 ---@private
 obj.watchers = {}
@@ -95,7 +102,14 @@ function obj:reload(files)
 		return
 	else
 		self:stop()
-		hs.notify.withdrawAll()
+
+		if self.withdrawNotifications then
+			hs.notify.withdrawAll()
+		end
+
+		if self.clearConsole then
+			hs.console.clearConsole()
+		end
 		hs.reload()
 	end
 end
