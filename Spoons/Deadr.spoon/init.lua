@@ -27,12 +27,19 @@ obj.defaultHotkeys = {
 ---@private
 obj.hud = nil
 
+---@private
+obj.modal = nil
+
 ---@public
 ---@return self
 function obj:init()
-	obj.hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
+	self.hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
 		logger = self.logger,
 	}) --[[@as Hud]]
+
+	self.modal = hs.hotkey.modal.new()
+	self.modal.entered = hs.fnutils.partial(self.entered, self)
+	self.modal.exited = hs.fnutils.partial(self.exited, self)
 
 	return self
 end
@@ -45,36 +52,49 @@ function obj:bindHotkeys(map)
 	}
 
 	hs.spoons.bindHotkeysToSpec(def, map)
+
+	self.modal:bind(
+		map.toggle[1],
+		map.toggle[2],
+		hs.fnutils.partial(self.toggle, self)
+	)
+	self.modal:bind({ "" }, "escape", hs.fnutils.partial(self.exit, self))
+
 	return self
 end
 
 function obj:start()
-	obj.hud:setItems({
+	self.hud:setItems({
 		{ "1", "1Password" },
 		{ "b", "Firefox" },
 		{ "d", "Dash" },
 		{ "t", "WezTerm" },
 		{ "w", "Neovide" },
-		{ "1", "1Password" },
-		{ "b", "Firefox" },
-		{ "d", "Dash" },
-		{ "t", "WezTerm" },
-		{ "w", "Neovide" },
-		{ "1", "1Password" },
-		{ "b", "Firefox" },
-		{ "d", "Dash" },
-		{ "t", "WezTerm" },
-		{ "w", "Neovide" },
-		{ "1", "1Password" },
 	})
 end
 
 function obj:toggle()
 	if self.hud:isShowing() then
-		self.hud:hide()
+		self:exit()
 	else
-		self.hud:show()
+		self:enter()
 	end
+end
+
+function obj:enter()
+	self.modal:enter()
+end
+
+function obj:exit()
+	self.modal:exit()
+end
+
+function obj:entered()
+	self.hud:show()
+end
+
+function obj:exited()
+	self.hud:hide()
 end
 
 return obj
