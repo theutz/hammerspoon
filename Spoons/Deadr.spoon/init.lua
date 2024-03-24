@@ -72,6 +72,7 @@ function obj:activate(defs)
 		local key, app, desc = table.unpack(item)
 		table.insert(items, { key, desc or app })
 		if type(app) == "table" then
+		-- TODO: Work with a stack of modals/huds
 		elseif type(app) == "string" then
 			self.modal:bind("", key, self.appOpener(app))
 		end
