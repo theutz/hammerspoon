@@ -1,3 +1,5 @@
+local partial = hs.fnutils.partial
+
 ---@class Deadr
 local obj = {}
 
@@ -17,7 +19,7 @@ obj.license = "MIT"
 obj.homepage = "https://theutz.com"
 
 ---@public
-obj.app_shortcuts = {}
+obj.binds = {}
 
 ---@private
 obj.logger = hs.logger.new(obj.name)
@@ -27,23 +29,10 @@ obj.defaultHotkeys = {
 	toggle = { {}, "f19" },
 }
 
----@private
-obj.hud = nil
+---@private { modal: hs.hotkey.modal, hud: Hud }[]
+obj.layers = {}
 
----@private
-obj.modal = nil
-
----@public
----@return self
 function obj:init()
-	self.hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
-		logger = self.logger,
-	}) --[[@as Hud]]
-
-	self.modal = hs.hotkey.modal.new()
-	self.modal.entered = hs.fnutils.partial(self.entered, self)--[[@as function]]
-	self.modal.exited = hs.fnutils.partial(self.exited, self)--[[@as function]]
-
 	return self
 end
 
@@ -55,31 +44,31 @@ function obj:bindHotkeys(map)
 	}
 
 	hs.spoons.bindHotkeysToSpec(def, map)
-
-	self.modal:bind(
-		map.toggle[1],
-		map.toggle[2],
-		hs.fnutils.partial(self.toggle, self)
-	)
-	self.modal:bind({ "" }, "escape", hs.fnutils.partial(self.exit, self))
-
+	--
+	-- self.modal:bind(
+	-- 	map.toggle[1],
+	-- 	map.toggle[2],
+	-- 	hs.fnutils.partial(self.toggle, self)
+	-- )
+	-- self.modal:bind({ "" }, "escape", hs.fnutils.partial(self.exit, self))
+	--
 	return self
 end
 
-function obj:activate(defs)
-	local items = {}
-	for _, item in ipairs(defs) do
-		local key, app, desc = table.unpack(item)
-		table.insert(items, { key, desc or app })
-		if type(app) == "table" then
-		-- TODO: Work with a stack of modals/huds
-		elseif type(app) == "string" then
-			self.modal:bind("", key, self.appOpener(app))
-		end
-	end
-	self.hud:setItems(items)
-	self.modal:enter()
-end
+-- function obj:activate(defs)
+-- local items = {}
+-- for _, item in ipairs(defs) do
+-- 	local key, app, desc = table.unpack(item)
+-- 	table.insert(items, { key, desc or app })
+-- 	if type(app) == "table" then
+-- 	-- TODO: Work with a stack of modals/huds
+-- 	elseif type(app) == "string" then
+-- 		self.modal:bind("", key, self.appOpener(app))
+-- 	end
+-- end
+-- self.hud:setItems(items)
+-- self.modal:enter()
+-- end
 
 function obj.appOpener(hint)
 	if type(hint) == "function" then
@@ -102,27 +91,59 @@ function obj.appOpener(hint)
 end
 
 function obj:toggle()
-	if self.hud:isShowing() then
-		self:exit()
+	if #self.layers == 0 then
+		table.insert(self.layers, self:makeLayer(self.binds))
+		self.layers[1].modal:enter()
 	else
-		self:activate(self.app_shortcuts)
+		for _, layer in ipairs(self.layers) do
+			layer.modal:exit()
+		end
+		self.layers = {}
 	end
 end
 
-function obj:enter()
-	self.modal:enter()
-end
+function obj:makeLayer(defs)
+	local modal = hs.hotkey.modal.new()
+	local hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
+		logger = self.logger,
+	}) --[[@as Hud]]
 
-function obj:exit()
-	self.modal:exit()
-end
+	local items = {}
 
-function obj:entered()
-	self.hud:show()
-end
+	for _, def in ipairs(defs) do
+		local mods = { "" }
+		local key, nameOrSubDef = table.unpack(def)
+		if type(nameOrSubDef) == "string" then
+			local name = nameOrSubDef
+			table.insert(items, { key, def.desc or name })
+			modal:bind(mods, key, self.appOpener(name))
+		elseif type(nameOrSubDef) == "table" then
+			local subDef = nameOrSubDef
+			assert(def.desc, "Sub-items must have an explicit description")
+			table.insert(items, { key, def.desc })
+			modal:bind(mods, key, function()
+				for _, layer in self.layers do
+					layer.modal:exit()
+				end
+				table.insert(self.layers, self:makeLayer(subDef))
+				self.layers[#self.layers]:enter()
+			end)
+		end
+	end
 
-function obj:exited()
-	self.hud:hide()
+	hud:setItems(items)
+
+	---@diagnostic disable-next-line: duplicate-set-field
+	function modal.entered()
+		hud:show()
+	end
+
+	---@diagnostic disable-next-line: duplicate-set-field
+	function modal:exited()
+		hud:hide()
+	end
+
+	return { modal = modal, hud = hud }
 end
 
 return obj

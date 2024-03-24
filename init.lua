@@ -62,15 +62,17 @@ hs.spoons.use("Frontr", {
 hs.spoons.use("Deadr", {
 	hotkeys = "default",
 	config = {
-		app_shortcuts = {
+		binds = {
 			{ "1", "1Password" },
-			-- { "b", { "Firefox", "Google Chrome" } },
-			{ "b", "Firefox" },
+			{
+				"b",
+				{ { "f", "Firefox" }, { "g", "Google Chrome" } },
+				desc = "Browsers",
+			},
 			{ "c", "Calendar" },
 			{ "d", "Dash" },
 			{ "e", "Mail" },
 			{ "f", "Figma" },
-			{ "g", "Google Chrome" },
 			{ "h", "Hammerspoon" },
 			{ "m", "Messages" },
 			{ "l", "Timemator" },
@@ -81,7 +83,7 @@ hs.spoons.use("Deadr", {
 			{ "u", "Due" },
 			{ "v", "ClearVPN" },
 			{ "w", "Neovide" },
-			{ "z", "zoom.us", "Zoom" },
+			{ "z", "zoom.us", desc = "Zoom" },
 		},
 	},
 	loglevel = "debug",
