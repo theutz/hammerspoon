@@ -24,6 +24,9 @@ obj.binds = {}
 ---@private
 obj.logger = hs.logger.new(obj.name)
 
+---@public
+obj.max_cols = 8
+
 ---@private
 obj.defaultHotkeys = {
 	activate = { {}, "f19" },
@@ -90,6 +93,7 @@ function obj:makeLayer(defs)
 	local modal = hs.hotkey.modal.new()
 	local hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
 		logger = self.logger,
+		max_cols = self.max_cols,
 	}) --[[@as Hud]]
 
 	local items = {}

@@ -11,6 +11,9 @@ M.canvas = hs.canvas.new(hs.screen.primaryScreen():frame()) --[[@as hs.canvas]]
 ---@private
 M.items = {}
 
+---@public
+M.max_cols = 8
+
 ---@param o self
 ---@return self
 function M:new(o)
@@ -67,7 +70,7 @@ function M:renderCanvas()
 	local size = 120
 	local padding = 20
 	local gap = padding / 2
-	local max_cols = 8
+	local max_cols = self.max_cols
 
 	local cell_count = #self.items
 	local row_count = math.ceil(cell_count / max_cols)
