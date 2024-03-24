@@ -164,7 +164,6 @@ function M:renderCanvas()
 
 		if is_last_row and remaining_cells > 0 and row_count > 1 then
 			local x_offset_count = (max_cols - remaining_cells) / 2
-			print(x_offset_count)
 			local x_offset = x_offset_count * size + x_offset_count * gap
 			cell.frame.x = cell.frame.x + x_offset
 			key_box.frame.x = key_box.frame.x + x_offset

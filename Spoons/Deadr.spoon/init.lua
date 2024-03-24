@@ -26,7 +26,7 @@ obj.logger = hs.logger.new(obj.name)
 
 ---@private
 obj.defaultHotkeys = {
-	toggle = { {}, "f19" },
+	activate = { {}, "f19" },
 }
 
 ---@private { modal: hs.hotkey.modal, hud: Hud }[]
@@ -40,35 +40,12 @@ end
 ---@return self
 function obj:bindHotkeys(map)
 	local def = {
-		toggle = hs.fnutils.partial(self.toggle, self),
+		activate = hs.fnutils.partial(self.activate, self),
 	}
 
 	hs.spoons.bindHotkeysToSpec(def, map)
-	--
-	-- self.modal:bind(
-	-- 	map.toggle[1],
-	-- 	map.toggle[2],
-	-- 	hs.fnutils.partial(self.toggle, self)
-	-- )
-	-- self.modal:bind({ "" }, "escape", hs.fnutils.partial(self.exit, self))
-	--
 	return self
 end
-
--- function obj:activate(defs)
--- local items = {}
--- for _, item in ipairs(defs) do
--- 	local key, app, desc = table.unpack(item)
--- 	table.insert(items, { key, desc or app })
--- 	if type(app) == "table" then
--- 	-- TODO: Work with a stack of modals/huds
--- 	elseif type(app) == "string" then
--- 		self.modal:bind("", key, self.appOpener(app))
--- 	end
--- end
--- self.hud:setItems(items)
--- self.modal:enter()
--- end
 
 function obj.appOpener(hint)
 	if type(hint) == "function" then
@@ -90,16 +67,15 @@ function obj.appOpener(hint)
 	end
 end
 
-function obj:toggle()
-	if #self.layers == 0 then
-		table.insert(self.layers, self:makeLayer(self.binds))
-		self.layers[1].modal:enter()
-	else
+function obj:activate()
+	if #self.layers > 0 then
 		for _, layer in ipairs(self.layers) do
 			layer.modal:exit()
 		end
 		self.layers = {}
 	end
+	table.insert(self.layers, self:makeLayer(self.binds))
+	self.layers[1].modal:enter()
 end
 
 function obj:makeLayer(defs)
@@ -134,14 +110,27 @@ function obj:makeLayer(defs)
 	hud:setItems(items)
 
 	---@diagnostic disable-next-line: duplicate-set-field
-	function modal.entered()
+	function modal:entered()
+		---@diagnostic disable-next-line: param-type-mismatch
+		obj.logger.d("modal entered")
 		hud:show()
 	end
 
 	---@diagnostic disable-next-line: duplicate-set-field
 	function modal:exited()
+		---@diagnostic disable-next-line: param-type-mismatch
+		obj.logger.d("modal exited")
 		hud:hide()
 	end
+
+	modal:bind("", "escape", function()
+		modal:exit()
+		table.remove(self.layers)
+		local curr = self.layers[#self.layers]
+		if curr and curr.modal and curr.modal.enter then
+			curr.modal:enter()
+		end
+	end)
 
 	return { modal = modal, hud = hud }
 end
