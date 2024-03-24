@@ -41,8 +41,8 @@ function obj:init()
 	}) --[[@as Hud]]
 
 	self.modal = hs.hotkey.modal.new()
-	self.modal.entered = hs.fnutils.partial(self.entered, self)
-	self.modal.exited = hs.fnutils.partial(self.exited, self)
+	self.modal.entered = hs.fnutils.partial(self.entered, self)--[[@as function]]
+	self.modal.exited = hs.fnutils.partial(self.exited, self)--[[@as function]]
 
 	return self
 end
