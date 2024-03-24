@@ -97,14 +97,19 @@ function obj:makeLayer(defs)
 	for _, def in ipairs(defs) do
 		local mods = { "" }
 		local key, nameOrSubDef = table.unpack(def)
+
 		if type(nameOrSubDef) == "string" then
 			local name = nameOrSubDef
+
 			table.insert(items, { key, def.desc or name })
+
 			modal:bind(mods, key, self.appOpener(name))
 		elseif type(nameOrSubDef) == "table" then
 			local subDef = nameOrSubDef
 			assert(def.desc, "Sub-items must have an explicit description")
+
 			table.insert(items, { key, def.desc })
+
 			modal:bind(mods, key, function()
 				for _, layer in ipairs(self.layers) do
 					layer.modal:exit()
