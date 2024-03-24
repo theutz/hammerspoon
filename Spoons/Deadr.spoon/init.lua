@@ -32,6 +32,8 @@ obj.defaultHotkeys = {
 ---@private { modal: hs.hotkey.modal, hud: Hud }[]
 obj.layers = {}
 
+---@public
+---@return self
 function obj:init()
 	return self
 end
@@ -39,14 +41,18 @@ end
 ---@public
 ---@return self
 function obj:bindHotkeys(map)
+	self.activate_keyspec = map.activate
+
 	local def = {
 		activate = hs.fnutils.partial(self.activate, self),
 	}
 
 	hs.spoons.bindHotkeysToSpec(def, map)
+
 	return self
 end
 
+---@private
 function obj.appOpener(hint)
 	if type(hint) == "function" then
 		return hint
@@ -67,6 +73,7 @@ function obj.appOpener(hint)
 	end
 end
 
+---@private
 function obj:activate()
 	if #self.layers > 0 then
 		for _, layer in ipairs(self.layers) do
@@ -78,6 +85,7 @@ function obj:activate()
 	self.layers[1].modal:enter()
 end
 
+---@private
 function obj:makeLayer(defs)
 	local modal = hs.hotkey.modal.new()
 	local hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
@@ -123,21 +131,29 @@ function obj:makeLayer(defs)
 		hud:hide()
 	end
 
-	modal:bind("", "escape", function()
+	local function closeTopLayer()
 		modal:exit()
 		table.remove(self.layers)
 		local curr = self.layers[#self.layers]
 		if curr and curr.modal and curr.modal.enter then
 			curr.modal:enter()
 		end
-	end)
+	end
+	modal:bind("", "escape", closeTopLayer)
 
-	modal:bind({ "shift" }, "escape", function()
+	local function closeAllLayers()
 		for i, layer in ipairs(self.layers) do
 			layer.modal:exit()
 			self.layers[i] = nil
 		end
-	end)
+	end
+
+	modal:bind({ "shift" }, "escape", closeAllLayers)
+	modal:bind(
+		self.activate_keyspec[1],
+		self.activate_keyspec[2],
+		closeAllLayers
+	)
 
 	return { modal = modal, hud = hud }
 end
