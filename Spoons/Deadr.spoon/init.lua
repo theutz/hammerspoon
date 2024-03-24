@@ -122,11 +122,11 @@ function obj:makeLayer(defs)
 			assert(def.desc, "Sub-items must have an explicit description")
 			table.insert(items, { key, def.desc })
 			modal:bind(mods, key, function()
-				for _, layer in self.layers do
+				for _, layer in ipairs(self.layers) do
 					layer.modal:exit()
 				end
 				table.insert(self.layers, self:makeLayer(subDef))
-				self.layers[#self.layers]:enter()
+				self.layers[#self.layers].modal:enter()
 			end)
 		end
 	end
