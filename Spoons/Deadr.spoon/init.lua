@@ -76,38 +76,28 @@ function obj:activate(defs)
 			self.modal:bind("", key, self.appOpener(app))
 		end
 	end
-	self.hud:setItems(items):show()
+	self.hud:setItems(items)
 	self.modal:enter()
 end
 
-function obj.appOpener(appName)
-	local app = hs.application.find(appName, true)
-	local fn = function()
-		if
-			app
-			and type(app.isFrontmost) == "function"
-			and app:isFrontmost()
-		then
-			if app:hide() then
-				return
+function obj.appOpener(hint)
+	if type(hint) == "function" then
+		return hint
+	end
+	return function()
+		local exact = true
+		local app = hs.application.find(hint, exact)
+		if app then
+			if app:isFrontmost() then
+				app:hide()
+			else
+				local allWindows = true
+				app:setFrontmost(allWindows)
 			end
-			local name
-			if appName and appName.name then
-				name = appName.name
-			elseif type(appName) == "string" then
-				name = appName
-			end
-			if name then
-				app:selectMenuItem("Hide " .. name)
-			end
-			return app
+		else
+			hs.application.open(hint)
 		end
-		return hs.application.open(appName)
 	end
-	if type(appName) == "function" then
-		fn = appName
-	end
-	return fn
 end
 
 function obj:toggle()
