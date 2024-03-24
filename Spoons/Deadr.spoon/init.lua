@@ -132,6 +132,13 @@ function obj:makeLayer(defs)
 		end
 	end)
 
+	modal:bind({ "shift" }, "escape", function()
+		for i, layer in ipairs(self.layers) do
+			layer.modal:exit()
+			self.layers[i] = nil
+		end
+	end)
+
 	return { modal = modal, hud = hud }
 end
 
