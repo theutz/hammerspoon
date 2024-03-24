@@ -62,6 +62,15 @@ hs.spoons.use("Frontr", {
 hs.spoons.use("Deadr", {
 	start = true,
 	hotkeys = "default",
+	config = {
+		app_shortcuts = {
+			{ "1", "1Password" },
+			{ "b", "Firefox" },
+			{ "d", "Dash" },
+			{ "t", "WezTerm" },
+			{ "w", "Neovide" },
+		},
+	},
 	loglevel = "debug",
 })
 

@@ -16,6 +16,9 @@ obj.license = "MIT"
 ---@public
 obj.homepage = "https://theutz.com"
 
+---@public
+obj.app_shortcuts = {}
+
 ---@private
 obj.logger = hs.logger.new(obj.name)
 
@@ -64,13 +67,13 @@ function obj:bindHotkeys(map)
 end
 
 function obj:start()
-	self.hud:setItems({
-		{ "1", "1Password" },
-		{ "b", "Firefox" },
-		{ "d", "Dash" },
-		{ "t", "WezTerm" },
-		{ "w", "Neovide" },
-	})
+	self.hud:setItems(self.app_shortcuts)
+	for _, sc in ipairs(self.app_shortcuts) do
+		local key, app = table.unpack(sc)
+		self.modal:bind({ "" }, key, function()
+			hs.application.launchOrFocus(app)
+		end)
+	end
 end
 
 function obj:toggle()
