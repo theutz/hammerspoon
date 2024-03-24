@@ -70,10 +70,38 @@ function obj:start()
 	self.hud:setItems(self.app_shortcuts)
 	for _, sc in ipairs(self.app_shortcuts) do
 		local key, app = table.unpack(sc)
-		self.modal:bind({ "" }, key, function()
-			hs.application.launchOrFocus(app)
-		end)
+		self.modal:bind({ "" }, key, self.appOpener(app))
 	end
+end
+
+function obj.appOpener(appName)
+	local app = hs.application.find(appName, true)
+	local fn = function()
+		if
+			app
+			and type(app.isFrontmost) == "function"
+			and app:isFrontmost()
+		then
+			if app:hide() then
+				return
+			end
+			local name
+			if appName and appName.name then
+				name = appName.name
+			elseif type(appName) == "string" then
+				name = appName
+			end
+			if name then
+				app:selectMenuItem("Hide " .. name)
+			end
+			return app
+		end
+		return hs.application.open(appName)
+	end
+	if type(appName) == "function" then
+		fn = appName
+	end
+	return fn
 end
 
 function obj:toggle()
