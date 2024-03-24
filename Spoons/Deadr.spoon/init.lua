@@ -66,12 +66,18 @@ function obj:bindHotkeys(map)
 	return self
 end
 
-function obj:start()
-	self.hud:setItems(self.app_shortcuts)
-	for _, sc in ipairs(self.app_shortcuts) do
-		local key, app = table.unpack(sc)
-		self.modal:bind({ "" }, key, self.appOpener(app))
+function obj:activate(defs)
+	local items = {}
+	for _, item in ipairs(defs) do
+		local key, app, desc = table.unpack(item)
+		table.insert(items, { key, desc or app })
+		if type(app) == "table" then
+		elseif type(app) == "string" then
+			self.modal:bind("", key, self.appOpener(app))
+		end
 	end
+	self.hud:setItems(items):show()
+	self.modal:enter()
 end
 
 function obj.appOpener(appName)
@@ -108,7 +114,7 @@ function obj:toggle()
 	if self.hud:isShowing() then
 		self:exit()
 	else
-		self:enter()
+		self:activate(self.app_shortcuts)
 	end
 end
 
