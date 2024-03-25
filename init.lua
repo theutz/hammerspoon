@@ -13,7 +13,7 @@ hs.spoons.use("Reloadr", {
 hs.loadSpoon("SpoonInstall")
 
 --- Install third-party spoons
-spoon.SpoonInstall:andUse("EmmyLua")
+-- spoon.SpoonInstall:andUse("EmmyLua")
 
 hs.spoons.use("Mousr", {
 	hotkeys = "default",
