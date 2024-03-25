@@ -56,23 +56,29 @@ function obj:bindHotkeys(map)
 end
 
 ---@private
-function obj.opener(hint)
+function obj.opener(hint, layer)
+	local fn
 	if type(hint) == "function" then
-		return hint
+		fn = hint
+	else
+		fn = function()
+			local exact = true
+			local app = hs.application.find(hint, exact)
+			if app then
+				if app:isFrontmost() then
+					app:hide()
+				else
+					local allWindows = true
+					app:setFrontmost(allWindows)
+				end
+			else
+				hs.application.open(hint)
+			end
+		end
 	end
 	return function()
-		local exact = true
-		local app = hs.application.find(hint, exact)
-		if app then
-			if app:isFrontmost() then
-				app:hide()
-			else
-				local allWindows = true
-				app:setFrontmost(allWindows)
-			end
-		else
-			hs.application.open(hint)
-		end
+		fn()
+		layer:exit()
 	end
 end
 
@@ -90,11 +96,15 @@ end
 
 ---@private
 function obj:makeLayer(defs)
-	local modal = hs.hotkey.modal.new()
-	local hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
-		logger = self.logger,
-		max_cols = self.max_cols,
-	}) --[[@as Hud]]
+	local layer = {
+		modal = hs.hotkey.modal.new(),
+		hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
+			logger = self.logger,
+			max_cols = self.max_cols,
+		}) --[[@as Hud]],
+	}
+	layer.exit = partial(layer.modal.exit, layer.modal)
+	layer.enter = partial(layer.modal.enter, layer.modal)
 
 	local items = {}
 
@@ -107,22 +117,22 @@ function obj:makeLayer(defs)
 
 			table.insert(items, { key, def.desc or app_name })
 
-			modal:bind(mods, key, self.opener(app_name))
+			layer.modal:bind(mods, key, self.opener(app_name, layer))
 		elseif type(action) == "function" then
 			assert(def.desc, "Custom actions must have a description")
 
 			table.insert(items, { key, def.desc })
 
-			modal:bind(mods, key, self.opener(action))
+			layer.modal:bind(mods, key, self.opener(action, layer))
 		elseif type(action) == "table" then
 			local layers = action
 			assert(def.desc, "Layers must have a description")
 
 			table.insert(items, { key, def.desc })
 
-			modal:bind(mods, key, function()
-				for _, layer in ipairs(self.layers) do
-					layer.exit()
+			layer.modal:bind(mods, key, function()
+				for _, l in ipairs(self.layers) do
+					l.exit()
 				end
 				table.insert(self.layers, self:makeLayer(layers))
 				self.layers[#self.layers].modal:enter()
@@ -130,47 +140,47 @@ function obj:makeLayer(defs)
 		end
 	end
 
-	hud:setItems(items)
+	layer.hud:setItems(items)
 
 	---@diagnostic disable-next-line: duplicate-set-field
-	function modal:entered()
+	function layer.modal:entered()
 		---@diagnostic disable-next-line: param-type-mismatch
 		obj.logger.d("modal entered")
-		hud:show()
+		layer.hud:show()
 	end
 
 	---@diagnostic disable-next-line: duplicate-set-field
-	function modal:exited()
+	function layer.modal:exited()
 		---@diagnostic disable-next-line: param-type-mismatch
 		obj.logger.d("modal exited")
-		hud:hide()
+		layer.hud:hide()
 	end
 
 	local function closeTopLayer()
-		modal:exit()
+		layer.modal:exit()
 		table.remove(self.layers)
 		local curr = self.layers[#self.layers]
 		if curr and curr.modal and curr.modal.enter then
 			curr.modal:enter()
 		end
 	end
-	modal:bind("", "escape", closeTopLayer)
+	layer.modal:bind("", "escape", closeTopLayer)
 
 	local function closeAllLayers()
-		for i, layer in ipairs(self.layers) do
-			layer.exit()
+		for i, l in ipairs(self.layers) do
+			l.exit()
 			self.layers[i] = nil
 		end
 	end
 
-	modal:bind({ "shift" }, "escape", closeAllLayers)
-	modal:bind(
+	layer.modal:bind({ "shift" }, "escape", closeAllLayers)
+	layer.modal:bind(
 		self.activate_keyspec[1],
 		self.activate_keyspec[2],
 		closeAllLayers
 	)
 
-	return { modal = modal, hud = hud, exit = modal.exit, enter = modal.enter }
+	return layer
 end
 
 return obj
