@@ -1,0 +1,21 @@
+return {
+	default_browser = "Firefox",
+	---@type { [string]: string[] }
+	routes = {
+		["Google Chrome"] = {
+			"bugherd.com",
+			"google.com",
+			"hubspot.com",
+		},
+		["Firefox"] = {
+			"reddit.com",
+			"facebook.com",
+			"instagram.com",
+			"threads.net",
+			"x.com",
+			"twitter.com",
+			"hachyderm.io",
+			"bsky.app",
+		},
+	},
+}

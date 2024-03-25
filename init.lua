@@ -30,10 +30,7 @@ hs.spoons.use("Mousr", {
 })
 
 hs.spoons.use("Urlr", {
-	config = {
-		default_browser = "Firefox",
-		routes = require("routes"),
-	},
+	config = require("config.urlr"),
 	start = true,
 })
 
@@ -42,8 +39,6 @@ hs.spoons.use("Windowr", {
 	start = true,
 	loglevel = "warning",
 })
-
--- require("hyperr").setup()
 
 hs.spoons.use("Frontr", {
 	start = true,
