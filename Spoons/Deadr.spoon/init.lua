@@ -27,11 +27,6 @@ obj.logger = hs.logger.new(obj.name)
 ---@public
 obj.max_cols = 8
 
----@private
-obj.defaultHotkeys = {
-	activate = { {}, "f19" },
-}
-
 ---@private { modal: hs.hotkey.modal, hud: Hud }[]
 obj.layers = {}
 

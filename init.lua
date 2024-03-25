@@ -1,4 +1,11 @@
---- Settings
+-- Karabiner
+local karabiner = {
+	right_command = { {}, "f18" },
+	right_option = { {}, "f19" },
+	escape = { {}, "f20" },
+}
+
+-- Settings
 hs.application.enableSpotlightForNameSearches(true)
 
 -- nothing, error, warning, info, debug, verbose
@@ -16,7 +23,9 @@ hs.loadSpoon("SpoonInstall")
 -- spoon.SpoonInstall:andUse("EmmyLua")
 
 hs.spoons.use("Mousr", {
-	hotkeys = "default",
+	hotkeys = {
+		activate = karabiner.right_option,
+	},
 	config = require("config.mousr"),
 })
 
@@ -37,7 +46,9 @@ hs.spoons.use("Frontr", {
 })
 
 hs.spoons.use("Deadr", {
-	hotkeys = "default",
+	hotkeys = {
+		activate = karabiner.escape,
+	},
 	config = require("config.deadr"),
 	loglevel = "debug",
 })
