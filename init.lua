@@ -19,7 +19,6 @@ hs.spoons.use("Reloadr", {
 	config = require("config.reloadr"),
 })
 
---- Install third-party spoons
 -- spoon.SpoonInstall:andUse("EmmyLua")
 
 hs.spoons.use("Mousr", {
