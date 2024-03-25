@@ -24,7 +24,7 @@ hs.loadSpoon("SpoonInstall")
 
 hs.spoons.use("Mousr", {
 	hotkeys = {
-		activate = karabiner.right_option,
+		activate = karabiner.right_command,
 	},
 	config = require("config.mousr"),
 })

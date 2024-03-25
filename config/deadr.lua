@@ -78,6 +78,20 @@ local reminders = {
 	{ "r", "Godspeed", desc = "Default" },
 	{ "d", "Due" },
 	{ "g", "Godspeed" },
+	{
+		"c",
+		function()
+			hs.urlevent.openURL(
+				"raycast://extensions/raycast/apple-reminders/my-reminders"
+			)
+		end,
+		desc = "Raycast Agenda",
+	},
+}
+
+local music = {
+	{ "s", "Spotify" },
+	{ "m", "" },
 }
 
 return {
@@ -94,7 +108,7 @@ return {
 		{ "l", "Timemator" },
 		{ "n", notes, desc = "Notes" },
 		{ "p", "Spotify" },
-		{ "r", reminders, desc = "Remidners" },
+		{ "r", reminders, desc = "Reminders" },
 		{ "t", terminals, desc = "Terminals" },
 		{ "v", vpns, desc = "VPNs" },
 		{ "z", "zoom.us", desc = "Zoom" },
