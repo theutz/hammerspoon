@@ -18,6 +18,13 @@ return {
 		{ "d", "Dash" },
 		{ "e", "Mail" },
 		{ "f", "Figma" },
+		{
+			"g",
+			function()
+				hs.alert.show("meh")
+			end,
+			desc = "meh",
+		},
 		{ "h", "Hammerspoon" },
 		{
 			"m",

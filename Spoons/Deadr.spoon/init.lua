@@ -108,6 +108,13 @@ function obj:makeLayer(defs)
 			table.insert(items, { key, def.desc or name })
 
 			modal:bind(mods, key, self.appOpener(name))
+		elseif type(nameOrSubDef) == "function" then
+			local customOpener = nameOrSubDef
+			assert(def.desc, "Custom openers must have an explicit description")
+
+			table.insert(items, { key, def.desc })
+
+			modal:bind(mods, key, self.appOpener(customOpener))
 		elseif type(nameOrSubDef) == "table" then
 			local subDef = nameOrSubDef
 			assert(def.desc, "Sub-items must have an explicit description")
