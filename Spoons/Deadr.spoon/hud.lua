@@ -77,7 +77,13 @@ function M:renderCanvas()
 	local col_count = cell_count <= max_cols and cell_count or max_cols
 	local remaining_cells = cell_count % max_cols
 
-	local canvas = hs.canvas.new(screenFrame)--[[@as hs.canvas]]
+	local canvas = hs.canvas.new(screenFrame) --[[@as hs.canvas]]
+	canvas:behavior({
+		"canJoinAllSpaces",
+		"fullScreenAuxiliary",
+		"fullScreenDisallowsTiling",
+		"transient",
+	})
 
 	canvas[1] = {
 		id = "overlay",
