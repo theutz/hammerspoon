@@ -39,6 +39,7 @@ local browsers = {
 	{ "o", "Opera" },
 	{ "s", "Safari" },
 	{ "v", "Vivaldi" },
+	{ "r", "io.raindrop.macapp", desc = "Raindrop" },
 }
 
 local messengers = {
@@ -49,6 +50,7 @@ local messengers = {
 	{ "a", "Messages", desc = "Apple Messages" },
 	{ "s", "Slack" },
 	{ "w", "WhatsApp" },
+	{ "i", "Ivory" },
 }
 
 local terminals = {
@@ -70,6 +72,11 @@ local vpns = {
 	{ "s", "Surfshark" },
 }
 
+local reminders = {
+	{ "a", "Reminders", desc = "Apple Reminders" },
+	{ "d", "Due" },
+}
+
 return {
 	max_cols = 5,
 	binds = {
@@ -84,8 +91,8 @@ return {
 		{ "l", "Timemator" },
 		{ "n", notes, desc = "Notes" },
 		{ "p", "Spotify" },
+		{ "r", reminders, desc = "Remidners" },
 		{ "t", terminals, desc = "Terminals" },
-		{ "u", "Due" },
 		{ "v", vpns, desc = "VPNs" },
 		{ "z", "zoom.us", desc = "Zoom" },
 	},
