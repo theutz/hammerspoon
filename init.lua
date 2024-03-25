@@ -11,13 +11,13 @@ hs.application.enableSpotlightForNameSearches(true)
 -- nothing, error, warning, info, debug, verbose
 hs.logger.defaultLogLevel = "warning"
 
+--- Load spoons
+hs.loadSpoon("SpoonInstall")
+
 hs.spoons.use("Reloadr", {
 	start = true,
 	config = require("config.reloadr"),
 })
-
---- Load spoons
-hs.loadSpoon("SpoonInstall")
 
 --- Install third-party spoons
 -- spoon.SpoonInstall:andUse("EmmyLua")
@@ -47,7 +47,7 @@ hs.spoons.use("Frontr", {
 
 hs.spoons.use("Deadr", {
 	hotkeys = {
-		activate = karabiner.escape,
+		activate = karabiner.right_option,
 	},
 	config = require("config.deadr"),
 	loglevel = "debug",
