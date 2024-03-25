@@ -59,7 +59,7 @@ hs.spoons.use("Frontr", {
 	},
 })
 
-hs.spoons.use("Appr", {
+hs.spoons.use("Deadr", {
 	hotkeys = "default",
 	config = {
 		max_cols = 5,
