@@ -5,6 +5,7 @@ return {
 		{
 			"b",
 			{
+				{ "b", "Firefox", desc = "Default" },
 				{ "e", "Microsoft Edge" },
 				{ "f", "Firefox" },
 				{ "g", "Google Chrome" },
@@ -16,7 +17,7 @@ return {
 		},
 		{ "c", "Calendar" },
 		{ "d", "Dash" },
-		{ "e", "Mail" },
+		{ "e", "Neovide" },
 		{ "f", "Figma" },
 		{
 			"h",
@@ -59,8 +60,9 @@ return {
 			{
 				{ "d", "Discord" },
 				{ "e", "Element" },
+				{ "m", "Mail", desc = "Email" },
 				{ "f", "Messenger", desc = "Facebook Messenger" },
-				{ "m", "Messages" },
+				{ "a", "Messages", desc = "Apple Messages" },
 				{ "s", "Slack" },
 				{ "w", "WhatsApp" },
 			},
@@ -71,18 +73,19 @@ return {
 			"n",
 			{
 				{ "a", "Notes", desc = "Apple Notes" },
-				{ "n", "Notion" },
+				{ "n", "Notion", desc = "Default" },
+				{ "o", "Notion" },
 			},
 			desc = "Notes",
 		},
 		{ "p", "Spotify" },
-		{ "s", "Slack" },
 		{
 			"t",
 			{
 				{ "w", "WezTerm" },
+				{ "t", "WezTerm", desc = "Default" },
 				{ "i", "iTerm 2" },
-				{ "t", "Terminal" },
+				{ "a", "Terminal", desc = "Apple Terminal" },
 			},
 			desc = "Terminals",
 		},
