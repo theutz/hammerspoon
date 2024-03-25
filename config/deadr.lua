@@ -5,10 +5,8 @@ local hammerspoon = function()
 	local win = app:findWindow(win_name)
 
 	if win then
-		if app:isFrontmost() then
-			hs.closeConsole()
-			hs.window.orderedWindows()[2]:focus()
-		end
+		hs.closeConsole()
+		hs.window.orderedWindows()[2]:focus()
 	else
 		local bringToFront = true
 		hs.openConsole(bringToFront)
@@ -45,9 +43,10 @@ local browsers = {
 }
 
 local messengers = {
+	{ "m", "Messages", desc = "Default" },
 	{ "d", "Discord" },
-	{ "e", "Element" },
-	{ "m", "Mail", desc = "Email" },
+	{ "x", "Element" },
+	{ "e", "Mail", desc = "Email" },
 	{ "f", "Messenger", desc = "Facebook Messenger" },
 	{ "a", "Messages", desc = "Apple Messages" },
 	{ "s", "Slack" },
