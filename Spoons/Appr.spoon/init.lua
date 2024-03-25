@@ -1,10 +1,10 @@
 local partial = hs.fnutils.partial
 
----@class Deadr
+---@class Appr
 local obj = {}
 
 ---@public
-obj.name = "Deadr"
+obj.name = "Appr"
 
 ---@public
 obj.author = "Michael Utz <michael@theutz.com>"
