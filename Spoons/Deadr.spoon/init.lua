@@ -100,24 +100,23 @@ function obj:makeLayer(defs)
 
 	for _, def in ipairs(defs) do
 		local mods = { "" }
-		local key, nameOrSubDef = table.unpack(def)
+		local key, action = table.unpack(def)
 
-		if type(nameOrSubDef) == "string" then
-			local name = nameOrSubDef
+		if type(action) == "string" then
+			local app_name = action
 
-			table.insert(items, { key, def.desc or name })
+			table.insert(items, { key, def.desc or app_name })
 
-			modal:bind(mods, key, self.opener(name))
-		elseif type(nameOrSubDef) == "function" then
-			local customOpener = nameOrSubDef
-			assert(def.desc, "Custom openers must have an explicit description")
+			modal:bind(mods, key, self.opener(app_name))
+		elseif type(action) == "function" then
+			assert(def.desc, "Custom actions must have a description")
 
 			table.insert(items, { key, def.desc })
 
-			modal:bind(mods, key, self.opener(customOpener))
-		elseif type(nameOrSubDef) == "table" then
-			local subDef = nameOrSubDef
-			assert(def.desc, "Sub-items must have an explicit description")
+			modal:bind(mods, key, self.opener(action))
+		elseif type(action) == "table" then
+			local layers = action
+			assert(def.desc, "Layers must have a description")
 
 			table.insert(items, { key, def.desc })
 
@@ -125,7 +124,7 @@ function obj:makeLayer(defs)
 				for _, layer in ipairs(self.layers) do
 					layer.modal:exit()
 				end
-				table.insert(self.layers, self:makeLayer(subDef))
+				table.insert(self.layers, self:makeLayer(layers))
 				self.layers[#self.layers].modal:enter()
 			end)
 		end
