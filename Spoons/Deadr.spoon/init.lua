@@ -80,7 +80,7 @@ end
 function obj:activate()
 	if #self.layers > 0 then
 		for _, layer in ipairs(self.layers) do
-			layer.modal:exit()
+			layer.exit()
 		end
 		self.layers = {}
 	end
@@ -122,7 +122,7 @@ function obj:makeLayer(defs)
 
 			modal:bind(mods, key, function()
 				for _, layer in ipairs(self.layers) do
-					layer.modal:exit()
+					layer.exit()
 				end
 				table.insert(self.layers, self:makeLayer(layers))
 				self.layers[#self.layers].modal:enter()
@@ -158,7 +158,7 @@ function obj:makeLayer(defs)
 
 	local function closeAllLayers()
 		for i, layer in ipairs(self.layers) do
-			layer.modal:exit()
+			layer.exit()
 			self.layers[i] = nil
 		end
 	end
@@ -170,7 +170,7 @@ function obj:makeLayer(defs)
 		closeAllLayers
 	)
 
-	return { modal = modal, hud = hud }
+	return { modal = modal, hud = hud, exit = modal.exit, enter = modal.enter }
 end
 
 return obj
