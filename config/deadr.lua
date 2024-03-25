@@ -5,8 +5,10 @@ local hammerspoon = function()
 	local win = app:findWindow(win_name)
 
 	if win then
-		hs.closeConsole()
-		hs.window.orderedWindows()[2]:focus()
+		if app:isFrontmost() then
+			hs.closeConsole()
+			hs.window.orderedWindows()[2]:focus()
+		end
 	else
 		local bringToFront = true
 		hs.openConsole(bringToFront)
@@ -74,7 +76,9 @@ local vpns = {
 
 local reminders = {
 	{ "a", "Reminders", desc = "Apple Reminders" },
+	{ "r", "Godspeed", desc = "Default" },
 	{ "d", "Due" },
+	{ "g", "Godspeed" },
 }
 
 return {
