@@ -59,6 +59,13 @@ function M:setItems(items)
 	self.logger.vf(hs.inspect(items))
 	---@diagnostic enable
 
+	table.sort(items, function(a, b)
+		if a[1] == b[1] then
+			return a[2] < b[2]
+		else
+			return a[1] < b[1]
+		end
+	end)
 	self.items = items
 
 	return self

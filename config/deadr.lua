@@ -59,8 +59,8 @@ local terminals = {
 }
 
 local notes = {
-	{ "a", "Notes", desc = "Apple Notes" },
 	{ "n", "Notion", desc = "Default" },
+	{ "a", "Notes", desc = "Apple Notes" },
 	{ "o", "Notion" },
 }
 
