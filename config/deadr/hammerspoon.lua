@@ -1,10 +1,14 @@
 local hammerspoon = function()
 	local app_name = "Hammerspoon"
 	local win_name = "Hammerspoon Console"
+
 	local app = hs.application.get("Hammerspoon")
 	local win = app:findWindow(win_name)
 
-	if win then
+	local wins = hs.window.orderedWindows()
+	local is_focused = win == wins[1] or win == wins[2]
+
+	if is_focused then
 		hs.closeConsole()
 		hs.window.orderedWindows()[2]:focus()
 	else
