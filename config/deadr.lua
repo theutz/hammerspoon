@@ -1,3 +1,4 @@
+local util = require("util")
 local partial = hs.fnutils.partial
 
 local hammerspoon = function()
@@ -94,7 +95,7 @@ local reminders = {
 
 local music = {
 	{ "s", "Spotify" },
-	{ "m", "" },
+	{ "m", "Music", desc = "Apple Music" },
 }
 
 local function split(...)
@@ -106,10 +107,14 @@ local function split(...)
 			apps[i] = hs.settings.get(name)
 			apps[i] = hs.application.open(apps[i] or name)
 			if apps[i] then
-				hs.grid.set(apps[i]:mainWindow(), sizes[i])
+				util.withAxHotfix(function(win)
+					hs.grid.set(win, sizes[i])
+				end)(apps[i]:mainWindow())
 			end
 		end
-		apps[1]:mainWindow():focus()
+		util.withAxHotfix(function(win)
+			win:focus()
+		end)(apps[1]:mainWindow())
 	end
 end
 
@@ -172,7 +177,7 @@ return {
 		{ "m", messengers, desc = "Messaging" },
 		{ "l", "Timemator" },
 		{ "n", notes, desc = "Notes" },
-		{ "p", "Spotify" },
+		{ "p", music, desc = "Music" },
 		{ "r", reminders, desc = "Reminders" },
 		{ "s", splits, desc = "Splits" },
 		{ "t", terminals, desc = "Terminals" },
