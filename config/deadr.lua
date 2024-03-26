@@ -1,3 +1,5 @@
+local partial = hs.fnutils.partial
+
 local hammerspoon = function()
 	local app_name = "Hammerspoon"
 	local win_name = "Hammerspoon Console"
@@ -95,6 +97,34 @@ local music = {
 	{ "m", "" },
 }
 
+local function mainVertical(primary, secondary)
+	primary = hs.application.open(primary)
+	secondary = hs.application.open(secondary)
+	if primary and secondary then
+		hs.grid.set(primary:mainWindow(), "0,0 8x12")
+		hs.grid.set(secondary:mainWindow(), "8,0 4x12")
+		primary:mainWindow():focus()
+	end
+end
+
+local splits = {
+	{
+		"e",
+		partial(mainVertical, "Neovide", "WezTerm"),
+		desc = "Editor/Terminal",
+	},
+	{
+		"b",
+		partial(mainVertical, "Google Chrome", "Neovide"),
+		desc = "Browser/Editor",
+	},
+	{
+		"h",
+		partial(mainVertical, "Neovide", "Hammerspoon"),
+		desc = "Editor/Hammerspoon",
+	},
+}
+
 return {
 	max_cols = 5,
 	binds = {
@@ -110,6 +140,7 @@ return {
 		{ "n", notes, desc = "Notes" },
 		{ "p", "Spotify" },
 		{ "r", reminders, desc = "Reminders" },
+		{ "s", splits, desc = "Splits" },
 		{ "t", terminals, desc = "Terminals" },
 		{ "v", vpns, desc = "VPNs" },
 		{ "z", "zoom.us", desc = "Zoom" },
