@@ -5,10 +5,20 @@ local karabiner = {
 	escape = { {}, "f20" },
 }
 
-hs.settings.set("default_browser", "Firefox")
-hs.settings.set("default_editor", "Neovide")
-hs.settings.set("default_terminal", "WezTerm")
-hs.settings.set("default_reminders", "Godspeed")
+local default_apps = {
+	{ "browser", "Firefox" },
+	{ "editor", "Neovide" },
+	{ "terminal", "WezTerm" },
+	{ "reminders", "Godspeed" },
+	{ "notes", "Notion" },
+	{ "vpn", "ClearVPN" },
+	{ "messages", "Messages" },
+	{ "music", "Spotify" },
+}
+for _, def in ipairs(default_apps) do
+	local type, app = table.unpack(def)
+	hs.settings.set("default_" .. type, app)
+end
 
 -- Settings
 hs.application.enableSpotlightForNameSearches(true)
