@@ -59,7 +59,7 @@ local messengers = {
 
 local terminals = {
 	{ "w", "WezTerm" },
-	{ "t", "WezTerm", desc = "Default" },
+	{ "t", hs.settings.get("default_terminal"), desc = "Default" },
 	{ "i", "iTerm 2" },
 	{ "a", "Terminal", desc = "Apple Terminal" },
 }
@@ -78,7 +78,7 @@ local vpns = {
 
 local reminders = {
 	{ "a", "Reminders", desc = "Apple Reminders" },
-	{ "r", "Godspeed", desc = "Default" },
+	{ "r", hs.settings.get("default_reminders"), desc = "Default" },
 	{ "d", "Due" },
 	{ "g", "Godspeed" },
 	{
@@ -97,38 +97,66 @@ local music = {
 	{ "m", "" },
 }
 
-local function mainVertical(primary, secondary)
-	primary = hs.application.open(primary)
-	secondary = hs.application.open(secondary)
-	if primary and secondary then
-		hs.grid.set(primary:mainWindow(), "0,0 8x12")
-		hs.grid.set(secondary:mainWindow(), "8,0 4x12")
-		primary:mainWindow():focus()
+local function split(...)
+	local names = table.pack(...)
+	return function()
+		local sizes = { "0,0 8x12", "8,0 4x12" }
+		local apps = {}
+		for i, name in ipairs(names) do
+			apps[i] = hs.settings.get(name)
+			apps[i] = hs.application.open(apps[i] or name)
+			if apps[i] then
+				hs.grid.set(apps[i]:mainWindow(), sizes[i])
+			end
+		end
+		apps[1]:mainWindow():focus()
 	end
 end
 
 local splits = {
 	{
 		"e",
-		partial(mainVertical, "Neovide", "WezTerm"),
-		desc = "Editor/Terminal",
+		{
+			{
+				"t",
+				split("default_editor", "default_terminal"),
+				desc = "Terminal",
+			},
+			{
+				"h",
+				split("default_editor", "Hammerspoon"),
+				desc = "Hammerspoon",
+			},
+			{
+				"b",
+				split("default_editor", "default_browser"),
+				desc = "Browser",
+			},
+		},
+		desc = "Editor",
 	},
 	{
 		"b",
-		partial(mainVertical, "Google Chrome", "Neovide"),
-		desc = "Browser/Editor",
-	},
-	{
-		"h",
-		partial(mainVertical, "Neovide", "Hammerspoon"),
-		desc = "Editor/Hammerspoon",
+		{
+			{
+				"t",
+				split("default_browser", "default_terminal"),
+				desc = "Terminal",
+			},
+			{
+				"e",
+				split("default_browser", "default_editor"),
+				desc = "Editor",
+			},
+		},
+		desc = "Browser",
 	},
 }
 
 return {
 	cell = {
 		width = 140,
-		height = 100,
+		height = 120,
 	},
 	table = {
 		cols = 5,

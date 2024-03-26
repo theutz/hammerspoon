@@ -5,6 +5,11 @@ local karabiner = {
 	escape = { {}, "f20" },
 }
 
+hs.settings.set("default_browser", "Firefox")
+hs.settings.set("default_editor", "Neovide")
+hs.settings.set("default_terminal", "WezTerm")
+hs.settings.set("default_reminders", "Godspeed")
+
 -- Settings
 hs.application.enableSpotlightForNameSearches(true)
 
