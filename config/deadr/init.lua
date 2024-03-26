@@ -112,7 +112,14 @@ local ask = {
 	{
 		"a",
 		raycast("raycast://extensions/raycast/raycast-ai/ai-chat"),
-		desc = "Raycast",
+		desc = "Ask AI",
+	},
+	{
+		"e",
+		raycast(
+			"raycast://extensions/raycast/emoji-symbols/search-emoji-symbols"
+		),
+		desc = "Emojis",
 	},
 	{
 		"t",
