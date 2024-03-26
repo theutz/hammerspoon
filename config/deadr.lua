@@ -126,7 +126,13 @@ local splits = {
 }
 
 return {
-	max_cols = 5,
+	cell = {
+		width = 140,
+		height = 100,
+	},
+	table = {
+		cols = 5,
+	},
 	binds = {
 		{ "1", "1Password" },
 		{ "b", browsers, desc = "Browsers" },

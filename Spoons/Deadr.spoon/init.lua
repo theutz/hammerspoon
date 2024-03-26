@@ -25,7 +25,20 @@ obj.binds = {}
 obj.logger = hs.logger.new(obj.name)
 
 ---@public
-obj.max_cols = 8
+obj.cell = {
+	width = 120,
+	height = 120,
+	padding = 20,
+	key = 36,
+	name = 16,
+}
+
+---@public
+obj.table = {
+	padding = 20,
+	gap = 10,
+	cols = 5,
+}
 
 ---@private { modal: hs.hotkey.modal, hud: Hud }[]
 obj.layers = {}
@@ -95,7 +108,8 @@ function obj:makeLayer(defs)
 		modal = hs.hotkey.modal.new(),
 		hud = dofile(hs.spoons.resourcePath("hud.lua")):new({
 			logger = self.logger,
-			max_cols = self.max_cols,
+			table = self.table,
+			cell = self.cell,
 		}) --[[@as Hud]],
 	}
 	layer.exit = partial(layer.modal.exit, layer.modal)

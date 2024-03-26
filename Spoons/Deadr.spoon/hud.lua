@@ -12,7 +12,19 @@ M.canvas = hs.canvas.new(hs.screen.primaryScreen():frame()) --[[@as hs.canvas]]
 M.items = {}
 
 ---@public
-M.max_cols = 8
+M.cell = {
+	width = 120,
+	height = 120,
+	key = 36,
+	name = 16,
+}
+
+---@public
+M.table = {
+	padding = 20,
+	gap = 10,
+	cols = 5,
+}
 
 ---@param o self
 ---@return self
@@ -74,10 +86,11 @@ end
 function M:renderCanvas()
 	local screenFrame = hs.screen.mainScreen():fullFrame()
 
-	local size = 120
-	local padding = 20
-	local gap = padding / 2
-	local max_cols = self.max_cols
+	local width = self.cell.width or 120
+	local height = self.cell.height or 120
+	local padding = self.table.padding or 20
+	local gap = self.table.gap or 10
+	local max_cols = self.table.cols or 8
 
 	local cell_count = #self.items
 	local row_count = math.ceil(cell_count / max_cols)
@@ -107,8 +120,8 @@ function M:renderCanvas()
 		frame = {
 			x = 0,
 			y = 0,
-			w = col_count * size + (col_count - 1) * gap + padding * 2,
-			h = row_count * size + (row_count - 1) * gap + padding * 2,
+			w = col_count * width + (col_count - 1) * gap + padding * 2,
+			h = row_count * height + (row_count - 1) * gap + padding * 2,
 		},
 		roundedRectRadii = { xRadius = 16, yRadius = 16 },
 	}
@@ -124,7 +137,7 @@ function M:renderCanvas()
 		local curr = canvas:elementCount()
 		local key, name = table.unpack(item)
 		local text = hs.styledtext.new(name, {
-			font = { name = "IBM Plex Mono", size = 16 },
+			font = { name = "IBM Plex Mono", size = self.cell.name or 16 },
 			color = { hex = "#fff" },
 			paragraphStyle = {
 				alignment = "center",
@@ -138,14 +151,14 @@ function M:renderCanvas()
 			frame = {
 				x = container.x
 					+ padding
-					+ (col - 1) * size
+					+ (col - 1) * width
 					+ (gap * (col - 1)),
 				y = container.y
 					+ padding
-					+ (row - 1) * size
+					+ (row - 1) * height
 					+ (gap * (row - 1)),
-				w = size,
-				h = size,
+				w = width,
+				h = height,
 			},
 			roundedRectRadii = { xRadius = 8, yRadius = 8 },
 		}
@@ -154,7 +167,7 @@ function M:renderCanvas()
 			type = "text",
 			text = text
 				.copy(text)--[[@as hs.styledtext]]
-				:setStyle({ font = { size = 36 } })--[[@as hs.styledtext]]
+				:setStyle({ font = { size = self.cell.key or 36 } })--[[@as hs.styledtext]]
 				:setString(key)--[[@as hs.styledtext]]
 				:upper(),
 			frame = {
@@ -180,7 +193,7 @@ function M:renderCanvas()
 
 		if is_last_row and remaining_cells > 0 and row_count > 1 then
 			local x_offset_count = (max_cols - remaining_cells) / 2
-			local x_offset = x_offset_count * size + x_offset_count * gap
+			local x_offset = x_offset_count * width + x_offset_count * gap
 			cell.frame.x = cell.frame.x + x_offset
 			key_box.frame.x = key_box.frame.x + x_offset
 			name_box.frame.x = name_box.frame.x + x_offset
