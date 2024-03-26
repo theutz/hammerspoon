@@ -1,5 +1,34 @@
+local function fromSettings(setting)
+	return function(toggler)
+		local def = hs.settings.get(setting)
+		if def == nil then
+			local message = setting
+			local informativeText = "What should the default value be?"
+			local defaultValue = ""
+			local button1 = "Save"
+			local button2 = "Cancel"
+			local button, value = hs.dialog.textPrompt(
+				message,
+				informativeText,
+				defaultValue,
+				button1,
+				button2
+			)
+			if button == button1 then
+				hs.settings.set(setting, value)
+				def = value
+			end
+		end
+		toggler(def)
+	end
+end
+
 local browsers = {
-	{ "b", "default_browser", desc = "Default" },
+	{
+		"b",
+		fromSettings("default_browser"),
+		desc = "Default",
+	},
 	{ "e", "Microsoft Edge" },
 	{ "f", "Firefox" },
 	{ "g", "Google Chrome" },
@@ -15,7 +44,7 @@ local messages = {
 	{ "e", "Mail", desc = "Email" },
 	{ "f", "Messenger", desc = "Facebook Messenger" },
 	{ "i", "Ivory" },
-	{ "m", hs.settings.get("default_messages"), desc = "Default" },
+	{ "m", fromSettings("default_messages"), desc = "Default" },
 	{ "s", "Slack" },
 	{ "w", "WhatsApp" },
 	{ "x", "Element" },
@@ -24,19 +53,19 @@ local messages = {
 
 local terminals = {
 	{ "w", "WezTerm" },
-	{ "t", hs.settings.get("default_terminal"), desc = "Default" },
+	{ "t", fromSettings("default_terminal"), desc = "Default" },
 	{ "i", "iTerm 2" },
 	{ "a", "Terminal", desc = "Apple Terminal" },
 }
 
 local notes = {
-	{ "n", hs.settings.get("default_notes"), desc = "Default" },
+	{ "n", fromSettings("default_notes"), desc = "Default" },
 	{ "a", "Notes", desc = "Apple Notes" },
 	{ "o", "Notion" },
 }
 
 local vpns = {
-	{ "v", hs.settings.get("default_vpn"), desc = "Default" },
+	{ "v", fromSettings("default_vpn"), desc = "Default" },
 	{ "c", "ClearVPN" },
 	{ "n", "NordVPN" },
 	{ "s", "Surfshark" },
@@ -44,7 +73,7 @@ local vpns = {
 
 local reminders = {
 	{ "a", "Reminders", desc = "Apple Reminders" },
-	{ "r", hs.settings.get("default_reminders"), desc = "Default" },
+	{ "r", fromSettings("default_reminders"), desc = "Default" },
 	{ "d", "Due" },
 	{ "g", "Godspeed" },
 	{
@@ -60,7 +89,7 @@ local reminders = {
 
 local music = {
 	{ "s", "Spotify" },
-	{ "p", hs.settings.get("default_music"), desc = "Default" },
+	{ "p", fromSettings("default_music"), desc = "Default" },
 	{ "m", "Music", desc = "Apple Music" },
 }
 

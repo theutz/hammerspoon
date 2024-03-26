@@ -67,26 +67,31 @@ end
 function obj.opener(hint, layer)
 	local fn
 	if type(hint) == "function" then
-		fn = hint
-	else
 		fn = function()
-			local exact = true
-			local app = hs.application.find(hint, exact)
-			if app then
-				if app:isFrontmost() then
-					app:hide()
-				else
-					local allWindows = true
-					app:setFrontmost(allWindows)
-				end
-			else
-				hs.application.open(hint)
-			end
+			hint(obj.appToggler)
 		end
+	else
+		fn = hs.fnutils.partial(obj.appToggler, hint) --[[@as function]]
 	end
 	return function()
 		fn()
 		layer:exit()
+	end
+end
+
+---@public
+function obj.appToggler(name)
+	local exact = true
+	local app = hs.application.find(name, exact)
+	if app then
+		if app:isFrontmost() then
+			app:hide()
+		else
+			local allWindows = true
+			app:setFrontmost(allWindows)
+		end
+	else
+		hs.application.open(name)
 	end
 end
 

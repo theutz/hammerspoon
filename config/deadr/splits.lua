@@ -11,7 +11,7 @@ local function split(...)
 			if apps[i] == nil then
 				local button, default = hs.dialog.textPrompt(
 					name,
-					string.format("What should `%s` be?", name),
+					string.format("What should the default value be?", name),
 					"",
 					"Save",
 					"Cancel"
