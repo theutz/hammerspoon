@@ -26,7 +26,10 @@ local function split(...)
 		for i, name in ipairs(names) do
 			if apps[i] then
 				util.withAxHotfix(function(win)
-					hs.grid.set(win, sizes[i])
+					win:moveToScreen(hs.screen:primaryScreen())
+					hs.timer.doAfter(0.1, function()
+						hs.grid.set(win, sizes[i])
+					end)
 				end)(apps[i]:mainWindow())
 			end
 		end
