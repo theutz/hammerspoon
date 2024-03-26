@@ -43,15 +43,16 @@ local browsers = {
 }
 
 local messengers = {
-	{ "m", "Messages", desc = "Default" },
+	{ "a", "Messages", desc = "Apple Messages" },
 	{ "d", "Discord" },
-	{ "x", "Element" },
 	{ "e", "Mail", desc = "Email" },
 	{ "f", "Messenger", desc = "Facebook Messenger" },
-	{ "a", "Messages", desc = "Apple Messages" },
+	{ "i", "Ivory" },
+	{ "m", "Messages", desc = "Default" },
 	{ "s", "Slack" },
 	{ "w", "WhatsApp" },
-	{ "i", "Ivory" },
+	{ "x", "Element" },
+	{ "t", "Telegram" },
 }
 
 local terminals = {
