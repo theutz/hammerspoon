@@ -104,9 +104,9 @@ return {
 	binds = {
 		{ "1", "1Password" },
 		{ "b", browsers, desc = "Browsers" },
-		{ "c", "Calendar" },
+		{ "c", fromSettings("default_calendar"), desc = "Calendar" },
 		{ "d", "Dash" },
-		{ "e", "Neovide" },
+		{ "e", fromSettings("default_editor"), desc = "Editor" },
 		{ "f", "Figma" },
 		{ "h", require("config.deadr.hammerspoon"), desc = "Hammerspoon" },
 		{ "m", messages, desc = "Messaging" },

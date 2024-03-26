@@ -1,4 +1,5 @@
 local util = require("util")
+local partial = hs.fnutils.partial
 
 local function split(...)
 	local names = table.pack(...)
@@ -35,41 +36,27 @@ local function split(...)
 	end
 end
 
+local se = partial(split, "default_editor") --[[@as function]]
+local sb = partial(split, "default_browser") --[[@as function]]
+
 local splits = {
 	{
 		"e",
 		{
-			{
-				"t",
-				split("default_editor", "default_terminal"),
-				desc = "Terminal",
-			},
-			{
-				"h",
-				split("default_editor", "Hammerspoon"),
-				desc = "Hammerspoon",
-			},
-			{
-				"b",
-				split("default_editor", "default_browser"),
-				desc = "Browser",
-			},
+			{ "t", se("default_terminal"), desc = "Terminal" },
+			{ "h", se("Hammerspoon"), desc = "Hammerspoon" },
+			{ "b", se("default_browser"), desc = "Browser" },
 		},
 		desc = "Editor",
 	},
 	{
 		"b",
 		{
-			{
-				"t",
-				split("default_browser", "default_terminal"),
-				desc = "Terminal",
-			},
-			{
-				"e",
-				split("default_browser", "default_editor"),
-				desc = "Editor",
-			},
+			{ "t", sb("default_terminal"), desc = "Terminal" },
+			{ "e", sb("default_editor"), desc = "Editor" },
+			{ "m", sb("default_email"), desc = "Email" },
+			{ "c", sb("default_calendar"), desc = "Calendar" },
+			{ "s", sb("Slack"), desc = "Slack" },
 		},
 		desc = "Browser",
 	},
