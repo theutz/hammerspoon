@@ -8,6 +8,21 @@ local function split(...)
 		for i, name in ipairs(names) do
 			apps[i] = hs.settings.get(name)
 			apps[i] = hs.application.open(apps[i] or name)
+			if apps[i] == nil then
+				local button, default = hs.dialog.textPrompt(
+					name,
+					string.format("What should `%s` be?", name),
+					"",
+					"Save",
+					"Cancel"
+				)
+				if button == "Save" then
+					hs.settings.set(name, default)
+					apps[i] = hs.application.open(default)
+				end
+			end
+		end
+		for i, name in ipairs(names) do
 			if apps[i] then
 				util.withAxHotfix(function(win)
 					hs.grid.set(win, sizes[i])
