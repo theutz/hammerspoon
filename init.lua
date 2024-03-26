@@ -54,10 +54,10 @@ hs.spoons.use("Windowr", {
 	start = true,
 })
 
-hs.spoons.use("Frontr", {
-	start = true,
-	config = require("config.frontr"),
-})
+-- hs.spoons.use("Frontr", {
+-- 	start = true,
+-- 	config = require("config.frontr"),
+-- })
 
 hs.spoons.use("Deadr", {
 	hotkeys = {
