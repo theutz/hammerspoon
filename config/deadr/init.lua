@@ -23,6 +23,12 @@ local function fromSettings(setting)
 	end
 end
 
+local function raycast(url)
+	return function()
+		hs.urlevent.openURL(url)
+	end
+end
+
 local browsers = {
 	{
 		"b",
@@ -73,17 +79,12 @@ local vpns = {
 
 local reminders = {
 	{ "a", "Reminders", desc = "Apple Reminders" },
-	{ "r", fromSettings("default_reminders"), desc = "Default" },
 	{ "d", "Due" },
 	{ "g", "Godspeed" },
 	{
-		"c",
-		function()
-			hs.urlevent.openURL(
-				"raycast://extensions/raycast/apple-reminders/my-reminders"
-			)
-		end,
-		desc = "Raycast Agenda",
+		"r",
+		raycast("raycast://extensions/raycast/apple-reminders/my-reminders"),
+		desc = "Default",
 	},
 }
 
@@ -91,6 +92,33 @@ local music = {
 	{ "s", "Spotify" },
 	{ "p", fromSettings("default_music"), desc = "Default" },
 	{ "m", "Music", desc = "Apple Music" },
+	{
+		"r",
+		raycast("raycast://extensions/mattisssa/spotify-player/yourLibrary"),
+		desc = "Raycast",
+	},
+}
+
+local calendar = {
+	{
+		"c",
+		raycast("raycast://extensions/raycast/calendar/my-schedule"),
+		desc = "Default",
+	},
+	{ "a", "Calendar", desc = "Apple Calendar" },
+}
+
+local ask = {
+	{
+		"a",
+		raycast("raycast://extensions/raycast/raycast-ai/ai-chat"),
+		desc = "Raycast",
+	},
+	{
+		"t",
+		raycast("raycast://extensions/raycast/translator/translate"),
+		desc = "Translate",
+	},
 }
 
 return {
@@ -103,8 +131,9 @@ return {
 	},
 	binds = {
 		{ "1", "1Password" },
+		{ "a", ask, desc = "Ask" },
 		{ "b", browsers, desc = "Browsers" },
-		{ "c", fromSettings("default_calendar"), desc = "Calendar" },
+		{ "c", calendar, desc = "Calendar" },
 		{ "d", "Dash" },
 		{ "e", fromSettings("default_editor"), desc = "Editor" },
 		{ "f", "Figma" },
