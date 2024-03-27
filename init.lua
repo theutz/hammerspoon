@@ -1,3 +1,6 @@
+-- Load IPC module
+require("hs.ipc")
+
 -- Karabiner
 local karabiner = {
 	right_command = { {}, "f18" },
