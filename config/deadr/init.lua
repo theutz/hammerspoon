@@ -81,8 +81,9 @@ local reminders = {
 	{ "a", "Reminders", desc = "Apple Reminders" },
 	{ "d", "Due" },
 	{ "g", "Godspeed" },
+	{ "r", fromSettings("default_reminders"), desc = "Default" },
 	{
-		"r",
+		"c",
 		raycast("raycast://extensions/raycast/apple-reminders/my-reminders"),
 		desc = "Default",
 	},
