@@ -6,6 +6,7 @@ return {
 			"bugherd.com",
 			"google.com",
 			"hubspot.com",
+			"zoho.com",
 		},
 		["Firefox"] = {
 			"reddit.com",
