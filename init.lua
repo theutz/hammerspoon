@@ -1,6 +1,13 @@
 -- Load IPC module
 require("hs.ipc")
 
+-- Add private spoons to package.path
+package.path = package.path
+	.. ";"
+	.. os.getenv("HOME")
+	.. "/code/theutz/Spoons/?.spoon/init.lua"
+print(package.path)
+
 -- Karabiner
 local karabiner = {
 	right_command = { {}, "f18" },
@@ -22,7 +29,7 @@ hs.spoons.use("Reloadr", {
 	config = require("config.reloadr"),
 })
 
--- spoon.SpoonInstall:andUse("EmmyLua")
+spoon.SpoonInstall:andUse("EmmyLua")
 
 hs.spoons.use("Mousr", {
 	hotkeys = {
@@ -47,12 +54,12 @@ hs.spoons.use("Frontr", {
 	config = require("config.frontr"),
 })
 
-hs.spoons.use("Deadr", {
-	hotkeys = {
-		activate = karabiner.right_option,
-	},
-	config = require("config.deadr"),
-	loglevel = "debug",
+hs.loadSpoon("Deadr")
+for k, v in pairs(require("config.deadr")) do
+	spoon.Deadr[k] = v
+end
+spoon.Deadr:bindHotkeys({
+	activate = karabiner.right_option,
 })
 
 spoon.Reloadr:notifyReloaded()
