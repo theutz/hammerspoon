@@ -129,6 +129,12 @@ local ask = {
 	},
 }
 
+local editors = {
+	{ "v", "Emacs" },
+	{ "e", fromSettings("default_editor"), desc = "Default" },
+	{ "n", "Neovide" }
+}
+
 return {
 	cell = {
 		width = 140,
@@ -143,7 +149,7 @@ return {
 		{ "b", browsers, desc = "Browsers" },
 		{ "c", calendar, desc = "Calendar" },
 		{ "d", "Dash" },
-		{ "e", fromSettings("default_editor"), desc = "Editor" },
+		{ "e", editors, desc = "Editors" },
 		{ "f", "Figma" },
 		{ "h", require("config.deadr.hammerspoon"), desc = "Hammerspoon" },
 		{ "m", messages, desc = "Messaging" },
