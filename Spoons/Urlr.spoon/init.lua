@@ -22,7 +22,7 @@ function obj:start()
 	return self
 end
 
-function obj.open_url_in_browser(url, browser)
+function obj:open_url_in_browser(url, browser)
 	hs.task
 		.new(
 			"/usr/bin/open",
@@ -34,7 +34,7 @@ end
 
 function obj:http_callback()
 	return function(_, host, _, fullURL)
-		local go = partial(self.open_url_in_browser, fullURL) --[[@as function]]
+		local go = partial(self.open_url_in_browser, self, fullURL) --[[@as function]]
 		for browser, hosts in pairs(obj.routes) do
 			if some(hosts, self.matchHost(host)) then
 				go(browser)
