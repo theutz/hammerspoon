@@ -9,6 +9,7 @@ return {
 			"zoho.com",
 		},
 		["Firefox"] = {
+			"notion.so",
 			"reddit.com",
 			"facebook.com",
 			"instagram.com",
