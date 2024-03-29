@@ -6,5 +6,5 @@ return {
 		"Spotify",
 		"Timemator",
 	},
-	grid = "1,1 10x10",
+	grid = "0,0 12x12",
 }
