@@ -27,6 +27,7 @@ hs.loadSpoon("SpoonInstall")
 hs.spoons.use("Reloadr", {
 	start = true,
 	config = require("config.reloadr"),
+	-- loglevel = "debug"
 })
 
 spoon.SpoonInstall:andUse("EmmyLua")
@@ -36,22 +37,26 @@ hs.spoons.use("Mousr", {
 		activate = karabiner.right_command,
 	},
 	config = require("config.mousr"),
+	-- loglevel = "debug"
 })
 
 hs.spoons.use("Urlr", {
 	config = require("config.urlr"),
 	start = true,
+	-- loglevel = "debug"
 })
 
 hs.spoons.use("Windowr", {
 	hotkeys = "default",
 	config = require("config.windowr"),
 	start = true,
+	-- loglevel = "debug"
 })
 
 hs.spoons.use("Frontr", {
 	start = true,
 	config = require("config.frontr"),
+	-- loglevel = "debug"
 })
 
 hs.loadSpoon("Deadr")
@@ -61,5 +66,6 @@ end
 spoon.Deadr:bindHotkeys({
 	activate = karabiner.right_option,
 })
+-- spoon.Deadr.logger.setLogLevel("debug")
 
 spoon.Reloadr:notifyReloaded()
