@@ -65,7 +65,16 @@ obj.defaultHotkeys = {
 }
 
 obj.sizes = {
-	centralize = { "1,1 10x10", "2,2 8x8", "3,3 6x6", "4,4 4x4", "0,0 12x12" },
+	centralize = {
+		"1,1 10x10",
+		"2,1 8x10",
+		"2,2 8x8",
+		"3,2 6x8",
+		"3,3 6x6",
+		"4,3 4x6",
+		"4,4 4x4",
+		"0,0 12x12",
+	},
 	fullscreen = { "0,0 12x12" },
 	moveToBottom = { "0,6 12x6", "4,6 4x6" },
 	moveToLeft = { "0,0 8x12", "0,0 6x12", "0,0 4x12" },
