@@ -43,7 +43,7 @@ hs.spoons.use("Mousr", {
 hs.spoons.use("Urlr", {
 	config = require("config.urlr"),
 	start = true,
-	-- loglevel = "debug"
+	-- loglevel = "debug",
 })
 
 hs.spoons.use("Windowr", {

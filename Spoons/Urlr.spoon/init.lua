@@ -9,6 +9,8 @@ obj.author = "Michael Utz <michael@theutz.com>"
 obj.license = "MIT"
 obj.homepage = "https://theutz.com"
 
+obj.logger = hs.logger.new("urlr")
+
 obj.default_browser = "Firefox"
 
 obj.routes = {}
@@ -23,24 +25,40 @@ function obj:start()
 end
 
 function obj:open_url_in_browser(url, browser)
+	local oldWin = hs.window.orderedWindows()[2]
+	self.logger.df(
+		---@diagnostic disable-next-line: param-type-mismatch
+		"current focused window: %s",
+		---@diagnostic disable-next-line: undefined-field
+		oldWin:application():name()
+	)
+
 	hs.task
-		.new(
-			"/usr/bin/open",
-			function() end,
-			{ "-a", browser or self.default_browser, url }
-		)
+		.new("/usr/bin/open", function()
+			local newWin = hs.window.frontmostWindow()
+			self.logger.df(
+				---@diagnostic disable-next-line: param-type-mismatch
+				"window focus after urlr: %s",
+				---@diagnostic disable-next-line: undefined-field
+				newWin:application():name()
+			)
+			oldWin:focus()
+			newWin:focus()
+		end, { "-a", browser or self.default_browser, url })
 		:start()
 end
 
 function obj:http_callback()
 	return function(_, host, _, fullURL)
 		local go = partial(self.open_url_in_browser, self, fullURL) --[[@as function]]
+
 		for browser, hosts in pairs(obj.routes) do
 			if some(hosts, self.matchHost(host)) then
 				go(browser)
 				return
 			end
 		end
+
 		hs.chooser
 			.new(function(browser)
 				go(browser and browser.text)
