@@ -61,6 +61,7 @@ obj.defaultHotkeys = {
 	southwest = "n",
 	tileAllWindows = "e",
 	unhideAll = "a",
+	tidy = "t",
 }
 
 obj.sizes = {
@@ -362,6 +363,14 @@ function obj:unhideAll()
 		app:unhide()
 	end
 	hs.timer.doAfter(0.5, hs.fnutils.partial(self.tileAllWindows, self))
+end
+
+function obj:tidy()
+	for _, win in ipairs(hs.window.visibleWindows()) do
+		self:withAxHotfix(function(w)
+			hs.grid.snap(win)
+		end)(win)
+	end
 end
 
 function obj.axHotfix(win)
