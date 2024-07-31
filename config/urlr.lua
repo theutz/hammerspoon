@@ -9,6 +9,7 @@ return {
 			"facebook.com",
 			"instagram.com",
 			"threads.net",
+			"linkedin.com",
 			"x.com",
 			"twitter.com",
 			"hachyderm.io",
