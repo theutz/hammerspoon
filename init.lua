@@ -32,40 +32,40 @@ hs.spoons.use("Reloadr", {
 
 spoon.SpoonInstall:andUse("EmmyLua")
 
-hs.spoons.use("Mousr", {
-	hotkeys = {
-		activate = karabiner.right_command,
-	},
-	config = require("config.mousr"),
-	-- loglevel = "debug"
-})
-
-hs.spoons.use("Urlr", {
-	config = require("config.urlr"),
-	start = true,
-	-- loglevel = "debug",
-})
-
-hs.spoons.use("Windowr", {
-	hotkeys = "default",
-	config = require("config.windowr"),
-	start = true,
-	-- loglevel = "debug"
-})
-
-hs.spoons.use("Frontr", {
-	start = true,
-	config = require("config.frontr"),
-	-- loglevel = "debug"
-})
-
-hs.loadSpoon("Deadr")
-for k, v in pairs(require("config.deadr")) do
-	spoon.Deadr[k] = v
-end
-spoon.Deadr:bindHotkeys({
-	activate = karabiner.right_option,
-})
+-- hs.spoons.use("Mousr", {
+-- 	hotkeys = {
+-- 		activate = karabiner.right_command,
+-- 	},
+-- 	config = require("config.mousr"),
+-- 	-- loglevel = "debug"
+-- })
+--
+-- hs.spoons.use("Urlr", {
+-- 	config = require("config.urlr"),
+-- 	start = true,
+-- 	-- loglevel = "debug",
+-- })
+--
+-- hs.spoons.use("Windowr", {
+-- 	hotkeys = "default",
+-- 	config = require("config.windowr"),
+-- 	start = true,
+-- 	-- loglevel = "debug"
+-- })
+--
+-- hs.spoons.use("Frontr", {
+-- 	start = true,
+-- 	config = require("config.frontr"),
+-- 	-- loglevel = "debug"
+-- })
+--
+-- hs.loadSpoon("Deadr")
+-- for k, v in pairs(require("config.deadr")) do
+-- 	spoon.Deadr[k] = v
+-- end
+-- spoon.Deadr:bindHotkeys({
+-- 	activate = karabiner.right_option,
+-- })
 -- spoon.Deadr.logger.setLogLevel("debug")
 
 spoon.Reloadr:notifyReloaded()
