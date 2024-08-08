@@ -46,10 +46,14 @@ obj.defaultHotkeys = {
 	maxHeight = "y",
 	maximizeAllWindows = "o",
 	maxWidth = "x",
-	moveToBottom = "j",
-	moveToLeft = "h",
-	moveToRight = "l",
-	moveToTop = "k",
+	moveToBottom = "s",
+	moveToLeft = "a",
+	moveToRight = "d",
+	moveToTop = "w",
+	focusWindowEast = "l",
+	focusWindowWest = "h",
+	focusWindowNorth = "k",
+	focusWindowSouth = "j",
 	nextScreen = "]",
 	nextWindow = "0",
 	northeast = "i",
@@ -128,6 +132,26 @@ end
 
 function obj:stop()
 	self.watcher:stop()
+end
+
+function obj:focusWindowEast()
+	local win = hs.window.focusedWindow()
+	win:focusWindowEast()
+end
+
+function obj:focusWindowWest()
+	local win = hs.window.focusedWindow()
+	win:focusWindowWest()
+end
+
+function obj:focusWindowSouth()
+	local win = hs.window.focusedWindow()
+	win:focusWindowSouth()
+end
+
+function obj:focusWindowNorth()
+	local win = hs.window.focusedWindow()
+	win:focusWindowNorth()
 end
 
 ---@param name string

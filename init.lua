@@ -24,13 +24,16 @@ hs.logger.defaultLogLevel = "warning"
 --- Load spoons
 hs.loadSpoon("SpoonInstall")
 
+-- hs.window.highlight.start()
+-- hs.window.highlight.ui.overlay = true
+--
 hs.spoons.use("Reloadr", {
 	start = true,
 	config = require("config.reloadr"),
 	-- loglevel = "debug"
 })
 
-spoon.SpoonInstall:andUse("EmmyLua")
+-- spoon.SpoonInstall:andUse("EmmyLua")
 
 -- hs.spoons.use("Mousr", {
 -- 	hotkeys = {
@@ -45,7 +48,7 @@ spoon.SpoonInstall:andUse("EmmyLua")
 -- 	start = true,
 -- 	-- loglevel = "debug",
 -- })
---
+
 -- hs.spoons.use("Windowr", {
 -- 	hotkeys = "default",
 -- 	config = require("config.windowr"),
