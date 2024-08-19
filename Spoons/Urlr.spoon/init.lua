@@ -13,6 +13,8 @@ obj.logger = hs.logger.new("urlr")
 
 obj.default_browser = "Firefox"
 
+obj.use_chooser = true
+
 obj.routes = {}
 
 function obj:init()
@@ -51,26 +53,37 @@ end
 function obj:http_callback()
 	return function(_, host, _, fullURL)
 		local go = partial(self.open_url_in_browser, self, fullURL) --[[@as function]]
+		local use_chooser = self.use_chooser
 
 		for browser, hosts in pairs(obj.routes) do
 			if some(hosts, self.matchHost(host)) then
+				if string.match(browser, "chooser") then
+					use_chooser = true
+					break
+				end
 				go(browser)
 				return
 			end
 		end
 
-		hs.chooser
-			.new(function(browser)
-				go(browser and browser.text)
-			end)
-			:choices(function()
-				local choices = {}
-				for k, _ in pairs(obj.routes) do
-					table.insert(choices, { text = k })
-				end
-				return choices
-			end)
-			:show()
+		if use_chooser == true then
+			hs.chooser
+				.new(function(browser)
+					go(browser and browser.text)
+				end)
+				:choices(function()
+					local choices = {}
+					for k, _ in pairs(obj.routes) do
+						if not string.match(k, "chooser") then
+							table.insert(choices, { text = k })
+						end
+					end
+					return choices
+				end)
+				:show()
+		else
+			go()
+		end
 	end
 end
 

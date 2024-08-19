@@ -1,5 +1,6 @@
 return {
 	default_browser = "qutebrowser",
+	use_chooser = false,
 	---@type { [string]: string[] }
 	routes = {
 		["qutebrowser"] = {
@@ -22,6 +23,9 @@ return {
 			"google.com",
 			"hubspot.com",
 			"zoho.com",
+		},
+		["chooser"] = {
+			"github.com",
 		},
 	},
 }
