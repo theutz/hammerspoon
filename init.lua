@@ -42,12 +42,12 @@ hs.spoons.use("Reloadr", {
 -- 	config = require("config.mousr"),
 -- 	-- loglevel = "debug"
 -- })
---
--- hs.spoons.use("Urlr", {
--- 	config = require("config.urlr"),
--- 	start = true,
--- 	-- loglevel = "debug",
--- })
+
+hs.spoons.use("Urlr", {
+	config = require("config.urlr"),
+	start = true,
+	-- loglevel = "debug",
+})
 
 -- hs.spoons.use("Windowr", {
 -- 	hotkeys = "default",

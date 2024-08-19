@@ -1,19 +1,21 @@
 return {
-	default_browser = "Firefox",
+	default_browser = "qutebrowser",
 	---@type { [string]: string[] }
 	routes = {
-		["Firefox"] = {
+		["qutebrowser"] = {
 			"notion.so",
 			"reddit.com",
 			"reddit%a*.com",
-			"facebook.com",
-			"instagram.com",
 			"threads.net",
 			"linkedin.com",
 			"x.com",
 			"twitter.com",
 			"hachyderm.io",
 			"bsky.app",
+		},
+		["Firefox"] = {
+			"facebook.com",
+			"instagram.com",
 		},
 		["Google Chrome"] = {
 			"bugherd.com",
