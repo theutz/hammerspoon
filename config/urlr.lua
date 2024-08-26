@@ -23,6 +23,8 @@ return {
 			"google.com",
 			"hubspot.com",
 			"zoho.com",
+			"slack.com",
+			"standupbot.com",
 		},
 		["chooser"] = {
 			"github.com",
