@@ -1,5 +1,5 @@
 return {
-	default_browser = "qutebrowser",
+	default_browser = "Firefox",
 	use_chooser = false,
 	---@type { [string]: string[] }
 	routes = {
