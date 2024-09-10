@@ -3,7 +3,9 @@ return {
 	use_chooser = false,
 	---@type { [string]: string[] }
 	routes = {
-		["qutebrowser"] = {
+		["Firefox"] = {
+			"facebook.com",
+			"instagram.com",
 			"notion.so",
 			"reddit.com",
 			"reddit%a*.com",
@@ -13,10 +15,6 @@ return {
 			"twitter.com",
 			"hachyderm.io",
 			"bsky.app",
-		},
-		["Firefox"] = {
-			"facebook.com",
-			"instagram.com",
 		},
 		["Google Chrome"] = {
 			"bugherd.com",
